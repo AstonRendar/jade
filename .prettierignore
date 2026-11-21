@@ -1,0 +1,9 @@
+dist
+coverage
+target
+src-tauri/target
+src-tauri/gen
+crates
+package-lock.json
+Cargo.lock
+*.md

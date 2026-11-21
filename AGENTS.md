@@ -162,7 +162,7 @@ jade/
 ├─ src/                          # frontend, mirrors the contexts
 │  ├─ notes/  sync/  preferences/
 │  │   └─ {ui/, store/, gateway/}   # gateway = the only code calling invoke()/listen()
-│  ├─ shared/ {ui/, bindings/, i18n/}
+│  ├─ shared/ {ui/, bindings/, i18n/, testing/}
 │  ├─ locales/{en,es,zh-CN,ca}.json
 │  └─ main.tsx  App.tsx
 └─ .github/workflows/
