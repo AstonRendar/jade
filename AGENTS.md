@@ -311,7 +311,7 @@ TDD is mandatory (§2). Two kinds of tests, both required:
 | Suite | Scope | Location |
 |---|---|---|
 | Unit | Domain and application in isolation; ports replaced by `mockall` mocks | `crates/<ctx>/tests/unit/<layer>/…` mirroring `src/`, crate root `tests/unit/main.rs` |
-| Functional | Complete flows written in Gherkin, run with `cucumber` against real adapters on temporary directories | `crates/<ctx>/tests/features/*.feature` and `src-tauri/tests/features/` for cross-context flows |
+| Functional | Complete flows written in Gherkin, run with `cucumber` against real adapters on temporary directories | `crates/<ctx>/tests/features/*.feature`, runner `tests/functional/main.rs` (`harness = false`); `src-tauri/tests/features/` for cross-context flows |
 | Frontend | Components and stores with Vitest + RTL; the core is replaced with `mockIPC` | next to the code, `*.test.tsx` |
 
 Functional tests never touch the network: remotes are bare repositories on disk
@@ -353,7 +353,7 @@ Coverage thresholds, enforced in CI: domain + application **≥ 95 %** lines; Ru
 ### Functional test conventions
 
 - One `.feature` per use case or flow, named after it (`synchronize_vault.feature`).
-- Steps grouped by topic in `tests/features/steps/` (`vault_steps.rs`, `remote_steps.rs`).
+- Steps grouped by topic in `tests/functional/steps/` (`device_steps.rs`, `remote_steps.rs`); the cucumber `World` in `tests/functional/world.rs`; port doubles that need no mocking (fixed clock, named device) in `tests/functional/doubles.rs`.
 - Fictitious data only: no real people, companies or URLs. Remotes use
   `https://git.example.com/…` in parsing tests.
 
