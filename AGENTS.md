@@ -204,10 +204,14 @@ Wikilink parsing and resolution exist **only in Rust**. The frontend asks the co
 (`ResolveLinks`) instead of reimplementing them.
 
 **`sync`**
-- Value objects: `WorkingDirectory`, `RemoteUrl` (normalises SSH forms to HTTPS for
-  network use), `BranchName`, `CommitId`, `CommitMessage`, `DeviceName`, `AccessToken`,
-  `SyncInterval`, `ConflictCopyName` (`Name (conflict YYYY-MM-DD HHMM).ext`).
-- Domain services: `ConflictResolutionPolicy` (table in §5), `SyncRetryPolicy`.
+- Value objects: `WorkingDirectory`, `TrackedPath` (repository-relative path),
+  `RemoteUrl` (normalises SSH forms to HTTPS for network use; `file://` kept for local
+  remotes), `BranchName`, `CommitId`, `CommitMessage` (`Sync from <device>`,
+  `Merge remote changes`), `DeviceName`, `AccessToken`, `SyncInterval`, `Timestamp`
+  (local wall-clock minute, supplied by `Clock`), `ConflictCopyName`
+  (`Name (conflict YYYY-MM-DD HHMM).ext`, numbered ` 2`, ` 3`… when taken).
+- Domain services: `ConflictResolutionPolicy` (`FileChange` × `FileChange` →
+  `ConflictResolution`, table in §5), `SyncRetryPolicy`.
 - Entities/results: `Revision`, `SyncReport`, `RepositoryStatus`.
 - Ports: `VersionControl`, `CredentialStore`, `Clock`, `DeviceInfo`.
 - Use cases: `InitRepository`, `CloneRepository`, `ConnectRemote`, `SynchronizeVault`,
@@ -245,7 +249,7 @@ written during checkout or merge.
 3. Fetch `refs/heads/<branch>` from `origin` into `refs/remotes/origin/<branch>`.
 4. Merge: up to date → nothing; fast-forward (or unborn local branch) → move the ref and
    check out; divergent → merge, resolve every conflict with `ConflictResolutionPolicy`,
-   and create a merge commit with both parents.
+   and create a merge commit (`Merge remote changes`) with both parents.
 5. Push `<branch>`. If rejected because the remote moved, repeat from step 3 (at most 3
    attempts, `SyncRetryPolicy`), then fail with `push_rejected`.
 6. Report every path changed by the merge (`notes://changed`).
@@ -296,7 +300,7 @@ TDD is mandatory (§2). Two kinds of tests, both required:
 
 | Suite | Scope | Location |
 |---|---|---|
-| Unit | Domain and application in isolation; ports replaced by `mockall` mocks | `crates/<ctx>/tests/unit/<layer>/…` mirroring `src/` |
+| Unit | Domain and application in isolation; ports replaced by `mockall` mocks | `crates/<ctx>/tests/unit/<layer>/…` mirroring `src/`, crate root `tests/unit/main.rs` |
 | Functional | Complete flows written in Gherkin, run with `cucumber` against real adapters on temporary directories | `crates/<ctx>/tests/features/*.feature` and `src-tauri/tests/features/` for cross-context flows |
 | Frontend | Components and stores with Vitest + RTL; the core is replaced with `mockIPC` | next to the code, `*.test.tsx` |
 
