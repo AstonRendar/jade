@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+repository = "https://github.com/AstonRendar/jade"
+
+[workspace.dependencies]
+tempfile = "3"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
