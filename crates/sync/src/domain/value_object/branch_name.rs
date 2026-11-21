@@ -16,6 +16,10 @@ impl BranchName {
         }
     }
 
+    pub fn main() -> Self {
+        Self("main".to_string())
+    }
+
     pub fn as_str(&self) -> &str {
         &self.0
     }

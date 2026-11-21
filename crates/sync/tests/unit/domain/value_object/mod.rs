@@ -8,3 +8,4 @@ mod remote_url;
 mod sync_interval;
 mod timestamp;
 mod tracked_path;
+mod working_directory;

@@ -8,6 +8,7 @@ mod remote_url;
 mod sync_interval;
 mod timestamp;
 mod tracked_path;
+mod working_directory;
 
 pub use access_token::{AccessToken, InvalidAccessTokenError};
 pub use branch_name::{BranchName, InvalidBranchNameError};
@@ -19,3 +20,4 @@ pub use remote_url::{RemoteUrl, UnsupportedRemoteUrlError};
 pub use sync_interval::{SyncInterval, SyncIntervalTooLongError};
 pub use timestamp::{InvalidTimestampError, Timestamp};
 pub use tracked_path::{InvalidTrackedPathError, TrackedPath};
+pub use working_directory::{InvalidWorkingDirectoryError, WorkingDirectory};

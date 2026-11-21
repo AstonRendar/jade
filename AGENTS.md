@@ -185,6 +185,11 @@ jade/
   imperative (`SaveNote`, `SynchronizeVault`).
 - **No comments.** Extract private functions with meaningful names instead. Doc
   comments only on public items whose contract is not obvious from the signature.
+- **Folders inside layers**: `domain/{value_object, service, port}` (plus `model/` for
+  entities and aggregates when a context has them); `application/` holds one module per
+  use case, with its request, response and error types next to it.
+- **Use-case requests carry primitives** (strings, numbers); the use case parses them
+  into value objects, so validation failures are use-case errors.
 
 ### 4.6 Domain map
 
@@ -212,10 +217,15 @@ Wikilink parsing and resolution exist **only in Rust**. The frontend asks the co
   (`Name (conflict YYYY-MM-DD HHMM).ext`, numbered ` 2`, ` 3`… when taken).
 - Domain services: `ConflictResolutionPolicy` (`FileChange` × `FileChange` →
   `ConflictResolution`, table in §5), `SyncRetryPolicy`.
-- Entities/results: `Revision`, `SyncReport`, `RepositoryStatus`.
-- Ports: `VersionControl`, `CredentialStore`, `Clock`, `DeviceInfo`.
-- Use cases: `InitRepository`, `CloneRepository`, `ConnectRemote`, `SynchronizeVault`,
-  `GetRepositoryStatus`, `ListNoteHistory`, `ReadNoteRevision`, `StoreAccessToken`,
+- Ports: `VersionControl` (with its types `MergeOutcome` — `UpToDate`,
+  `FastForwarded`, `Diverged` —, `Conflict`, `ResolvedConflict`, `PushOutcome`,
+  `RepositoryStatus`, `Revision`, `VersionControlError`), `CredentialStore`
+  (`Credentials::Anonymous | Token`), `Clock`, `DeviceInfo`.
+  The merge is two-phase: the adapter reports conflicts (`merge_remote`), the use case
+  decides with the policy, the adapter applies the decisions (`conclude_merge`).
+- Use cases: `InitRepository`, `CloneRepository`, `ConnectRemote`, `SynchronizeVault`
+  (returns a `SyncReport`), `GetRepositoryStatus`, `ListNoteHistory`,
+  `ReadNoteRevision`, `StoreAccessToken` (an empty token deletes it),
   `CheckAccessToken`.
 
 **`preferences`**
