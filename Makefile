@@ -26,4 +26,4 @@ coverage:
 	cargo llvm-cov report --ignore-filename-regex '(/infrastructure/|/tests/)' --fail-under-lines 95
 	npm run coverage
 
-check: lint test
+check: lint test coverage
