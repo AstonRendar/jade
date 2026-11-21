@@ -1,0 +1,13 @@
+mod folding;
+mod note_path;
+mod search_query;
+mod vault_path;
+mod vault_root;
+mod wiki_link;
+
+pub(crate) use folding::fold;
+pub use note_path::{InvalidNotePathError, NotePath};
+pub use search_query::{EmptySearchQueryError, SearchQuery};
+pub use vault_path::{InvalidVaultPathError, VaultPath};
+pub use vault_root::{InvalidVaultRootError, VaultRoot};
+pub use wiki_link::{EmptyWikiLinkTargetError, WikiLink};
