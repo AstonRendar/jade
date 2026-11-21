@@ -12,7 +12,8 @@ translations in `locales/`.
 
 Jade is a Markdown notes app (an Obsidian-style vault) whose storage and sync are a
 **Git repository**, typically on GitHub. One codebase ships to Linux, macOS, Windows,
-Android and iOS.
+Android and iOS. Platform priority: **macOS desktop, Ubuntu desktop, Android**; Windows
+and iOS come later.
 
 Goals:
 - Git is the core, not an add-on: automatic commit/pull/push, per-note history, safe
@@ -119,8 +120,12 @@ reconsidered. `lib.rs` only declares the three modules.
   `Git2VersionControl`, `KeyringCredentialStore`, `JsonFilePreferencesRepository`,
   `SystemClock`, `NotifyVaultWatcher`.
 
-An **architecture test** in each crate fails if `domain/` or `application/` import
-anything outside the allowed list.
+The **architecture test** (`crates/shared/tests/architecture.rs`) scans every crate in
+the workspace and fails if `src/` contains anything other than `lib.rs` and the three
+layers, if `domain/` or `application/` reference a dependency outside the allowed list
+or I/O from `std` (`fs`, `net`, `process`, `env`, `thread`, `time::SystemTime`), or if a
+layer reaches an outer one (`domain` → `application`/`infrastructure`, `application` →
+`infrastructure`).
 
 `crates/shared/` is **not a context**: it holds purely technical code that several
 contexts need identically (e.g. the `UseCase` trait). It has the same layers, never
@@ -305,7 +310,10 @@ Required coverage:
 - every use case → at least one Gherkin scenario;
 - locale completeness: a test fails if any locale misses a key present in `en` or has
   extra keys;
-- an architecture test per context crate (§4.2).
+- the architecture test (§4.2).
+
+Test files under `tests/` may start with `#![allow(clippy::expect_used)]`; production
+code may not use `unwrap`/`expect` (enforced by workspace lints).
 
 Coverage thresholds, enforced in CI: domain + application **≥ 95 %** lines; Rust overall
 **≥ 85 %**; frontend **≥ 80 %**.
@@ -364,9 +372,9 @@ Coverage thresholds, enforced in CI: domain + application **≥ 95 %** lines; Ru
   PR with squash.
 - Semver; the version is kept in sync in `package.json`, the workspace `Cargo.toml` and
   `tauri.conf.json`.
-- CI (GitHub Actions): on PR → `make check` on ubuntu, macOS and windows. On tag `v*` →
-  `tauri-action` builds Linux, Windows and macOS into a draft release. Android and iOS
-  are built locally until signing is set up.
+- CI (GitHub Actions): on PR → `make check` on ubuntu and macOS (windows joins in its
+  phase). On tag `v*` → `tauri-action` builds macOS and Linux into a draft release.
+  Android and iOS are built locally until signing is set up.
 
 ## 11. Roadmap
 
@@ -384,7 +392,7 @@ wikilink autocomplete and Mod+click navigation; preview toggle; quick switcher
 restore; sync with status indicator; preferences (language, token, auto-sync, remote,
 init repository); external change watcher; light/dark theme.
 
-**Phase 2 — Linux and Windows + GitHub login.** CI builds, platform fixes, OAuth device
+**Phase 2 — Ubuntu + GitHub login.** Linux build in CI, platform fixes, OAuth device
 flow, renaming a note updates links to it.
 
 **Phase 3 — Android.** Vaults in app storage (clone-based), Android Keystore, mobile
@@ -393,7 +401,9 @@ layout.
 **Phase 4 — Editor.** Obsidian-style live preview, embedded images via the asset
 protocol, visual conflict merge view.
 
-**Phase 5 — iOS.** As phase 3, plus Files app integration.
+**Phase 5 — Windows.** Windows build in CI and platform fixes.
+
+**Phase 6 — iOS.** As phase 3, plus Files app integration.
 
 ## 12. Development environment
 
