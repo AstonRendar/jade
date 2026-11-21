@@ -62,6 +62,9 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Secrets | `keyring` (desktop, iOS); Android Keystore in phase 3 |
 | File watching | `notify` |
 | Unicode | `unicode-normalization` |
+| Local time | `chrono` (infrastructure only: `Clock` adapter) |
+| Device name | `gethostname` (infrastructure only: `DeviceInfo` adapter) |
+| Native dialogs | `tauri-plugin-dialog` (folder picker) |
 | Errors | `thiserror` |
 | Logging | `tracing` |
 | Rust tests | `cargo test`, `mockall`, `cucumber` (Gherkin), `tempfile`, `cargo-llvm-cov` |
@@ -194,12 +197,14 @@ jade/
 ### 4.6 Domain map
 
 **`notes`**
-- Value objects: `VaultRoot`, `NotePath` (relative, `/`-separated, NFC, no `..`/absolute
-  components, `.md`), `FolderPath`, `NoteTitle` (derived from the path), `NoteContent`,
-  `WikiLink` (target, alias, heading, embed flag), `SearchQuery`.
-- Aggregate: `Note` (path + content).
-- Domain services: `WikiLinkParser`, `LinkResolver` (exact path, then file name,
-  case-insensitive, shortest path wins on ambiguity), `BacklinkFinder`.
+- Value objects: `VaultRoot`, `VaultPath` (any vault-relative path: `/`-separated, NFC,
+  no `..`/absolute/empty components), `NotePath` (a `VaultPath` whose file name ends in
+  `.md`; title derived from the file name), `WikiLink` (target, heading, alias, embed
+  flag), `SearchQuery` (Unicode- and case-insensitive matching).
+- Model: `Note` (path + content).
+- Domain services: `WikiLinkParser` (ignores links in fenced and inline code),
+  `LinkResolver` (exact path, then name or partial path, case-insensitive, shortest path
+  wins on ambiguity), `BacklinkFinder`, `NoteSearch` (title and line hits, capped).
 - Ports: `NoteRepository`, `VaultWatcher`.
 - Use cases: `OpenVault`, `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
   `CreateFolder`, `RenameEntry`, `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
