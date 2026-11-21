@@ -11,6 +11,8 @@ repository = "https://github.com/AstonRendar/jade"
 [workspace.dependencies]
 thiserror = "2"
 tempfile = "3"
+mockall = "0.13"
+jade-shared = { path = "crates/shared" }
 
 [workspace.lints.clippy]
 unwrap_used = "deny"

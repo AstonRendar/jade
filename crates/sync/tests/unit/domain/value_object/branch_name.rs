@@ -49,3 +49,13 @@ fn rejects_names_git_does_not_allow() {
     // Assert
     assert_eq!(accepted, Vec::<&str>::new());
 }
+
+#[test]
+fn names_the_default_branch_main() {
+    // Arrange
+    // Act
+    let branch = BranchName::main();
+
+    // Assert
+    assert_eq!(branch.as_str(), "main");
+}
