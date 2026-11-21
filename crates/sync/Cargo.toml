@@ -7,10 +7,19 @@ repository.workspace = true
 
 [dependencies]
 jade-shared.workspace = true
+git2.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
+cucumber.workspace = true
 mockall.workspace = true
+tempfile.workspace = true
+tokio.workspace = true
+
+[[test]]
+name = "functional"
+path = "tests/functional/main.rs"
+harness = false
 
 [lints]
 workspace = true
