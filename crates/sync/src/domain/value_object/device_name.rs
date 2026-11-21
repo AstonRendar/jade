@@ -1,4 +1,5 @@
 const MAX_LENGTH: usize = 64;
+const UNKNOWN_DEVICE: &str = "Unknown device";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DeviceName(String);
@@ -26,6 +27,10 @@ impl DeviceName {
             return Err(InvalidDeviceNameError::TooLong);
         }
         Ok(Self(name.to_string()))
+    }
+
+    pub fn unknown() -> Self {
+        Self(UNKNOWN_DEVICE.to_string())
     }
 
     pub fn as_str(&self) -> &str {

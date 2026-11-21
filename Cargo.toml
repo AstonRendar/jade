@@ -11,6 +11,9 @@ repository = "https://github.com/AstonRendar/jade"
 [workspace.dependencies]
 thiserror = "2"
 unicode-normalization = "0.1"
+keyring = "4"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+gethostname = "1"
 tempfile = "3"
 mockall = "0.13"
 cucumber = "0.23"

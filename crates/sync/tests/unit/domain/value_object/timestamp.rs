@@ -51,3 +51,13 @@ fn rejects_out_of_range_components() {
     // Assert
     assert_eq!(accepted, Vec::new());
 }
+
+#[test]
+fn offers_the_unix_epoch_as_a_known_valid_instant() {
+    // Arrange
+    // Act
+    let epoch = Timestamp::unix_epoch();
+
+    // Assert
+    assert_eq!((epoch.year(), epoch.month(), epoch.day()), (1970, 1, 1));
+}

@@ -50,3 +50,13 @@ fn rejects_names_longer_than_64_characters() {
     assert!(accepted.is_ok());
     assert!(rejected.is_err());
 }
+
+#[test]
+fn has_a_generic_name_for_unknown_devices() {
+    // Arrange
+    // Act
+    let name = DeviceName::unknown();
+
+    // Assert
+    assert_eq!(name.as_str(), "Unknown device");
+}
