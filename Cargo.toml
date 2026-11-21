@@ -11,6 +11,8 @@ repository = "https://github.com/AstonRendar/jade"
 [workspace.dependencies]
 thiserror = "2"
 unicode-normalization = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 tempfile = "3"
 mockall = "0.13"
 cucumber = "0.23"
