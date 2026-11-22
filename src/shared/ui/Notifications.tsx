@@ -10,10 +10,11 @@ export function Notifications() {
     <div className={styles.stack} aria-live="polite">
       {notifications.map((notification) => (
         <div
-          key={notification.id}
+          key={`${notification.id}-${notification.flashes}`}
           role={notification.kind === "error" ? "alert" : "status"}
           className={styles.notification}
           data-kind={notification.kind}
+          data-flash={notification.flashes > 0 || undefined}
         >
           <span>{t(notification.key, notification.params)}</span>
           <button

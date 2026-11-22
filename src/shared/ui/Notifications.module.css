@@ -19,6 +19,22 @@
   box-shadow: var(--shadow);
 }
 
+.notification[data-flash] {
+  animation: flash 0.5s ease-in-out 2;
+}
+
+@keyframes flash {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification[data-flash] {
+    animation: none;
+  }
+}
+
 .notification[data-kind="info"] {
   background: var(--surface);
   color: var(--text);
