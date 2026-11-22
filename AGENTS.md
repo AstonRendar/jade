@@ -310,6 +310,10 @@ user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and
 - `workspace/` is the only place that combines several contexts in the UI, like
   `src-tauri` does in the core.
 - File names differ by more than letter case (macOS file systems ignore case).
+- Mobile screens: Android draws edge to edge; `MainActivity` pads the content by the
+  system bars, cutout and keyboard insets, and CSS also honours `env(safe-area-inset-*)`
+  (`viewport-fit=cover`). Every mobile UI change is checked on a device or emulator
+  screenshot (`adb exec-out screencap -p`), not only in tests.
 - Tests use `mockIPC(..., { shouldMockEvents: true })`, record the commands invoked and
   assert on them; they unmount and flush pending promises before `clearMocks`.
 
