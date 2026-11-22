@@ -2318,13 +2318,28 @@ dependencies = [
 name = "jade-notes"
 version = "0.1.0"
 dependencies = [
+ "cucumber",
+ "jade-shared",
+ "mockall",
+ "tempfile",
  "thiserror 2.0.21",
+ "tokio",
  "unicode-normalization",
 ]
 
 [[package]]
 name = "jade-preferences"
 version = "0.1.0"
+dependencies = [
+ "cucumber",
+ "jade-shared",
+ "mockall",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+]
 
 [[package]]
 name = "jade-shared"
