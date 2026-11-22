@@ -121,6 +121,45 @@ describe("welcome screen on each platform", () => {
     );
   });
 
+  it("lets the token be stored before any vault is open", async () => {
+    // Arrange
+    capabilities = MOBILE;
+    await renderWorkspace();
+
+    // Act
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Settings" }),
+    );
+    await userEvent.type(screen.getByLabelText("GitHub token"), "token-123");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    // Assert
+    await waitFor(() =>
+      expect(called("sync_store_access_token")).toEqual([
+        { token: "token-123" },
+      ]),
+    );
+    expect(called("sync_get_status")).toEqual([]);
+  });
+
+  it("does not offer repository settings without an open vault", async () => {
+    // Arrange
+    await renderWorkspace();
+
+    // Act
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Settings" }),
+    );
+
+    // Assert
+    expect(
+      screen.queryByRole("button", { name: "Version this folder" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Remote repository"),
+    ).not.toBeInTheDocument();
+  });
+
   async function renderWorkspace() {
     const i18n = await createI18n("en");
     render(<Workspace i18n={i18n} />);
@@ -153,6 +192,15 @@ describe("welcome screen on each platform", () => {
       case "notes_find_backlinks":
       case "sync_list_note_history":
         return [];
+      case "sync_has_access_token":
+        return false;
+      case "preferences_update":
+        return {
+          locale: "en",
+          theme: "system",
+          autoSyncMinutes: 5,
+          recentVaults: [],
+        };
       case "sync_get_status":
         return {
           isRepository: false,
