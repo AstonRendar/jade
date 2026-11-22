@@ -182,6 +182,8 @@ jade/
   in their name (`FsNoteRepository`, `Git2VersionControl`).
 - **Errors** are enums whose names end in `Error`, one per module that raises them.
   Domain errors describe business rules; infrastructure errors wrap the technical cause.
+  When all the use cases of a context fail in the same ways, they may share one
+  application error (`notes::application::error::NotesError`) instead of one per use case.
 - **Secrets** (`AccessToken`) implement `Debug` redacted and are never logged.
 - **Use cases** implement `shared::application::UseCase` (`type Request`,
   `type Response`, `type Error`, `fn execute`). One use case per file, named as an
