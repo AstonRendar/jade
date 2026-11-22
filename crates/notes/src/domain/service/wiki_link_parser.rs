@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use crate::domain::value_object::WikiLink;
 
 const FENCES: [&str; 2] = ["```", "~~~"];
@@ -6,6 +8,7 @@ const FENCES: [&str; 2] = ["```", "~~~"];
 pub struct LocatedLink {
     pub line: usize,
     pub link: WikiLink,
+    pub target_span: Range<usize>,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -15,25 +18,24 @@ impl WikiLinkParser {
     pub fn parse(&self, content: &str) -> Vec<LocatedLink> {
         let mut inside_fence = false;
         let mut links = Vec::new();
-        for (index, line) in content.lines().enumerate() {
+        let mut line_start = 0;
+        for (index, raw_line) in content.split_inclusive('\n').enumerate() {
+            let line = raw_line.trim_end_matches(['\n', '\r']);
             if FENCES
                 .iter()
                 .any(|fence| line.trim_start().starts_with(fence))
             {
                 inside_fence = !inside_fence;
-                continue;
-            }
-            if inside_fence {
-                continue;
-            }
-            links.extend(
-                links_in(&without_inline_code(line))
-                    .into_iter()
-                    .map(|link| LocatedLink {
+            } else if !inside_fence {
+                links.extend(links_in(&without_inline_code(line)).into_iter().map(
+                    |(link, span)| LocatedLink {
                         line: index + 1,
                         link,
-                    }),
-            );
+                        target_span: line_start + span.start..line_start + span.end,
+                    },
+                ));
+            }
+            line_start += raw_line.len();
         }
         links
     }
@@ -45,34 +47,34 @@ fn without_inline_code(line: &str) -> String {
         .map(|character| {
             if character == '`' {
                 inside_code = !inside_code;
-                ' '
+                " ".to_string()
             } else if inside_code {
-                ' '
+                " ".repeat(character.len_utf8())
             } else {
-                character
+                character.to_string()
             }
         })
         .collect()
 }
 
-fn links_in(line: &str) -> Vec<WikiLink> {
+fn links_in(line: &str) -> Vec<(WikiLink, Range<usize>)> {
     let mut links = Vec::new();
-    let mut rest = line;
     let mut consumed = 0;
-    while let Some(close) = rest.find("]]") {
-        if let Some(open) = rest[..close].rfind("[[") {
+    while let Some(close) = line[consumed..].find("]]") {
+        let close = consumed + close;
+        if let Some(open) = line[consumed..close].rfind("[[") {
+            let inner_start = consumed + open + 2;
             let embed = line[..consumed + open].ends_with('!');
-            if let Some(link) = parse_inner(&rest[open + 2..close], embed) {
-                links.push(link);
+            if let Some(parsed) = parse_inner(&line[inner_start..close], inner_start, embed) {
+                links.push(parsed);
             }
         }
-        consumed += close + 2;
-        rest = &rest[close + 2..];
+        consumed = close + 2;
     }
     links
 }
 
-fn parse_inner(inner: &str, embed: bool) -> Option<WikiLink> {
+fn parse_inner(inner: &str, offset: usize, embed: bool) -> Option<(WikiLink, Range<usize>)> {
     let (reference, alias) = match inner.split_once('|') {
         Some((reference, alias)) => (reference, Some(alias)),
         None => (inner, None),
@@ -81,5 +83,8 @@ fn parse_inner(inner: &str, embed: bool) -> Option<WikiLink> {
         Some((target, heading)) => (target, Some(heading)),
         None => (reference, None),
     };
-    WikiLink::new(target, heading, alias, embed).ok()
+    let link = WikiLink::new(target, heading, alias, embed).ok()?;
+    let leading = target.len() - target.trim_start().len();
+    let start = offset + leading;
+    Some((link, start..start + target.trim().len()))
 }

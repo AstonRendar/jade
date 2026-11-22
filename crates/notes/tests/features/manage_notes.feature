@@ -69,3 +69,17 @@ Feature: Manage notes and folders
   Scenario: Other files are listed but are not notes
     Given the file "diagram.png" exists
     Then the vault lists the file "diagram.png"
+
+  Scenario: Renaming a note updates the links to it
+    Given the note "plan.md" contains "# Plan"
+    And the note "daily.md" contains "Review [[Plan#Goals|the plan]] and ![[plan]]"
+    When "plan.md" is renamed to "Roadmap.md"
+    Then "daily.md" contains "Review [[Roadmap#Goals|the plan]] and ![[Roadmap]]"
+
+  Scenario: Moving a folder updates the links to its notes
+    Given the note "projects/plan.md" contains "# Plan"
+    And the note "daily.md" contains "See [[projects/plan]]"
+    And the note "projects/notes.md" contains "Back to [[plan]]"
+    When "projects" is renamed to "archive"
+    Then "daily.md" contains "See [[archive/plan]]"
+    And "archive/notes.md" contains "Back to [[plan]]"
