@@ -45,3 +45,15 @@
   background: var(--danger);
   color: var(--on-accent);
 }
+
+.revision {
+  max-height: 50vh;
+  margin: 0 0 12px;
+  padding: 8px;
+  overflow: auto;
+  white-space: pre-wrap;
+  border-radius: 6px;
+  background: var(--bg);
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+}

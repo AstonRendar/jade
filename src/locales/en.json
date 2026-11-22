@@ -26,7 +26,8 @@
   "common": {
     "cancel": "Cancel",
     "create": "Create",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "close": "Close"
   },
   "errors": {
     "vault_not_open": "No vault is open.",
@@ -53,5 +54,42 @@
   "editor": {
     "edit": "Edit",
     "preview": "Preview"
+  },
+  "navigation": {
+    "quickSwitcher": "Open note",
+    "quickSwitcherPlaceholder": "Type a note name…",
+    "search": "Search",
+    "searchPlaceholder": "Search all notes…",
+    "backlinks": "Backlinks",
+    "noBacklinks": "No other note links here."
+  },
+  "history": {
+    "title": "History",
+    "empty": "No history yet. It appears after the first sync.",
+    "restore": "Restore this version"
+  },
+  "sync": {
+    "now": "Sync now",
+    "syncing": "Syncing…",
+    "notVersioned": "Not versioned",
+    "pending_one": "{{count}} pending",
+    "pending_other": "{{count}} pending",
+    "localOnly": "local only",
+    "conflictCopy": "Both devices changed “{{original}}”. The other version was saved as “{{copy}}”."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "sameAsSystem": "Same as the system",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "autoSync": "Sync every (minutes, 0 = off)",
+    "token": "GitHub token",
+    "tokenStored": "A token is stored. Type a new one to replace it.",
+    "removeToken": "Remove token",
+    "remote": "Remote repository",
+    "versionFolder": "Version this folder",
+    "save": "Save"
   }
 }

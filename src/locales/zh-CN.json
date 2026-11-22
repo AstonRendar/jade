@@ -26,7 +26,8 @@
   "common": {
     "cancel": "取消",
     "create": "创建",
-    "dismiss": "关闭"
+    "dismiss": "关闭",
+    "close": "关闭"
   },
   "errors": {
     "vault_not_open": "没有打开的库。",
@@ -53,5 +54,42 @@
   "editor": {
     "edit": "编辑",
     "preview": "预览"
+  },
+  "navigation": {
+    "quickSwitcher": "打开笔记",
+    "quickSwitcherPlaceholder": "输入笔记名称…",
+    "search": "搜索",
+    "searchPlaceholder": "搜索所有笔记…",
+    "backlinks": "反向链接",
+    "noBacklinks": "没有其他笔记链接到这里。"
+  },
+  "history": {
+    "title": "历史记录",
+    "empty": "暂无历史记录。首次同步后会显示。",
+    "restore": "恢复此版本"
+  },
+  "sync": {
+    "now": "立即同步",
+    "syncing": "正在同步…",
+    "notVersioned": "未启用版本管理",
+    "pending_one": "{{count}} 项待提交",
+    "pending_other": "{{count}} 项待提交",
+    "localOnly": "仅本地",
+    "conflictCopy": "两台设备都修改了“{{original}}”。另一版本已保存为“{{copy}}”。"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言",
+    "sameAsSystem": "跟随系统",
+    "theme": "主题",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "autoSync": "同步间隔（分钟，0 = 关闭）",
+    "token": "GitHub 令牌",
+    "tokenStored": "已保存令牌。输入新令牌可替换。",
+    "removeToken": "删除令牌",
+    "remote": "远程仓库",
+    "versionFolder": "为此文件夹启用版本管理",
+    "save": "保存"
   }
 }
