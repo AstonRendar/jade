@@ -1,6 +1,53 @@
 {
   "welcome": {
     "title": "欢迎使用 Jade",
-    "subtitle": "你的笔记，由 Git 进行版本管理。"
+    "subtitle": "你的笔记，由 Git 进行版本管理。",
+    "openFolder": "打开文件夹",
+    "cloneRepository": "克隆仓库",
+    "cloneUrl": "仓库地址",
+    "cloneDestination": "选择克隆位置",
+    "chooseFolderAndClone": "选择文件夹并克隆",
+    "recentVaults": "最近的库",
+    "noRecentVaults": "尚未打开任何库。"
+  },
+  "layout": {
+    "selectNote": "选择或新建一篇笔记。",
+    "closeVault": "关闭库"
+  },
+  "tree": {
+    "label": "库",
+    "empty": "此库为空。",
+    "newNote": "新建笔记",
+    "newFolder": "新建文件夹",
+    "rename": "重命名",
+    "delete": "删除",
+    "deleteConfirm": "删除“{{name}}”？如果它已同步，可以从历史记录中恢复。"
+  },
+  "common": {
+    "cancel": "取消",
+    "create": "创建",
+    "dismiss": "关闭"
+  },
+  "errors": {
+    "vault_not_open": "没有打开的库。",
+    "vault_not_found": "库所在的文件夹已不存在。",
+    "invalid_path": "“{{path}}”不是有效的名称。",
+    "already_exists": "“{{path}}”已存在。",
+    "not_found": "找不到“{{path}}”。",
+    "invalid_move": "文件夹不能移动到自身内部。",
+    "empty_query": "请输入要搜索的内容。",
+    "invalid_url": "“{{url}}”不是 Jade 可以使用的仓库地址。",
+    "invalid_token": "令牌无效。",
+    "invalid_preference": "该设置无效。",
+    "not_a_repository": "此库尚未启用版本管理。",
+    "already_a_repository": "此库已启用版本管理。",
+    "auth_required": "该仓库需要令牌，请在设置中添加。",
+    "auth_failed": "仓库拒绝了该令牌。",
+    "network": "无法访问仓库，请检查网络连接。",
+    "file_too_large": "“{{path}}”超过 100 MB，无法同步。",
+    "push_rejected": "其他设备一直在修改仓库，请重试。",
+    "credentials_unavailable": "系统钥匙串不可用。",
+    "io": "无法读取或写入文件。",
+    "unexpected": "出现了问题。"
   }
 }

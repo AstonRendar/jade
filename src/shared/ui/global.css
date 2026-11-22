@@ -1,17 +1,42 @@
 :root {
   --bg: #fbfaf7;
+  --surface: #ffffff;
+  --sidebar: #f3f2ee;
   --text: #1f2421;
   --muted: #6b726e;
+  --border: #e2e0da;
+  --hover: rgba(47, 143, 106, 0.08);
+  --selected: rgba(47, 143, 106, 0.16);
   --accent: #2f8f6a;
+  --accent-text: #23704f;
+  --on-accent: #ffffff;
+  --danger: #c2410c;
+  --danger-surface: #fdeee6;
+  --danger-text: #8a2c06;
+  --backdrop: rgba(20, 24, 22, 0.35);
+  --shadow: 0 8px 24px rgba(20, 24, 22, 0.16);
+  --radius: 8px;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #16191a;
+    --surface: #1f2324;
+    --sidebar: #1a1d1e;
     --text: #e4e7e5;
     --muted: #9aa29e;
-    --accent: #5cc49a;
+    --border: #2c3132;
+    --hover: rgba(92, 196, 154, 0.1);
+    --selected: rgba(92, 196, 154, 0.2);
+    --accent: #3aa57c;
+    --accent-text: #7ad6ad;
+    --on-accent: #0c1f17;
+    --danger: #ea580c;
+    --danger-surface: #3b1d10;
+    --danger-text: #fdc9ae;
+    --backdrop: rgba(0, 0, 0, 0.55);
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     color-scheme: dark;
   }
 }
@@ -37,19 +62,30 @@ body {
     "PingFang SC",
     "Noto Sans CJK SC",
     sans-serif;
+  font-size: 14px;
 }
 
-.welcome {
-  display: grid;
-  place-content: center;
-  height: 100%;
-  text-align: center;
+button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
 }
 
-.welcome h1 {
-  color: var(--accent);
+input {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
 }
 
-.welcome p {
-  color: var(--muted);
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
