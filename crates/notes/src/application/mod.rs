@@ -2,6 +2,7 @@ pub mod create_folder;
 pub mod create_note;
 pub mod create_vault;
 pub mod delete_entry;
+pub mod delete_vault;
 pub mod error;
 pub mod find_backlinks;
 pub mod follow_link;

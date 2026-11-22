@@ -182,6 +182,7 @@ fn entry(path: &str, kind: EntryKind) -> VaultEntry {
     }
 }
 
+#[given(expr = "a vault named {string} is created next to the current one")]
 #[when(expr = "a vault named {string} is created next to the current one")]
 fn a_vault_is_created(world: &mut NotesWorld, name: String) {
     let result = create_vault(world, &name);
@@ -217,4 +218,34 @@ fn create_vault(
             name: name.to_string(),
         },
     )
+}
+
+#[when(expr = "the vault {string} is deleted")]
+fn the_vault_is_deleted(world: &mut NotesWorld, name: String) {
+    let container = vaults_folder(world);
+    let result = jade_notes::application::delete_vault::DeleteVault::new(FsNoteRepository).execute(
+        jade_notes::application::delete_vault::DeleteVaultRequest {
+            vault_root: std::path::Path::new(&container)
+                .join(name)
+                .display()
+                .to_string(),
+            container,
+        },
+    );
+    world.record(result);
+}
+
+#[then(expr = "the vault {string} no longer exists")]
+fn the_vault_no_longer_exists(world: &mut NotesWorld, name: String) {
+    assert_eq!(world.last_error, None);
+    assert!(!std::path::Path::new(&vaults_folder(world))
+        .join(name)
+        .exists());
+}
+
+fn vaults_folder(world: &NotesWorld) -> String {
+    std::path::Path::new(&world.root())
+        .join("vaults")
+        .display()
+        .to_string()
 }

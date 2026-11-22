@@ -9,6 +9,7 @@ mock! {
     impl NoteRepository for NoteRepository {
         fn vault_exists(&self, root: &VaultRoot) -> bool;
         fn create_root(&self, root: &VaultRoot) -> Result<(), NoteRepositoryError>;
+        fn delete_root(&self, root: &VaultRoot) -> Result<(), NoteRepositoryError>;
         fn entry_exists(&self, root: &VaultRoot, path: &VaultPath) -> Result<bool, NoteRepositoryError>;
         fn list(&self, root: &VaultRoot) -> Result<Vec<VaultEntry>, NoteRepositoryError>;
         fn read(&self, root: &VaultRoot, path: &NotePath) -> Result<String, NoteRepositoryError>;

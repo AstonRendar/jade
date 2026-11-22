@@ -235,7 +235,8 @@ jade/
   and the path otherwise).
 - Port: `NoteRepository`. Watching the vault for external changes is a shell concern
   (`src-tauri/src/watcher.rs`), not part of the domain.
-- Use cases: `OpenVault`, `CreateVault` (a new folder inside a parent), `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
+- Use cases: `OpenVault`, `CreateVault` (a new folder inside a parent), `DeleteVault` (only a
+  vault directly inside a given container: the app storage on mobile), `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
   `CreateFolder`, `RenameEntry` (always updates links to the moved notes in the whole
   vault — decision of 2026-11-22), `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
   `ResolveLinks`, `FollowLink` (creates the note if missing).
@@ -276,7 +277,8 @@ Wikilink parsing and resolution exist **only in Rust**. The frontend asks the co
 Tauri commands are named `<context>_<action>` in snake_case:
 - `app_capabilities` (`CapabilitiesView`: can the platform open any folder, where managed
   vaults live);
-- `notes_open_vault`, `notes_create_vault`, `notes_list_entries`, `notes_read_note`, `notes_save_note`,
+- `notes_open_vault`, `notes_create_vault`, `notes_delete_vault` (mobile only: deletes a
+  vault kept in the app storage, closes it if open and forgets it), `notes_list_entries`, `notes_read_note`, `notes_save_note`,
   `notes_create_note`, `notes_create_folder`, `notes_rename_entry`,
   `notes_delete_entry`, `notes_search`, `notes_find_backlinks`, `notes_resolve_links`,
   `notes_follow_link`;

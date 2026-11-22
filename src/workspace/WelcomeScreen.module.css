@@ -69,9 +69,16 @@
   list-style: none;
 }
 
+.recent li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .recent button {
   display: grid;
   width: 100%;
+  min-width: 0;
   gap: 2px;
   text-align: start;
   border: none;
@@ -80,6 +87,17 @@
 
 .recent button:hover {
   background: var(--hover);
+}
+
+.recent .delete {
+  width: auto;
+  flex: none;
+  padding: 10px;
+  color: var(--muted);
+}
+
+.recent .delete:hover {
+  color: var(--danger-text);
 }
 
 .recent span {

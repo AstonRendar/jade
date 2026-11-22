@@ -14,7 +14,11 @@
     "createVaultDestination": "Tria on crear la caixa",
     "clone": "Clonar",
     "cloning": "S'està clonant el repositori…",
-    "cloningDetail": "Pot trigar una mica, segons la mida de les teves notes."
+    "cloningDetail": "Pot trigar una mica, segons la mida de les teves notes.",
+    "deleteVault": "Eliminar {{name}} d'aquest dispositiu",
+    "deleteVaultTitle": "Vols eliminar «{{name}}» d'aquest dispositiu?",
+    "deleteVaultMessage": "Els seus fitxers s'esborraran d'aquest dispositiu per alliberar espai. Els canvis que no s'hagin sincronitzat es perdran; el repositori remot no es toca.",
+    "delete": "Eliminar"
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",

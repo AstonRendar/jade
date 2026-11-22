@@ -1,6 +1,7 @@
 mod create_entries;
 mod create_vault;
 mod delete_entry;
+mod delete_vault;
 mod follow_link;
 mod links_and_search;
 mod open_vault;

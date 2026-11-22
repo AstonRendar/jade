@@ -5,6 +5,8 @@ use jade_notes::application::create_folder::{CreateFolder, CreateFolderRequest};
 use jade_notes::application::create_note::{CreateNote, CreateNoteRequest};
 use jade_notes::application::create_vault::{CreateVault, CreateVaultRequest};
 use jade_notes::application::delete_entry::{DeleteEntry, DeleteEntryRequest};
+use jade_notes::application::delete_vault::{DeleteVault, DeleteVaultRequest};
+use jade_notes::application::error::NotesError;
 use jade_notes::application::find_backlinks::{FindBacklinks, FindBacklinksRequest};
 use jade_notes::application::follow_link::{FollowLink, FollowLinkRequest};
 use jade_notes::application::list_vault_entries::{ListVaultEntries, ListVaultEntriesRequest};
@@ -307,6 +309,31 @@ where
             path: path.to_string(),
         })?;
         Ok(preferences.into())
+    }
+
+    /// Deletes a vault folder kept by the app in `container` (mobile app storage),
+    /// closing it if it is open and forgetting it. A folder already gone is just forgotten.
+    pub fn delete_vault(
+        &self,
+        path: &str,
+        container: Option<&str>,
+    ) -> Result<PreferencesView, ErrorView> {
+        let container =
+            container.ok_or_else(|| ErrorView::with(ErrorCode::InvalidPath, "path", path))?;
+        let _exclusive = self.exclusive()?;
+        match DeleteVault::new(FsNoteRepository).execute(DeleteVaultRequest {
+            vault_root: path.to_string(),
+            container: container.to_string(),
+        }) {
+            Ok(()) | Err(NotesError::VaultNotFound) => {}
+            Err(error) => return Err(error.into()),
+        }
+        let mut open = self.vault.lock().map_err(poisoned)?;
+        if open.as_deref() == Some(path) {
+            *open = None;
+        }
+        drop(open);
+        self.forget_vault(path)
     }
 
     fn vault(&self) -> Result<String, ErrorView> {

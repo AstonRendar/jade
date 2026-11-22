@@ -22,12 +22,14 @@ describe("welcome screen on each platform", () => {
   let calls: Call[];
   let capabilities: CapabilitiesView;
   let cloneFinishes: () => Promise<void>;
+  let recentVaults: string[];
 
   beforeEach(() => {
     resetStores();
     calls = [];
     capabilities = DESKTOP;
     cloneFinishes = () => Promise.resolve();
+    recentVaults = [];
     mockIPC(
       (command, args) => {
         const values = (args ?? {}) as Record<string, unknown>;
@@ -148,6 +150,80 @@ describe("welcome screen on each platform", () => {
     expect(screen.getByRole("main")).not.toHaveAttribute("inert");
   });
 
+  it("deletes a vault from the device after confirming", async () => {
+    // Arrange
+    capabilities = MOBILE;
+    recentVaults = ["/data/jade/vaults/journal", "/data/jade/vaults/work"];
+    await renderWorkspace();
+
+    // Act
+    await userEvent.click(
+      await screen.findByRole("button", {
+        name: "Delete journal from this device",
+      }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+    // Assert
+    await waitFor(() =>
+      expect(called("notes_delete_vault")).toEqual([
+        { path: "/data/jade/vaults/journal" },
+      ]),
+    );
+    expect(await screen.findByText("work")).toBeInTheDocument();
+    expect(screen.queryByText("journal")).not.toBeInTheDocument();
+  });
+
+  it("keeps the vault when the deletion is cancelled", async () => {
+    // Arrange
+    capabilities = MOBILE;
+    recentVaults = ["/data/jade/vaults/journal"];
+    await renderWorkspace();
+
+    // Act
+    await userEvent.click(
+      await screen.findByRole("button", {
+        name: "Delete journal from this device",
+      }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    // Assert
+    expect(called("notes_delete_vault")).toEqual([]);
+    expect(screen.getByText("journal")).toBeInTheDocument();
+  });
+
+  it("never deletes folders on desktop", async () => {
+    // Arrange
+    recentVaults = ["/Users/example/journal"];
+
+    // Act
+    await renderWorkspace();
+
+    // Assert
+    expect(await screen.findByText("journal")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /from this device/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("lists the vault just closed among the recent ones", async () => {
+    // Arrange
+    await renderWorkspace();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Create vault" }),
+    );
+    await userEvent.type(screen.getByRole("textbox"), "Journal{Enter}");
+
+    // Act
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Close vault" }),
+    );
+
+    // Assert
+    expect(await screen.findByText("Journal")).toBeInTheDocument();
+  });
+
   it("asks where to create a vault on desktop", async () => {
     // Arrange
     await renderWorkspace();
@@ -225,11 +301,19 @@ describe("welcome screen on each platform", () => {
           locale: "en",
           theme: "system",
           autoSyncMinutes: 5,
-          recentVaults: [],
+          recentVaults,
+        };
+      case "notes_delete_vault":
+        return {
+          locale: "en",
+          theme: "system",
+          autoSyncMinutes: 5,
+          recentVaults: recentVaults.filter((path) => path !== args.path),
         };
       case "plugin:dialog|open":
         return "/Users/example/Documents";
       case "notes_create_vault":
+        recentVaults = [`${args.parent}/${args.name}`, ...recentVaults];
         return { path: `${args.parent}/${args.name}`, name: args.name };
       case "sync_clone_repository":
         return cloneFinishes().then(() => ({

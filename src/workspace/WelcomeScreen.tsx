@@ -1,12 +1,13 @@
 import { open } from "@tauri-apps/plugin-dialog";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { notesGateway } from "../notes/gateway/notesGateway";
 import { useVault } from "../notes/store/vaultStore";
 import { usePreferences } from "../preferences/store/preferencesStore";
 import type { CapabilitiesView } from "../shared/bindings/CapabilitiesView";
 import { isErrorView } from "../shared/gateway/call";
 import { BusyOverlay } from "../shared/ui/BusyOverlay";
-import { PromptDialog } from "../shared/ui/Dialog";
+import { ConfirmDialog, PromptDialog } from "../shared/ui/Dialog";
 import {
   reportingErrors,
   useNotifications,
@@ -24,6 +25,11 @@ export function WelcomeScreen() {
     null,
   );
   const [cloning, setCloning] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  useEffect(() => {
+    void reportingErrors(() => usePreferences.getState().load());
+  }, []);
 
   const openVault = async (path: string) => {
     try {
@@ -46,6 +52,15 @@ export function WelcomeScreen() {
     if (typeof folder === "string") {
       await openVault(folder);
     }
+  };
+
+  const deleteVault = async (path: string) => {
+    setDeleting(null);
+    await reportingErrors(async () =>
+      usePreferences.setState({
+        preferences: await notesGateway.deleteVault(path),
+      }),
+    );
   };
 
   const clone = async (capabilities: CapabilitiesView, url: string) => {
@@ -132,12 +147,36 @@ export function WelcomeScreen() {
                     <strong>{lastSegment(path)}</strong>
                     <span className={styles.muted}>{path}</span>
                   </button>
+                  {capabilities?.managedVaultsFolder != null && (
+                    <button
+                      type="button"
+                      className={styles.delete}
+                      aria-label={t("welcome.deleteVault", {
+                        name: lastSegment(path),
+                      })}
+                      title={t("welcome.deleteVault", {
+                        name: lastSegment(path),
+                      })}
+                      onClick={() => setDeleting(path)}
+                    >
+                      <TrashIcon />
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
           )}
         </section>
       </main>
+      {deleting !== null && (
+        <ConfirmDialog
+          title={t("welcome.deleteVaultTitle", { name: lastSegment(deleting) })}
+          message={t("welcome.deleteVaultMessage")}
+          confirmLabel={t("welcome.delete")}
+          onConfirm={() => void deleteVault(deleting)}
+          onCancel={() => setDeleting(null)}
+        />
+      )}
       {cloning && (
         <BusyOverlay
           message={t("welcome.cloning")}
@@ -214,4 +253,22 @@ function CloneForm({
 function lastSegment(path: string): string {
   const parts = path.split(/[\\/]/).filter(Boolean);
   return parts[parts.length - 1] ?? path;
+}
+
+function TrashIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
+    </svg>
+  );
 }
