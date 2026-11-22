@@ -3,6 +3,7 @@ use crate::domain::value_object::{NotePath, VaultPath, VaultRoot};
 
 pub trait NoteRepository {
     fn vault_exists(&self, root: &VaultRoot) -> bool;
+    fn create_root(&self, root: &VaultRoot) -> Result<(), NoteRepositoryError>;
     fn entry_exists(&self, root: &VaultRoot, path: &VaultPath)
         -> Result<bool, NoteRepositoryError>;
     fn list(&self, root: &VaultRoot) -> Result<Vec<VaultEntry>, NoteRepositoryError>;

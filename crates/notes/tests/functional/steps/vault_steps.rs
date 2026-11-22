@@ -181,3 +181,40 @@ fn entry(path: &str, kind: EntryKind) -> VaultEntry {
         kind,
     }
 }
+
+#[when(expr = "a vault named {string} is created next to the current one")]
+fn a_vault_is_created(world: &mut NotesWorld, name: String) {
+    let result = create_vault(world, &name);
+    world.opened = world.record(result);
+    world.last_vault_name = Some(name);
+}
+
+#[then(expr = "the new vault is named {string}")]
+fn the_new_vault_is_named(world: &mut NotesWorld, name: String) {
+    let opened = world.opened.as_ref().expect("vault was created");
+    assert_eq!(opened.name, name);
+    assert!(opened.root.as_path().is_dir());
+}
+
+#[then("creating it again fails because it already exists")]
+fn creating_again_fails(world: &mut NotesWorld) {
+    let name = world.last_vault_name.clone().expect("a vault was created");
+    let result = create_vault(world, &name);
+    assert!(matches!(result, Err(NotesError::AlreadyExists(_))));
+}
+
+fn create_vault(
+    world: &NotesWorld,
+    name: &str,
+) -> Result<jade_notes::application::open_vault::VaultInfo, NotesError> {
+    let parent = std::path::Path::new(&world.root())
+        .join("vaults")
+        .display()
+        .to_string();
+    jade_notes::application::create_vault::CreateVault::new(FsNoteRepository).execute(
+        jade_notes::application::create_vault::CreateVaultRequest {
+            parent,
+            name: name.to_string(),
+        },
+    )
+}

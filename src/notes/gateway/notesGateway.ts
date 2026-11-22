@@ -11,6 +11,8 @@ import { call } from "../../shared/gateway/call";
 
 export const notesGateway = {
   openVault: (path: string) => call<VaultView>("notes_open_vault", { path }),
+  createVault: (parent: string, name: string) =>
+    call<VaultView>("notes_create_vault", { parent, name }),
   listEntries: () => call<EntryView[]>("notes_list_entries"),
   createNote: (folder: string | null, title: string) =>
     call<string>("notes_create_note", { folder, title }),

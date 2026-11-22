@@ -160,6 +160,8 @@ Inside it:
   `src/shared/bindings/*.ts` (CI fails if they are not committed).
 - `watcher.rs` — `notify` watcher on the open vault, debounced, emits
   `notes://changed` with visible vault-relative paths.
+- `platform.rs` — what the platform allows: desktop opens any folder; mobile keeps vaults
+  in `<app data>/vaults` (decision of 2026-11-22) and only creates or clones them there.
 - `scheduler.rs` — background thread that runs the sync when the auto-sync interval
   elapses and the vault is a repository.
 
@@ -232,7 +234,7 @@ jade/
   and the path otherwise).
 - Port: `NoteRepository`. Watching the vault for external changes is a shell concern
   (`src-tauri/src/watcher.rs`), not part of the domain.
-- Use cases: `OpenVault`, `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
+- Use cases: `OpenVault`, `CreateVault` (a new folder inside a parent), `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
   `CreateFolder`, `RenameEntry` (always updates links to the moved notes in the whole
   vault — decision of 2026-11-22), `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
   `ResolveLinks`, `FollowLink` (creates the note if missing).
@@ -271,7 +273,9 @@ Wikilink parsing and resolution exist **only in Rust**. The frontend asks the co
 ### 4.7 Command contract and errors
 
 Tauri commands are named `<context>_<action>` in snake_case:
-- `notes_open_vault`, `notes_list_entries`, `notes_read_note`, `notes_save_note`,
+- `app_capabilities` (`CapabilitiesView`: can the platform open any folder, where managed
+  vaults live);
+- `notes_open_vault`, `notes_create_vault`, `notes_list_entries`, `notes_read_note`, `notes_save_note`,
   `notes_create_note`, `notes_create_folder`, `notes_rename_entry`,
   `notes_delete_entry`, `notes_search`, `notes_find_backlinks`, `notes_resolve_links`,
   `notes_follow_link`;

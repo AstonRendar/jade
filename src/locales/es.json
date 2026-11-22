@@ -8,7 +8,11 @@
     "cloneDestination": "Elige dónde clonar",
     "chooseFolderAndClone": "Elegir carpeta y clonar",
     "recentVaults": "Bóvedas recientes",
-    "noRecentVaults": "Aún no has abierto ninguna bóveda."
+    "noRecentVaults": "Aún no has abierto ninguna bóveda.",
+    "createVault": "Crear bóveda",
+    "vaultName": "Nombre de la bóveda",
+    "createVaultDestination": "Elige dónde crear la bóveda",
+    "clone": "Clonar"
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",

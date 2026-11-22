@@ -1,6 +1,7 @@
 pub mod commands;
 pub mod errors;
 pub mod flush;
+pub mod platform;
 pub mod scheduler;
 pub mod view_models;
 pub mod watcher;
@@ -11,7 +12,7 @@ use std::sync::Arc;
 use jade_sync::infrastructure::{HostnameDeviceInfo, KeyringCredentialStore, SystemClock};
 use tauri::Manager;
 
-use crate::commands::{editor, notes, preferences, sync, AppJade};
+use crate::commands::{app as app_commands, editor, notes, preferences, sync, AppJade};
 use crate::flush::FlushCoordinator;
 use crate::watcher::VaultWatcher;
 use crate::wiring::Jade;
@@ -39,7 +40,9 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            app_commands::app_capabilities,
             notes::notes_open_vault,
+            notes::notes_create_vault,
             notes::notes_list_entries,
             notes::notes_read_note,
             notes::notes_save_note,

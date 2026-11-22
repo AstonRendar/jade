@@ -295,3 +295,12 @@ fn remembers_no_vaults(world: &mut AppWorld, device: String) {
     let preferences = world.app(&device).preferences().expect("preferences load");
     assert!(preferences.recent_vaults.is_empty());
 }
+
+#[when(expr = "the app on {string} creates the vault {string} in the folder {string}")]
+fn the_app_creates_a_vault(world: &mut AppWorld, device: String, name: String, folder: String) {
+    let parent = world.path(&folder).display().to_string();
+    let result = world.app(&device).create_vault(&parent, &name);
+    if let Some(vault) = world.record(&device, result) {
+        world.opened.insert(device, vault);
+    }
+}

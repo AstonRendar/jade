@@ -2,6 +2,7 @@ import { useEditor } from "../../notes/store/editorStore";
 import { useVault } from "../../notes/store/vaultStore";
 import { usePreferences } from "../../preferences/store/preferencesStore";
 import { useSync } from "../../sync/store/syncStore";
+import { usePlatform } from "../../workspace/platformStore";
 import { useNotifications } from "../ui/notificationStore";
 
 export function resetStores() {
@@ -10,4 +11,5 @@ export function resetStores() {
   usePreferences.setState(usePreferences.getInitialState(), true);
   useNotifications.setState(useNotifications.getInitialState(), true);
   useSync.setState(useSync.getInitialState(), true);
+  usePlatform.setState(usePlatform.getInitialState(), true);
 }

@@ -15,6 +15,7 @@ pub struct NotesWorld {
     pub backlinks: Vec<Backlink>,
     pub resolved: Vec<ResolvedLink>,
     pub hits: Vec<SearchHit>,
+    pub last_vault_name: Option<String>,
 }
 
 impl NotesWorld {
@@ -27,6 +28,7 @@ impl NotesWorld {
             backlinks: Vec::new(),
             resolved: Vec::new(),
             hits: Vec::new(),
+            last_vault_name: None,
         }
     }
 

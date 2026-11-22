@@ -47,3 +47,8 @@ Feature: Application flows across contexts
   Scenario: A token is stored without ever being shown again
     When the app on "laptop" stores the token "token-123"
     Then the app on "laptop" has a token
+
+  Scenario: Creating a vault opens and remembers it
+    When the app on "phone" creates the vault "Journal" in the folder "vaults"
+    Then the open vault on "phone" is named "Journal"
+    And the most recent vault on "phone" is the folder "vaults/Journal"

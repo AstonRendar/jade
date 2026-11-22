@@ -8,7 +8,11 @@
     "cloneDestination": "选择克隆位置",
     "chooseFolderAndClone": "选择文件夹并克隆",
     "recentVaults": "最近的库",
-    "noRecentVaults": "尚未打开任何库。"
+    "noRecentVaults": "尚未打开任何库。",
+    "createVault": "新建库",
+    "vaultName": "库名称",
+    "createVaultDestination": "选择新建库的位置",
+    "clone": "克隆"
   },
   "layout": {
     "selectNote": "选择或新建一篇笔记。",
