@@ -1,5 +1,5 @@
 import { open } from "@tauri-apps/plugin-dialog";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { notesGateway } from "../notes/gateway/notesGateway";
 import { useVault } from "../notes/store/vaultStore";
@@ -26,6 +26,10 @@ export function WelcomeScreen() {
   );
   const [cloning, setCloning] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+
+  useEffect(() => {
+    void reportingErrors(() => usePreferences.getState().load());
+  }, []);
 
   const openVault = async (path: string) => {
     try {

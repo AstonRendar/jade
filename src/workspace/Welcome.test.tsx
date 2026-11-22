@@ -207,6 +207,23 @@ describe("welcome screen on each platform", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("lists the vault just closed among the recent ones", async () => {
+    // Arrange
+    await renderWorkspace();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Create vault" }),
+    );
+    await userEvent.type(screen.getByRole("textbox"), "Journal{Enter}");
+
+    // Act
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Close vault" }),
+    );
+
+    // Assert
+    expect(await screen.findByText("Journal")).toBeInTheDocument();
+  });
+
   it("asks where to create a vault on desktop", async () => {
     // Arrange
     await renderWorkspace();
@@ -296,6 +313,7 @@ describe("welcome screen on each platform", () => {
       case "plugin:dialog|open":
         return "/Users/example/Documents";
       case "notes_create_vault":
+        recentVaults = [`${args.parent}/${args.name}`, ...recentVaults];
         return { path: `${args.parent}/${args.name}`, name: args.name };
       case "sync_clone_repository":
         return cloneFinishes().then(() => ({
