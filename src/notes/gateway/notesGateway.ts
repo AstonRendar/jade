@@ -2,7 +2,9 @@ import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import type { ChangedPathsView } from "../../shared/bindings/ChangedPathsView";
 import type { EntryView } from "../../shared/bindings/EntryView";
 import type { FlushRequestView } from "../../shared/bindings/FlushRequestView";
+import type { BacklinkView } from "../../shared/bindings/BacklinkView";
 import type { FollowedLinkView } from "../../shared/bindings/FollowedLinkView";
+import type { SearchHitView } from "../../shared/bindings/SearchHitView";
 import type { SyncReportView } from "../../shared/bindings/SyncReportView";
 import type { VaultView } from "../../shared/bindings/VaultView";
 import { call } from "../../shared/gateway/call";
@@ -17,6 +19,9 @@ export const notesGateway = {
     call<string>("notes_rename_entry", { from, to }),
   deleteEntry: (path: string) => call<null>("notes_delete_entry", { path }),
   readNote: (path: string) => call<string>("notes_read_note", { path }),
+  search: (query: string) => call<SearchHitView[]>("notes_search", { query }),
+  findBacklinks: (path: string) =>
+    call<BacklinkView[]>("notes_find_backlinks", { path }),
   saveNote: (path: string, content: string) =>
     call<null>("notes_save_note", { path, content }),
   followLink: (target: string) =>

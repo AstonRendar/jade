@@ -1,0 +1,33 @@
+.list {
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+}
+
+.list button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  text-align: start;
+  border: none;
+  background: none;
+}
+
+.list button:hover {
+  background: var(--hover);
+}
+
+.list span,
+.empty {
+  color: var(--muted);
+}
+
+.list span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 8px 12px;
+}

@@ -195,6 +195,20 @@ describe("Workspace", () => {
         return entries;
       case "notes_create_note":
         return `${args.folder}/${args.title}.md`;
+      case "notes_read_note":
+        return "";
+      case "notes_find_backlinks":
+      case "sync_list_note_history":
+        return [];
+      case "sync_get_status":
+        return {
+          isRepository: false,
+          branch: null,
+          remote: null,
+          pendingChanges: 0,
+          ahead: 0,
+          behind: 0,
+        };
       default:
         return null;
     }

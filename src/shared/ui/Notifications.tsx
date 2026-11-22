@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { errorMessage } from "./errorMessage";
 import styles from "./Notifications.module.css";
 import { useNotifications } from "./notificationStore";
 
@@ -10,8 +9,13 @@ export function Notifications() {
   return (
     <div className={styles.stack} aria-live="polite">
       {notifications.map((notification) => (
-        <div key={notification.id} role="alert" className={styles.notification}>
-          <span>{errorMessage(t, notification.error)}</span>
+        <div
+          key={notification.id}
+          role={notification.kind === "error" ? "alert" : "status"}
+          className={styles.notification}
+          data-kind={notification.kind}
+        >
+          <span>{t(notification.key, notification.params)}</span>
           <button
             type="button"
             aria-label={t("common.dismiss")}

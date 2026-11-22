@@ -26,7 +26,8 @@
   "common": {
     "cancel": "Cancelar",
     "create": "Crear",
-    "dismiss": "Cerrar"
+    "dismiss": "Cerrar",
+    "close": "Cerrar"
   },
   "errors": {
     "vault_not_open": "No hay ninguna bóveda abierta.",
@@ -53,5 +54,42 @@
   "editor": {
     "edit": "Editar",
     "preview": "Vista previa"
+  },
+  "navigation": {
+    "quickSwitcher": "Abrir nota",
+    "quickSwitcherPlaceholder": "Escribe el nombre de una nota…",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar en todas las notas…",
+    "backlinks": "Enlaces entrantes",
+    "noBacklinks": "Ninguna otra nota enlaza aquí."
+  },
+  "history": {
+    "title": "Historial",
+    "empty": "Aún no hay historial. Aparece tras la primera sincronización.",
+    "restore": "Restaurar esta versión"
+  },
+  "sync": {
+    "now": "Sincronizar",
+    "syncing": "Sincronizando…",
+    "notVersioned": "Sin versionar",
+    "pending_one": "{{count}} pendiente",
+    "pending_other": "{{count}} pendientes",
+    "localOnly": "solo local",
+    "conflictCopy": "Los dos dispositivos cambiaron «{{original}}». La otra versión se ha guardado como «{{copy}}»."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "sameAsSystem": "El del sistema",
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "autoSync": "Sincronizar cada (minutos, 0 = nunca)",
+    "token": "Token de GitHub",
+    "tokenStored": "Hay un token guardado. Escribe otro para sustituirlo.",
+    "removeToken": "Eliminar token",
+    "remote": "Repositorio remoto",
+    "versionFolder": "Versionar esta carpeta",
+    "save": "Guardar"
   }
 }

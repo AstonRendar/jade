@@ -1,0 +1,22 @@
+.settings {
+  display: grid;
+  gap: 12px;
+}
+
+.settings label {
+  display: grid;
+  gap: 4px;
+}
+
+.settings select {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.inline {
+  justify-self: start;
+}
