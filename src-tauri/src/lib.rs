@@ -25,6 +25,8 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
+            #[cfg(target_os = "android")]
+            jade_sync::infrastructure::SystemCertificates::trust_android_store();
             let preferences_file = app.path().app_config_dir()?.join(PREFERENCES_FILE);
             let jade: Arc<AppJade> = Arc::new(Jade::new(
                 preferences_file,
