@@ -60,6 +60,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Core | Rust stable, edition 2021, Cargo workspace |
 | Git | `git2` (libgit2), features `https`, `vendored-libgit2`, `vendored-openssl`; no SSH |
 | Secrets | `keyring-core` with the native store of each platform: Keychain (macOS/iOS), Secret Service (Linux), Credential Manager (Windows), SharedPreferences encrypted with the Android Keystore (Android) |
+| TLS on Android | `openssl-sys` + `libgit2-sys` (Android only): the vendored OpenSSL is built without file access, so `SystemCertificates` loads the system root certificates into libgit2 from memory at startup |
 | File watching | `notify` |
 | Unicode | `unicode-normalization` |
 | Local time | `chrono` (infrastructure only: `Clock` adapter) |
