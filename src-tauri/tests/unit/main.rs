@@ -175,3 +175,45 @@ fn maps_preferences_and_credential_failures() {
         ]
     );
 }
+
+#[test]
+fn a_flush_request_completes_when_the_editor_acknowledges_it() {
+    // Arrange
+    let coordinator = std::sync::Arc::new(jade_lib::flush::FlushCoordinator::default());
+    let acknowledger = std::sync::Arc::clone(&coordinator);
+
+    // Act
+    let acknowledged = coordinator.request(
+        move |id| {
+            std::thread::spawn(move || acknowledger.acknowledge(id));
+        },
+        std::time::Duration::from_secs(5),
+    );
+
+    // Assert
+    assert!(acknowledged);
+}
+
+#[test]
+fn a_flush_request_gives_up_when_nobody_answers() {
+    // Arrange
+    let coordinator = jade_lib::flush::FlushCoordinator::default();
+
+    // Act
+    let acknowledged = coordinator.request(|_| {}, std::time::Duration::from_millis(20));
+
+    // Assert
+    assert!(!acknowledged);
+}
+
+#[test]
+fn acknowledging_an_unknown_request_is_harmless() {
+    // Arrange
+    let coordinator = jade_lib::flush::FlushCoordinator::default();
+
+    // Act
+    coordinator.acknowledge(42);
+
+    // Assert
+    assert!(!coordinator.request(|_| {}, std::time::Duration::from_millis(1)));
+}

@@ -49,5 +49,9 @@
     "credentials_unavailable": "El clauer del sistema no està disponible.",
     "io": "No s'han pogut llegir o escriure els fitxers.",
     "unexpected": "Alguna cosa ha anat malament."
+  },
+  "editor": {
+    "edit": "Editar",
+    "preview": "Previsualització"
   }
 }

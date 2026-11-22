@@ -4,6 +4,7 @@ use tauri::{AppHandle, Emitter, State};
 
 use super::{blocking, AppJade};
 use crate::errors::ErrorView;
+use crate::flush::{FlushCoordinator, FlushRequestView, FLUSH_REQUESTED, FLUSH_TIMEOUT};
 use crate::view_models::{RepositoryStatusView, RevisionView, SyncReportView, VaultView};
 use crate::watcher::VaultWatcher;
 
@@ -14,7 +15,14 @@ pub const SYNC_FAILED: &str = "sync://failed";
 pub fn synchronize_and_notify(
     app: &AppHandle,
     jade: &AppJade,
+    flush: &FlushCoordinator,
 ) -> Result<SyncReportView, ErrorView> {
+    flush.request(
+        |id| {
+            let _ = app.emit(FLUSH_REQUESTED, FlushRequestView { id });
+        },
+        FLUSH_TIMEOUT,
+    );
     let _ = app.emit(SYNC_STARTED, ());
     let result = jade.synchronize();
     let _ = match &result {
@@ -28,8 +36,13 @@ pub fn synchronize_and_notify(
 pub async fn sync_synchronize(
     app: AppHandle,
     jade: State<'_, Arc<AppJade>>,
+    flush: State<'_, Arc<FlushCoordinator>>,
 ) -> Result<SyncReportView, ErrorView> {
-    blocking(&jade, move |jade| synchronize_and_notify(&app, jade)).await
+    let flush = Arc::clone(&flush);
+    blocking(&jade, move |jade| {
+        synchronize_and_notify(&app, jade, &flush)
+    })
+    .await
 }
 
 #[tauri::command]

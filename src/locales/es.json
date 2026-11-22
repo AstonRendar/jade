@@ -49,5 +49,9 @@
     "credentials_unavailable": "El llavero del sistema no está disponible.",
     "io": "No se han podido leer o escribir los archivos.",
     "unexpected": "Algo ha ido mal."
+  },
+  "editor": {
+    "edit": "Editar",
+    "preview": "Vista previa"
   }
 }
