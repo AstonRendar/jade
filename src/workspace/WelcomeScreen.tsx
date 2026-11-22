@@ -1,0 +1,118 @@
+import { open } from "@tauri-apps/plugin-dialog";
+import { useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
+import { useVault } from "../notes/store/vaultStore";
+import { usePreferences } from "../preferences/store/preferencesStore";
+import { isErrorView } from "../shared/gateway/call";
+import {
+  reportingErrors,
+  useNotifications,
+} from "../shared/ui/notificationStore";
+import styles from "./WelcomeScreen.module.css";
+
+export function WelcomeScreen() {
+  const { t } = useTranslation();
+  const preferences = usePreferences((state) => state.preferences);
+  const recentVaults = preferences?.recentVaults ?? [];
+  const [cloning, setCloning] = useState(false);
+
+  const openVault = async (path: string) => {
+    try {
+      await useVault.getState().open(path);
+    } catch (error) {
+      useNotifications.getState().report(error);
+      if (isErrorView(error) && error.code === "vault_not_found") {
+        await reportingErrors(() =>
+          usePreferences.getState().forgetVault(path),
+        );
+      }
+    }
+  };
+
+  const chooseFolder = async () => {
+    const folder = await open({
+      directory: true,
+      title: t("welcome.openFolder"),
+    });
+    if (typeof folder === "string") {
+      await openVault(folder);
+    }
+  };
+
+  return (
+    <main className={styles.welcome}>
+      <h1>{t("welcome.title")}</h1>
+      <p className={styles.subtitle}>{t("welcome.subtitle")}</p>
+      <div className={styles.actions}>
+        <button type="button" className={styles.primary} onClick={chooseFolder}>
+          {t("welcome.openFolder")}
+        </button>
+        <button type="button" onClick={() => setCloning(true)}>
+          {t("welcome.cloneRepository")}
+        </button>
+      </div>
+      {cloning && <CloneForm onCancel={() => setCloning(false)} />}
+      <section className={styles.recent}>
+        <h2>{t("welcome.recentVaults")}</h2>
+        {recentVaults.length === 0 ? (
+          <p className={styles.muted}>{t("welcome.noRecentVaults")}</p>
+        ) : (
+          <ul>
+            {recentVaults.map((path) => (
+              <li key={path}>
+                <button type="button" onClick={() => openVault(path)}>
+                  <strong>{lastSegment(path)}</strong>
+                  <span className={styles.muted}>{path}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </main>
+  );
+}
+
+function CloneForm({ onCancel }: { onCancel: () => void }) {
+  const { t } = useTranslation();
+  const [url, setUrl] = useState("");
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    const parent = await open({
+      directory: true,
+      title: t("welcome.cloneDestination"),
+    });
+    if (typeof parent === "string") {
+      await reportingErrors(() =>
+        useVault.getState().clone(url.trim(), parent),
+      );
+    }
+  };
+  return (
+    <form className={styles.clone} onSubmit={submit}>
+      <label>
+        {t("welcome.cloneUrl")}
+        <input
+          autoFocus
+          required
+          value={url}
+          placeholder="https://github.com/user/notes.git"
+          onChange={(event) => setUrl(event.target.value)}
+        />
+      </label>
+      <div className={styles.actions}>
+        <button type="button" onClick={onCancel}>
+          {t("common.cancel")}
+        </button>
+        <button type="submit" className={styles.primary}>
+          {t("welcome.chooseFolderAndClone")}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function lastSegment(path: string): string {
+  const parts = path.split(/[\\/]/).filter(Boolean);
+  return parts[parts.length - 1] ?? path;
+}

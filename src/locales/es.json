@@ -1,6 +1,53 @@
 {
   "welcome": {
     "title": "Bienvenido a Jade",
-    "subtitle": "Tus notas, versionadas con Git."
+    "subtitle": "Tus notas, versionadas con Git.",
+    "openFolder": "Abrir carpeta",
+    "cloneRepository": "Clonar repositorio",
+    "cloneUrl": "Dirección del repositorio",
+    "cloneDestination": "Elige dónde clonar",
+    "chooseFolderAndClone": "Elegir carpeta y clonar",
+    "recentVaults": "Bóvedas recientes",
+    "noRecentVaults": "Aún no has abierto ninguna bóveda."
+  },
+  "layout": {
+    "selectNote": "Selecciona o crea una nota.",
+    "closeVault": "Cerrar bóveda"
+  },
+  "tree": {
+    "label": "Bóveda",
+    "empty": "Esta bóveda está vacía.",
+    "newNote": "Nueva nota",
+    "newFolder": "Nueva carpeta",
+    "rename": "Renombrar",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar «{{name}}»? Podrás recuperarla del historial si ya se había sincronizado."
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "dismiss": "Cerrar"
+  },
+  "errors": {
+    "vault_not_open": "No hay ninguna bóveda abierta.",
+    "vault_not_found": "La carpeta de la bóveda ya no existe.",
+    "invalid_path": "«{{path}}» no es un nombre válido.",
+    "already_exists": "Ya existe «{{path}}».",
+    "not_found": "No se encuentra «{{path}}».",
+    "invalid_move": "Una carpeta no puede moverse dentro de sí misma.",
+    "empty_query": "Escribe algo para buscar.",
+    "invalid_url": "«{{url}}» no es una dirección de repositorio que Jade pueda usar.",
+    "invalid_token": "El token no es válido.",
+    "invalid_preference": "Ese ajuste no es válido.",
+    "not_a_repository": "Esta bóveda todavía no está versionada.",
+    "already_a_repository": "Esta bóveda ya está versionada.",
+    "auth_required": "El repositorio necesita un token. Añádelo en Ajustes.",
+    "auth_failed": "El repositorio ha rechazado el token.",
+    "network": "No se puede acceder al repositorio. Revisa la conexión.",
+    "file_too_large": "«{{path}}» ocupa más de 100 MB y no se puede sincronizar.",
+    "push_rejected": "Otro dispositivo no ha dejado de modificar el repositorio. Vuelve a intentarlo.",
+    "credentials_unavailable": "El llavero del sistema no está disponible.",
+    "io": "No se han podido leer o escribir los archivos.",
+    "unexpected": "Algo ha ido mal."
   }
 }

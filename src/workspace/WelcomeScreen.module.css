@@ -1,0 +1,84 @@
+.welcome {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 16px;
+  min-height: 100%;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.welcome h1 {
+  margin: 0;
+  color: var(--accent-text);
+}
+
+.subtitle,
+.muted {
+  color: var(--muted);
+}
+
+.subtitle {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.clone {
+  display: grid;
+  gap: 12px;
+  width: min(480px, 100%);
+  text-align: start;
+}
+
+.clone label {
+  display: grid;
+  gap: 4px;
+}
+
+.recent {
+  width: min(480px, 100%);
+  text-align: start;
+}
+
+.recent h2 {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recent ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recent button {
+  display: grid;
+  width: 100%;
+  gap: 2px;
+  text-align: start;
+  border: none;
+  background: none;
+}
+
+.recent button:hover {
+  background: var(--hover);
+}
+
+.recent span {
+  font-size: 0.85em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

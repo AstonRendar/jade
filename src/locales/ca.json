@@ -1,6 +1,53 @@
 {
   "welcome": {
     "title": "Benvingut a Jade",
-    "subtitle": "Les teves notes, versionades amb Git."
+    "subtitle": "Les teves notes, versionades amb Git.",
+    "openFolder": "Obrir carpeta",
+    "cloneRepository": "Clonar repositori",
+    "cloneUrl": "Adreça del repositori",
+    "cloneDestination": "Tria on clonar",
+    "chooseFolderAndClone": "Triar carpeta i clonar",
+    "recentVaults": "Caixes recents",
+    "noRecentVaults": "Encara no has obert cap caixa."
+  },
+  "layout": {
+    "selectNote": "Selecciona o crea una nota.",
+    "closeVault": "Tancar la caixa"
+  },
+  "tree": {
+    "label": "Caixa",
+    "empty": "Aquesta caixa és buida.",
+    "newNote": "Nota nova",
+    "newFolder": "Carpeta nova",
+    "rename": "Canviar el nom",
+    "delete": "Eliminar",
+    "deleteConfirm": "Vols eliminar «{{name}}»? La podràs recuperar de l'historial si ja s'havia sincronitzat."
+  },
+  "common": {
+    "cancel": "Cancel·lar",
+    "create": "Crear",
+    "dismiss": "Tancar"
+  },
+  "errors": {
+    "vault_not_open": "No hi ha cap caixa oberta.",
+    "vault_not_found": "La carpeta de la caixa ja no existeix.",
+    "invalid_path": "«{{path}}» no és un nom vàlid.",
+    "already_exists": "Ja existeix «{{path}}».",
+    "not_found": "No es troba «{{path}}».",
+    "invalid_move": "Una carpeta no es pot moure dins d'ella mateixa.",
+    "empty_query": "Escriu alguna cosa per cercar.",
+    "invalid_url": "«{{url}}» no és una adreça de repositori que Jade pugui fer servir.",
+    "invalid_token": "El testimoni no és vàlid.",
+    "invalid_preference": "Aquest ajust no és vàlid.",
+    "not_a_repository": "Aquesta caixa encara no està versionada.",
+    "already_a_repository": "Aquesta caixa ja està versionada.",
+    "auth_required": "El repositori necessita un testimoni. Afegeix-lo a Ajustos.",
+    "auth_failed": "El repositori ha rebutjat el testimoni.",
+    "network": "No es pot accedir al repositori. Revisa la connexió.",
+    "file_too_large": "«{{path}}» ocupa més de 100 MB i no es pot sincronitzar.",
+    "push_rejected": "Un altre dispositiu no ha parat de modificar el repositori. Torna-ho a provar.",
+    "credentials_unavailable": "El clauer del sistema no està disponible.",
+    "io": "No s'han pogut llegir o escriure els fitxers.",
+    "unexpected": "Alguna cosa ha anat malament."
   }
 }

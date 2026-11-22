@@ -1,6 +1,53 @@
 {
   "welcome": {
     "title": "Welcome to Jade",
-    "subtitle": "Your notes, versioned with Git."
+    "subtitle": "Your notes, versioned with Git.",
+    "openFolder": "Open folder",
+    "cloneRepository": "Clone repository",
+    "cloneUrl": "Repository address",
+    "cloneDestination": "Choose where to clone",
+    "chooseFolderAndClone": "Choose folder and clone",
+    "recentVaults": "Recent vaults",
+    "noRecentVaults": "No vaults opened yet."
+  },
+  "layout": {
+    "selectNote": "Select or create a note.",
+    "closeVault": "Close vault"
+  },
+  "tree": {
+    "label": "Vault",
+    "empty": "This vault is empty.",
+    "newNote": "New note",
+    "newFolder": "New folder",
+    "rename": "Rename",
+    "delete": "Delete",
+    "deleteConfirm": "Delete “{{name}}”? You can recover it from the history once it has been synchronised."
+  },
+  "common": {
+    "cancel": "Cancel",
+    "create": "Create",
+    "dismiss": "Dismiss"
+  },
+  "errors": {
+    "vault_not_open": "No vault is open.",
+    "vault_not_found": "The vault folder no longer exists.",
+    "invalid_path": "“{{path}}” is not a valid name.",
+    "already_exists": "“{{path}}” already exists.",
+    "not_found": "“{{path}}” was not found.",
+    "invalid_move": "A folder cannot be moved inside itself.",
+    "empty_query": "Type something to search.",
+    "invalid_url": "“{{url}}” is not a repository address Jade can use.",
+    "invalid_token": "The token is not valid.",
+    "invalid_preference": "That setting is not valid.",
+    "not_a_repository": "This vault is not versioned yet.",
+    "already_a_repository": "This vault is already versioned.",
+    "auth_required": "The repository needs a token. Add one in Settings.",
+    "auth_failed": "The repository rejected the token.",
+    "network": "The repository cannot be reached. Check your connection.",
+    "file_too_large": "“{{path}}” is larger than 100 MB and cannot be synchronised.",
+    "push_rejected": "Another device kept changing the repository. Try again.",
+    "credentials_unavailable": "The system keychain is not available.",
+    "io": "The files could not be read or written.",
+    "unexpected": "Something went wrong."
   }
 }

@@ -183,9 +183,10 @@ jade/
 ├─ src/                          # frontend, mirrors the contexts
 │  ├─ notes/  sync/  preferences/
 │  │   └─ {ui/, store/, gateway/}   # gateway = the only code calling invoke()/listen()
-│  ├─ shared/ {ui/, bindings/, i18n/, testing/}
+│  ├─ workspace/                 # composes the contexts: Workspace, WelcomeScreen, AppShell
+│  ├─ shared/ {ui/, gateway/, bindings/, i18n/, testing/}
 │  ├─ locales/{en,es,zh-CN,ca}.json
-│  └─ main.tsx  App.tsx
+│  └─ main.tsx
 └─ .github/workflows/
 ```
 
@@ -285,6 +286,21 @@ user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and
 `invalid_url`, `invalid_token`, `invalid_preference`, `not_a_repository`,
 `already_a_repository`, `auth_required`, `auth_failed`, `network`, `file_too_large`,
 `push_rejected`, `credentials_unavailable`, `io`, `unexpected`.
+
+### 4.8 Frontend conventions
+
+- Gateways call the core only through `shared/gateway/call.ts`, which always rejects
+  with an `ErrorView`. Types come from `shared/bindings/` (generated, never edited).
+- State lives in one Zustand store per context (`useVault`, `usePreferences`). Store
+  actions throw `ErrorView`s; UI handlers wrap them with `reportingErrors`, which shows
+  a translated notification (`shared/ui/notificationStore.ts`).
+- Components select plain values from stores; never return new arrays or objects from
+  a selector (it re-renders forever).
+- `workspace/` is the only place that combines several contexts in the UI, like
+  `src-tauri` does in the core.
+- File names differ by more than letter case (macOS file systems ignore case).
+- Tests use `mockIPC(..., { shouldMockEvents: true })`, record the commands invoked and
+  assert on them; they unmount and flush pending promises before `clearMocks`.
 
 ## 5. Sync algorithm (`SynchronizeVault`)
 

@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
 import { createI18n, resolveLocale } from "./shared/i18n";
 import "./shared/ui/global.css";
+import { Workspace } from "./workspace/Workspace";
 
 const container = document.getElementById("root");
 if (!container) {
@@ -12,7 +12,7 @@ if (!container) {
 createI18n(resolveLocale(navigator.languages)).then((i18n) => {
   createRoot(container).render(
     <StrictMode>
-      <App i18n={i18n} />
+      <Workspace i18n={i18n} />
     </StrictMode>,
   );
 });
