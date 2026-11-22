@@ -12,7 +12,9 @@
     "createVault": "新建库",
     "vaultName": "库名称",
     "createVaultDestination": "选择新建库的位置",
-    "clone": "克隆"
+    "clone": "克隆",
+    "cloning": "正在克隆仓库…",
+    "cloningDetail": "这可能需要一点时间，取决于笔记的大小。"
   },
   "layout": {
     "selectNote": "选择或新建一篇笔记。",

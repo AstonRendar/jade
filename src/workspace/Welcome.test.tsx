@@ -21,11 +21,13 @@ const MOBILE: CapabilitiesView = {
 describe("welcome screen on each platform", () => {
   let calls: Call[];
   let capabilities: CapabilitiesView;
+  let cloneFinishes: () => Promise<void>;
 
   beforeEach(() => {
     resetStores();
     calls = [];
     capabilities = DESKTOP;
+    cloneFinishes = () => Promise.resolve();
     mockIPC(
       (command, args) => {
         const values = (args ?? {}) as Record<string, unknown>;
@@ -101,6 +103,49 @@ describe("welcome screen on each platform", () => {
       ]),
     );
     expect(called("plugin:dialog|open")).toEqual([]);
+  });
+
+  it("blocks the screen with a progress message while cloning", async () => {
+    // Arrange
+    capabilities = MOBILE;
+    cloneFinishes = () => new Promise(() => undefined);
+    await renderWorkspace();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Clone repository" }),
+    );
+
+    // Act
+    await userEvent.type(
+      screen.getByLabelText("Repository address"),
+      "https://git.example.com/notes.git{Enter}",
+    );
+
+    // Assert
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Cloning the repository…",
+    );
+    expect(screen.getByRole("main")).toHaveAttribute("inert");
+  });
+
+  it("unblocks the screen when cloning fails", async () => {
+    // Arrange
+    capabilities = MOBILE;
+    cloneFinishes = () => Promise.reject({ code: "network", params: {} });
+    await renderWorkspace();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Clone repository" }),
+    );
+
+    // Act
+    await userEvent.type(
+      screen.getByLabelText("Repository address"),
+      "https://git.example.com/notes.git{Enter}",
+    );
+
+    // Assert
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByRole("main")).not.toHaveAttribute("inert");
   });
 
   it("asks where to create a vault on desktop", async () => {
@@ -187,7 +232,10 @@ describe("welcome screen on each platform", () => {
       case "notes_create_vault":
         return { path: `${args.parent}/${args.name}`, name: args.name };
       case "sync_clone_repository":
-        return { path: `${args.parent}/notes`, name: "notes" };
+        return cloneFinishes().then(() => ({
+          path: `${args.parent}/notes`,
+          name: "notes",
+        }));
       case "notes_list_entries":
       case "notes_find_backlinks":
       case "sync_list_note_history":

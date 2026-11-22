@@ -12,7 +12,9 @@
     "createVault": "Crear caixa",
     "vaultName": "Nom de la caixa",
     "createVaultDestination": "Tria on crear la caixa",
-    "clone": "Clonar"
+    "clone": "Clonar",
+    "cloning": "S'està clonant el repositori…",
+    "cloningDetail": "Pot trigar una mica, segons la mida de les teves notes."
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",
