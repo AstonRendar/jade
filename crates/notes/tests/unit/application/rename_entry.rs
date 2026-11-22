@@ -12,6 +12,7 @@ fn renames_an_entry() {
     // Arrange
     let mut repository = MockNoteRepository::new();
     given_target_exists(&mut repository, false);
+    given_notes(&mut repository, vec![]);
     expect_renamed(&mut repository, "ideas.md", "thoughts.md");
 
     // Act
@@ -54,6 +55,7 @@ fn reports_a_missing_source() {
     // Arrange
     let mut repository = MockNoteRepository::new();
     given_target_exists(&mut repository, false);
+    given_notes(&mut repository, vec![]);
     given_rename_fails_with_missing_source(&mut repository);
 
     // Act
@@ -64,6 +66,28 @@ fn reports_a_missing_source() {
         result,
         Err(NotesError::NotFound(NoteMother::vault_path("gone.md")))
     );
+}
+
+#[test]
+fn rewrites_links_to_the_renamed_note() {
+    // Arrange
+    let mut repository = MockNoteRepository::new();
+    given_target_exists(&mut repository, false);
+    given_notes(
+        &mut repository,
+        vec![
+            NoteMother::note("plan.md", "# Plan"),
+            NoteMother::note("daily.md", "see [[plan]]"),
+        ],
+    );
+    expect_renamed(&mut repository, "plan.md", "Roadmap.md");
+    expect_note_written(&mut repository, "daily.md", "see [[Roadmap]]");
+
+    // Act
+    let result = RenameEntry::new(repository).execute(request("plan.md", "Roadmap.md"));
+
+    // Assert
+    assert_eq!(result, Ok(NoteMother::vault_path("Roadmap.md")));
 }
 
 fn request(from: &str, to: &str) -> RenameEntryRequest {
@@ -78,6 +102,22 @@ fn given_target_exists(repository: &mut MockNoteRepository, exists: bool) {
     repository
         .expect_entry_exists()
         .returning(move |_, _| Ok(exists));
+}
+
+fn given_notes(repository: &mut MockNoteRepository, notes: Vec<jade_notes::domain::model::Note>) {
+    repository.expect_notes().return_once(move |_| Ok(notes));
+}
+
+fn expect_note_written(repository: &mut MockNoteRepository, path: &str, content: &str) {
+    repository
+        .expect_write()
+        .with(
+            eq(NoteMother::root()),
+            eq(NoteMother::path(path)),
+            eq(content.to_string()),
+        )
+        .times(1)
+        .returning(|_, _, _| Ok(()));
 }
 
 fn given_rename_fails_with_missing_source(repository: &mut MockNoteRepository) {

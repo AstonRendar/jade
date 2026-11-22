@@ -66,6 +66,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Device name | `gethostname` (infrastructure only: `DeviceInfo` adapter) |
 | Native dialogs | `tauri-plugin-dialog` (folder picker) |
 | Errors | `thiserror` |
+| HTTP | `reqwest` (blocking, rustls) — only when an adapter needs HTTP (decision of 2026-11-22) |
 | Serialisation | `serde`, `serde_json` (view models and persistence adapters only) |
 | Logging | `tracing` |
 | Rust tests | `cargo test`, `mockall`, `cucumber` (Gherkin), `tempfile`, `cargo-llvm-cov` |
@@ -225,11 +226,15 @@ jade/
 - Model: `Note` (path + content).
 - Domain services: `WikiLinkParser` (ignores links in fenced and inline code),
   `LinkResolver` (exact path, then name or partial path, case-insensitive, shortest path
-  wins on ambiguity), `BacklinkFinder`, `NoteSearch` (title and line hits, capped).
+  wins on ambiguity), `BacklinkFinder`, `NoteSearch` (title and line hits, capped),
+  `LinkRewriter` (points links at moved notes, keeping headings, aliases and embeds;
+  keeps the link text when it still resolves, uses the title when it is unambiguous
+  and the path otherwise).
 - Port: `NoteRepository`. Watching the vault for external changes is a shell concern
   (`src-tauri/src/watcher.rs`), not part of the domain.
 - Use cases: `OpenVault`, `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
-  `CreateFolder`, `RenameEntry`, `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
+  `CreateFolder`, `RenameEntry` (always updates links to the moved notes in the whole
+  vault — decision of 2026-11-22), `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
   `ResolveLinks`, `FollowLink` (creates the note if missing).
 
 Wikilink parsing and resolution exist **only in Rust**. The frontend asks the core

@@ -1,4 +1,4 @@
-use jade_notes::domain::service::{LocatedLink, WikiLinkParser};
+use jade_notes::domain::service::WikiLinkParser;
 use jade_notes::domain::value_object::WikiLink;
 
 #[test]
@@ -7,7 +7,7 @@ fn parses_a_plain_link() {
     let content = "See [[Ideas]] later.";
 
     // Act
-    let links = WikiLinkParser.parse(content);
+    let links = parse(content);
 
     // Assert
     assert_eq!(links, vec![located(1, link("Ideas", None, None, false))]);
@@ -19,7 +19,7 @@ fn parses_aliases_headings_and_embeds() {
     let content = "[[Plan|the plan]] [[Plan#Goals]] [[Plan#Goals|goals]] ![[diagram.png]]";
 
     // Act
-    let links = WikiLinkParser.parse(content);
+    let links = parse(content);
 
     // Assert
     assert_eq!(
@@ -55,7 +55,7 @@ fn trims_spaces_inside_the_brackets() {
     let content = "[[  Plan  #  Goals  |  goals  ]]";
 
     // Act
-    let links = WikiLinkParser.parse(content);
+    let links = parse(content);
 
     // Assert
     assert_eq!(
@@ -103,6 +103,30 @@ fn link(target: &str, heading: Option<&str>, alias: Option<&str>, embed: bool) -
     WikiLink::new(target, heading, alias, embed).expect("valid link")
 }
 
-fn located(line: usize, link: WikiLink) -> LocatedLink {
-    LocatedLink { line, link }
+fn located(line: usize, link: WikiLink) -> (usize, WikiLink) {
+    (line, link)
+}
+
+fn parse(content: &str) -> Vec<(usize, WikiLink)> {
+    WikiLinkParser
+        .parse(content)
+        .into_iter()
+        .map(|located| (located.line, located.link))
+        .collect()
+}
+
+#[test]
+fn locates_the_target_text_of_each_link() {
+    // Arrange
+    let content = "café `é` [[ Plan #Goals|x]]\n![[Ideas]]";
+
+    // Act
+    let targets: Vec<&str> = WikiLinkParser
+        .parse(content)
+        .iter()
+        .map(|located| &content[located.target_span.clone()])
+        .collect();
+
+    // Assert
+    assert_eq!(targets, vec!["Plan", "Ideas"]);
 }
