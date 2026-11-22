@@ -59,7 +59,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Shell | Tauri 2 (desktop + mobile) |
 | Core | Rust stable, edition 2021, Cargo workspace |
 | Git | `git2` (libgit2), features `https`, `vendored-libgit2`, `vendored-openssl`; no SSH |
-| Secrets | `keyring` 4 (Keychain on macOS/iOS, Secret Service on Linux, Credential Manager on Windows; its Android store in phase 3) |
+| Secrets | `keyring-core` with the native store of each platform: Keychain (macOS/iOS), Secret Service (Linux), Credential Manager (Windows), SharedPreferences encrypted with the Android Keystore (Android) |
 | File watching | `notify` |
 | Unicode | `unicode-normalization` |
 | Local time | `chrono` (infrastructure only: `Clock` adapter) |
@@ -509,6 +509,14 @@ libsecret/dbus).
 
 ```
 npm install
-make dev       # run the desktop app
-make check     # everything CI runs
+make dev          # run the desktop app
+make check        # everything CI runs
+make android-dev  # run on a connected Android device or emulator
+make android-apk  # debug APK for arm64 phones
 ```
+
+Android needs the SDK, the NDK (Android Studio → SDK Tools → NDK) and the Rust
+targets `aarch64-linux-android`, `armv7-linux-androideabi`, `i686-linux-android` and
+`x86_64-linux-android`. The `Makefile` points `ANDROID_HOME`, `NDK_HOME` and `JAVA_HOME`
+at the default Android Studio locations on macOS; override them if yours differ. The
+generated Android project lives in `src-tauri/gen/android` and is committed.

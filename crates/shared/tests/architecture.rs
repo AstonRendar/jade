@@ -89,7 +89,7 @@ fn forbidden_dependencies(manifest: &Path) -> Vec<String> {
             if let Some(name) = line.strip_prefix("[dependencies.") {
                 dependencies.push(name.trim_end_matches(']').to_string());
             }
-        } else if section == "[dependencies]" && line.contains('=') {
+        } else if is_dependency_section(section) && line.contains('=') {
             dependencies.push(dependency_name(line));
         }
     }
@@ -98,6 +98,11 @@ fn forbidden_dependencies(manifest: &Path) -> Vec<String> {
         .map(|name| name.replace('-', "_"))
         .filter(|name| !ALLOWED_PURE_DEPENDENCIES.contains(&name.as_str()))
         .collect()
+}
+
+fn is_dependency_section(section: &str) -> bool {
+    section == "[dependencies]"
+        || (section.starts_with("[target.") && section.ends_with(".dependencies]"))
 }
 
 fn dependency_name(manifest_line: &str) -> String {
@@ -304,6 +309,24 @@ fn rejects_a_crate_missing_a_layer() {
 
     // Assert
     assert_eq!(reasons(&violations), vec!["missing layer `infrastructure`"]);
+}
+
+#[test]
+fn rejects_platform_specific_dependencies_in_the_domain() {
+    // Arrange
+    let fixture = given_a_crate_depending_on(&[]);
+    given_a_file(
+        &fixture,
+        "Cargo.toml",
+        "[package]\nname = \"fixture\"\n\n[target.'cfg(unix)'.dependencies]\nkeyring-core = \"1\"\n",
+    );
+    given_a_file(&fixture, "src/domain/mod.rs", "use keyring_core::Entry;\n");
+
+    // Act
+    let violations = check_crate(fixture.path());
+
+    // Assert
+    assert_eq!(reasons(&violations), vec!["depends on `keyring_core`"]);
 }
 
 #[test]
