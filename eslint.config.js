@@ -4,7 +4,16 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", "coverage", "target", "src-tauri", "crates"] },
+  {
+    ignores: [
+      "dist",
+      "coverage",
+      "target",
+      "src-tauri",
+      "crates",
+      "src/shared/bindings",
+    ],
+  },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.strict],

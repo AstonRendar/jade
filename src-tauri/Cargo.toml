@@ -13,7 +13,32 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+jade-notes = { path = "../crates/notes" }
+jade-preferences = { path = "../crates/preferences" }
+jade-shared.workspace = true
+jade-sync = { path = "../crates/sync" }
+notify = "9"
+serde.workspace = true
+serde_json.workspace = true
 tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+ts-rs = "12"
+
+[dev-dependencies]
+git2.workspace = true
+cucumber.workspace = true
+tempfile.workspace = true
+tokio.workspace = true
+
+[[test]]
+name = "unit"
+path = "tests/unit/main.rs"
+
+[[test]]
+name = "functional"
+path = "tests/functional/main.rs"
+harness = false
 
 [lints]
 workspace = true
