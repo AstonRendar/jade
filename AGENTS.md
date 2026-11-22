@@ -59,7 +59,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Shell | Tauri 2 (desktop + mobile) |
 | Core | Rust stable, edition 2021, Cargo workspace |
 | Git | `git2` (libgit2), features `https`, `vendored-libgit2`, `vendored-openssl`; no SSH |
-| Secrets | `keyring` (desktop, iOS); Android Keystore in phase 3 |
+| Secrets | `keyring` 4 (Keychain on macOS/iOS, Secret Service on Linux, Credential Manager on Windows; its Android store in phase 3) |
 | File watching | `notify` |
 | Unicode | `unicode-normalization` |
 | Local time | `chrono` (infrastructure only: `Clock` adapter) |

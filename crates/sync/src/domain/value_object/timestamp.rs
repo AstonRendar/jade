@@ -47,6 +47,16 @@ impl Timestamp {
         })
     }
 
+    pub fn unix_epoch() -> Self {
+        Self {
+            year: 1970,
+            month: 1,
+            day: 1,
+            hour: 0,
+            minute: 0,
+        }
+    }
+
     pub fn year(&self) -> u16 {
         self.year
     }
