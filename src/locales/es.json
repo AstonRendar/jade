@@ -16,7 +16,8 @@
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",
-    "closeVault": "Cerrar bóveda"
+    "closeVault": "Cerrar bóveda",
+    "showNotes": "Mostrar notas"
   },
   "tree": {
     "label": "Bóveda",
