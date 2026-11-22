@@ -8,8 +8,8 @@ travel between devices: every vault is a Git repository, usually on GitHub, and 
 commits, pulls and pushes for you. You get full version history and sync across devices
 without needing to know Git — and without a proprietary sync service.
 
-> **Status: early development.** The synchronisation core is built and tested; the user
-> interface is in progress. Not ready for daily use yet.
+> **Status: early preview.** The macOS desktop app works end to end (vaults, editor,
+> links, search, history and sync). Builds for other platforms are on the way.
 
 ## Why Jade
 
@@ -53,8 +53,8 @@ A vault without a remote is still versioned locally and can be connected to one 
 | Phase | Scope | State |
 |---|---|---|
 | 0 | Foundations: architecture, CI, synchronisation core | Done |
-| 1 | MVP on macOS: vault, editor, links, search, backlinks, history, sync | In progress |
-| 2 | Ubuntu, sign in with GitHub, link updates on rename | Planned |
+| 1 | MVP on macOS: vault, editor, links, search, backlinks, history, sync | Done |
+| 2 | Ubuntu, sign in with GitHub, link updates on rename | Next |
 | 3 | Android | Planned |
 | 4 | Live preview, embedded images, visual conflict merge | Planned |
 | 5 | Windows | Planned |
@@ -71,6 +71,15 @@ cd jade
 make install   # frontend dependencies
 make dev       # run the desktop app
 ```
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Cmd/Ctrl+O` | Open a note by name |
+| `Cmd/Ctrl+Shift+F` | Search all notes |
+| `Cmd/Ctrl+S` | Synchronise now |
+| `Cmd/Ctrl+click` on a `[[link]]` | Follow the link (creates the note if missing) |
 
 ## Development
 
