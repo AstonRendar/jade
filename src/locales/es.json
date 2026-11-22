@@ -12,7 +12,9 @@
     "createVault": "Crear bóveda",
     "vaultName": "Nombre de la bóveda",
     "createVaultDestination": "Elige dónde crear la bóveda",
-    "clone": "Clonar"
+    "clone": "Clonar",
+    "cloning": "Clonando el repositorio…",
+    "cloningDetail": "Puede tardar un poco, según el tamaño de tus notas."
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",

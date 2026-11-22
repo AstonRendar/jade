@@ -12,7 +12,9 @@
     "createVault": "Create vault",
     "vaultName": "Vault name",
     "createVaultDestination": "Choose where to create the vault",
-    "clone": "Clone"
+    "clone": "Clone",
+    "cloning": "Cloning the repository…",
+    "cloningDetail": "This can take a moment, depending on the size of your notes."
   },
   "layout": {
     "selectNote": "Select or create a note.",

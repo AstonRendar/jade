@@ -525,3 +525,7 @@ targets `aarch64-linux-android`, `armv7-linux-androideabi`, `i686-linux-android`
 `x86_64-linux-android`. The `Makefile` points `ANDROID_HOME`, `NDK_HOME` and `JAVA_HOME`
 at the default Android Studio locations on macOS; override them if yours differ. The
 generated Android project lives in `src-tauri/gen/android` and is committed.
+
+App icons are generated from the SVG sources in `src-tauri/icons/source/` with
+`npx tauri icon src-tauri/icons/source/icons.json` (desktop, Android adaptive icon and
+iOS); `public/jade.svg` is the same gem for the welcome screen and favicon.

@@ -5,6 +5,7 @@ import { useVault } from "../notes/store/vaultStore";
 import { usePreferences } from "../preferences/store/preferencesStore";
 import type { CapabilitiesView } from "../shared/bindings/CapabilitiesView";
 import { isErrorView } from "../shared/gateway/call";
+import { BusyOverlay } from "../shared/ui/BusyOverlay";
 import { PromptDialog } from "../shared/ui/Dialog";
 import {
   reportingErrors,
@@ -22,6 +23,7 @@ export function WelcomeScreen() {
   const [form, setForm] = useState<"clone" | "create" | "settings" | null>(
     null,
   );
+  const [cloning, setCloning] = useState(false);
 
   const openVault = async (path: string) => {
     try {
@@ -46,76 +48,103 @@ export function WelcomeScreen() {
     }
   };
 
+  const clone = async (capabilities: CapabilitiesView, url: string) => {
+    const parent = await destinationFolder(
+      capabilities,
+      t("welcome.cloneDestination"),
+    );
+    if (parent === null) {
+      return;
+    }
+    setCloning(true);
+    await reportingErrors(() => useVault.getState().clone(url, parent));
+    setCloning(false);
+  };
+
   return (
-    <main className={styles.welcome}>
-      <button
-        type="button"
-        className={styles.settings}
-        title={t("settings.title")}
-        aria-label={t("settings.title")}
-        onClick={() => setForm("settings")}
-      >
-        ⚙
-      </button>
-      {form === "settings" && <SettingsDialog onClose={() => setForm(null)} />}
-      <img className={styles.logo} src="/jade.svg" alt="" />
-      <h1>{t("welcome.title")}</h1>
-      <p className={styles.subtitle}>{t("welcome.subtitle")}</p>
-      {capabilities && (
-        <div className={styles.actions}>
-          {capabilities.canOpenFolders && (
-            <button
-              type="button"
-              className={styles.primary}
-              onClick={chooseFolder}
-            >
-              {t("welcome.openFolder")}
+    <>
+      <main className={styles.welcome} inert={cloning}>
+        <button
+          type="button"
+          className={styles.settings}
+          title={t("settings.title")}
+          aria-label={t("settings.title")}
+          onClick={() => setForm("settings")}
+        >
+          ⚙
+        </button>
+        {form === "settings" && (
+          <SettingsDialog onClose={() => setForm(null)} />
+        )}
+        <img className={styles.logo} src="/jade.svg" alt="" />
+        <h1>{t("welcome.title")}</h1>
+        <p className={styles.subtitle}>{t("welcome.subtitle")}</p>
+        {capabilities && (
+          <div className={styles.actions}>
+            {capabilities.canOpenFolders && (
+              <button
+                type="button"
+                className={styles.primary}
+                onClick={chooseFolder}
+              >
+                {t("welcome.openFolder")}
+              </button>
+            )}
+            <button type="button" onClick={() => setForm("create")}>
+              {t("welcome.createVault")}
             </button>
+            <button type="button" onClick={() => setForm("clone")}>
+              {t("welcome.cloneRepository")}
+            </button>
+          </div>
+        )}
+        {capabilities && form === "clone" && (
+          <CloneForm
+            capabilities={capabilities}
+            onClone={(url) => clone(capabilities, url)}
+            onCancel={() => setForm(null)}
+          />
+        )}
+        {capabilities && form === "create" && (
+          <PromptDialog
+            title={t("welcome.vaultName")}
+            submitLabel={t("common.create")}
+            onSubmit={(name) => {
+              setForm(null);
+              void createVault(
+                capabilities,
+                name,
+                t("welcome.createVaultDestination"),
+              );
+            }}
+            onCancel={() => setForm(null)}
+          />
+        )}
+        <section className={styles.recent}>
+          <h2>{t("welcome.recentVaults")}</h2>
+          {recentVaults.length === 0 ? (
+            <p className={styles.muted}>{t("welcome.noRecentVaults")}</p>
+          ) : (
+            <ul>
+              {recentVaults.map((path) => (
+                <li key={path}>
+                  <button type="button" onClick={() => openVault(path)}>
+                    <strong>{lastSegment(path)}</strong>
+                    <span className={styles.muted}>{path}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
-          <button type="button" onClick={() => setForm("create")}>
-            {t("welcome.createVault")}
-          </button>
-          <button type="button" onClick={() => setForm("clone")}>
-            {t("welcome.cloneRepository")}
-          </button>
-        </div>
-      )}
-      {capabilities && form === "clone" && (
-        <CloneForm capabilities={capabilities} onCancel={() => setForm(null)} />
-      )}
-      {capabilities && form === "create" && (
-        <PromptDialog
-          title={t("welcome.vaultName")}
-          submitLabel={t("common.create")}
-          onSubmit={(name) => {
-            setForm(null);
-            void createVault(
-              capabilities,
-              name,
-              t("welcome.createVaultDestination"),
-            );
-          }}
-          onCancel={() => setForm(null)}
+        </section>
+      </main>
+      {cloning && (
+        <BusyOverlay
+          message={t("welcome.cloning")}
+          detail={t("welcome.cloningDetail")}
         />
       )}
-      <section className={styles.recent}>
-        <h2>{t("welcome.recentVaults")}</h2>
-        {recentVaults.length === 0 ? (
-          <p className={styles.muted}>{t("welcome.noRecentVaults")}</p>
-        ) : (
-          <ul>
-            {recentVaults.map((path) => (
-              <li key={path}>
-                <button type="button" onClick={() => openVault(path)}>
-                  <strong>{lastSegment(path)}</strong>
-                  <span className={styles.muted}>{path}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+    </>
   );
 }
 
@@ -143,24 +172,18 @@ async function destinationFolder(
 
 function CloneForm({
   capabilities,
+  onClone,
   onCancel,
 }: {
   capabilities: CapabilitiesView;
+  onClone: (url: string) => Promise<void>;
   onCancel: () => void;
 }) {
   const { t } = useTranslation();
   const [url, setUrl] = useState("");
-  const submit = async (event: FormEvent) => {
+  const submit = (event: FormEvent) => {
     event.preventDefault();
-    const parent = await destinationFolder(
-      capabilities,
-      t("welcome.cloneDestination"),
-    );
-    if (parent !== null) {
-      await reportingErrors(() =>
-        useVault.getState().clone(url.trim(), parent),
-      );
-    }
+    void onClone(url.trim());
   };
   return (
     <form className={styles.clone} onSubmit={submit}>
