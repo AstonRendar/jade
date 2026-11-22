@@ -304,3 +304,47 @@ fn the_app_creates_a_vault(world: &mut AppWorld, device: String, name: String, f
         world.opened.insert(device, vault);
     }
 }
+
+#[when(expr = "the app on {string} deletes its vault {string}")]
+fn the_app_deletes_its_vault(world: &mut AppWorld, device: String, name: String) {
+    let container = world.device_folder(&device);
+    let vault = container.join(name).display().to_string();
+    let result = world
+        .app(&device)
+        .delete_vault(&vault, Some(&container.display().to_string()));
+    world.record(&device, result);
+}
+
+#[when(expr = "the app on {string} deletes the folder {string}")]
+fn the_app_deletes_a_folder(world: &mut AppWorld, device: String, folder: String) {
+    let container = world.device_folder(&device).display().to_string();
+    let vault = world.path(&folder).display().to_string();
+    let result = world.app(&device).delete_vault(&vault, Some(&container));
+    world.record(&device, result);
+}
+
+#[then(expr = "the vault {string} is gone from {string}")]
+fn the_vault_is_gone(world: &mut AppWorld, name: String, device: String) {
+    assert!(!world.device_folder(&device).join(name).exists());
+}
+
+#[then(expr = "the app on {string} remembers no vaults")]
+fn the_app_remembers_no_vaults(world: &mut AppWorld, device: String) {
+    let preferences = world.app(&device).preferences().expect("preferences load");
+    assert!(preferences.recent_vaults.is_empty());
+}
+
+#[then(expr = "listing the entries on {string} fails with {string}")]
+fn listing_fails_with(world: &mut AppWorld, device: String, code: String) {
+    let error = world
+        .app(&device)
+        .list_entries()
+        .expect_err("listing fails");
+    let actual = serde_json::to_value(error.code).expect("code serialises");
+    assert_eq!(actual, serde_json::Value::String(code));
+}
+
+#[then(expr = "the folder {string} still exists")]
+fn the_folder_still_exists(world: &mut AppWorld, folder: String) {
+    assert!(world.path(&folder).is_dir());
+}

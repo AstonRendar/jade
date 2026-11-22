@@ -20,6 +20,10 @@ impl NoteRepository for FsNoteRepository {
         fs::create_dir_all(root.as_path()).map_err(storage)
     }
 
+    fn delete_root(&self, root: &VaultRoot) -> Result<(), NoteRepositoryError> {
+        fs::remove_dir_all(root.as_path()).map_err(storage)
+    }
+
     fn entry_exists(
         &self,
         root: &VaultRoot,

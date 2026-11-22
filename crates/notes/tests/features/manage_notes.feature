@@ -88,3 +88,8 @@ Feature: Manage notes and folders
     When a vault named "Journal" is created next to the current one
     Then the new vault is named "Journal"
     And creating it again fails because it already exists
+
+  Scenario: Deleting a vault removes its folder
+    Given a vault named "Journal" is created next to the current one
+    When the vault "Journal" is deleted
+    Then the vault "Journal" no longer exists

@@ -52,6 +52,7 @@ pub fn run() {
             notes::notes_create_folder,
             notes::notes_rename_entry,
             notes::notes_delete_entry,
+            notes::notes_delete_vault,
             notes::notes_search,
             notes::notes_find_backlinks,
             notes::notes_resolve_links,

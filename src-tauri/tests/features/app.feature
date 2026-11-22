@@ -52,3 +52,18 @@ Feature: Application flows across contexts
     When the app on "phone" creates the vault "Journal" in the folder "vaults"
     Then the open vault on "phone" is named "Journal"
     And the most recent vault on "phone" is the folder "vaults/Journal"
+
+  Scenario: Deleting a cloned vault frees its folder and forgets it
+    Given a remote vault "journal" with "welcome.md" containing "hello"
+    And the app on "phone" cloned the remote vault
+    When the app on "phone" deletes its vault "journal"
+    Then the vault "journal" is gone from "phone"
+    And the app on "phone" remembers no vaults
+    And listing the entries on "phone" fails with "vault_not_open"
+
+  Scenario: Only vaults kept by the app can be deleted
+    Given a folder "notes" with the note "a.md"
+    When the app on "laptop" deletes the folder "notes"
+    Then the app on "laptop" fails with "invalid_path"
+    And the folder "notes" still exists
+

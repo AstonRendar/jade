@@ -5,7 +5,8 @@ use tauri::{AppHandle, State};
 use super::{blocking, AppJade};
 use crate::errors::ErrorView;
 use crate::view_models::{
-    BacklinkView, EntryView, FollowedLinkView, ResolvedLinkView, SearchHitView, VaultView,
+    BacklinkView, EntryView, FollowedLinkView, PreferencesView, ResolvedLinkView, SearchHitView,
+    VaultView,
 };
 use crate::watcher::VaultWatcher;
 
@@ -123,4 +124,17 @@ pub async fn notes_follow_link(
     target: String,
 ) -> Result<FollowedLinkView, ErrorView> {
     blocking(&jade, move |jade| jade.follow_link(&target)).await
+}
+
+#[tauri::command]
+pub async fn notes_delete_vault(
+    app: AppHandle,
+    jade: State<'_, Arc<AppJade>>,
+    path: String,
+) -> Result<PreferencesView, ErrorView> {
+    let container = super::app::app_capabilities(app)?.managed_vaults_folder;
+    blocking(&jade, move |jade| {
+        jade.delete_vault(&path, container.as_deref())
+    })
+    .await
 }
