@@ -58,6 +58,7 @@ export function WelcomeScreen() {
         ⚙
       </button>
       {form === "settings" && <SettingsDialog onClose={() => setForm(null)} />}
+      <img className={styles.logo} src="/jade.svg" alt="" />
       <h1>{t("welcome.title")}</h1>
       <p className={styles.subtitle}>{t("welcome.subtitle")}</p>
       {capabilities && (
