@@ -3,6 +3,7 @@ import type { EntryView } from "../../shared/bindings/EntryView";
 import type { VaultView } from "../../shared/bindings/VaultView";
 import { syncGateway } from "../../sync/gateway/syncGateway";
 import { notesGateway } from "../gateway/notesGateway";
+import { useEditor } from "./editorStore";
 
 type VaultState = {
   vault: VaultView | null;
@@ -47,6 +48,7 @@ export const useVault = create<VaultState>((set, get) => ({
     await get().refresh();
   },
   rename: async (from, to) => {
+    await useEditor.getState().flush();
     await notesGateway.renameEntry(from, to);
     const selected = get().selected;
     await get().refresh();

@@ -1,5 +1,6 @@
 pub mod commands;
 pub mod errors;
+pub mod flush;
 pub mod scheduler;
 pub mod view_models;
 pub mod watcher;
@@ -10,7 +11,8 @@ use std::sync::Arc;
 use jade_sync::infrastructure::{HostnameDeviceInfo, KeyringCredentialStore, SystemClock};
 use tauri::Manager;
 
-use crate::commands::{notes, preferences, sync, AppJade};
+use crate::commands::{editor, notes, preferences, sync, AppJade};
+use crate::flush::FlushCoordinator;
 use crate::watcher::VaultWatcher;
 use crate::wiring::Jade;
 
@@ -30,8 +32,10 @@ pub fn run() {
                 HostnameDeviceInfo,
             ));
             app.manage(Arc::clone(&jade));
+            let flush = Arc::new(FlushCoordinator::default());
+            app.manage(Arc::clone(&flush));
             app.manage(VaultWatcher::default());
-            scheduler::spawn(app.handle().clone(), jade);
+            scheduler::spawn(app.handle().clone(), jade, flush);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -59,6 +63,7 @@ pub fn run() {
             preferences::preferences_get,
             preferences::preferences_update,
             preferences::preferences_forget_vault,
+            editor::editor_flush_completed,
         ])
         .run(tauri::generate_context!());
     if let Err(error) = result {

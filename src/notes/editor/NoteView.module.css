@@ -1,0 +1,74 @@
+.note {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  min-height: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modes {
+  display: flex;
+}
+
+.modes button {
+  border-radius: 0;
+}
+
+.modes button:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.modes button:last-child {
+  border-radius: 0 6px 6px 0;
+  border-inline-start: none;
+}
+
+.modes button[aria-pressed="true"] {
+  background: var(--selected);
+  color: var(--accent-text);
+}
+
+.editor {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor > :global(.cm-editor) {
+  height: 100%;
+}
+
+.preview {
+  overflow: auto;
+  padding: 24px 16px 40vh;
+  line-height: 1.6;
+}
+
+.preview > * {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.preview :global(a) {
+  color: var(--accent-text);
+}
+
+.preview :global(code) {
+  font-family: ui-monospace, monospace;
+}

@@ -6,16 +6,17 @@ use tauri::AppHandle;
 
 use crate::commands::sync::synchronize_and_notify;
 use crate::commands::AppJade;
+use crate::flush::FlushCoordinator;
 
 const TICK: Duration = Duration::from_secs(30);
 
-pub fn spawn(app: AppHandle, jade: Arc<AppJade>) {
+pub fn spawn(app: AppHandle, jade: Arc<AppJade>, flush: Arc<FlushCoordinator>) {
     thread::spawn(move || {
         let mut last_sync = Instant::now();
         loop {
             thread::sleep(TICK);
             if is_due(&jade, last_sync) {
-                let _ = synchronize_and_notify(&app, &jade);
+                let _ = synchronize_and_notify(&app, &jade, &flush);
                 last_sync = Instant::now();
             }
         }

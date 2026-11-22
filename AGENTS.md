@@ -273,11 +273,13 @@ Tauri commands are named `<context>_<action>` in snake_case:
 - `sync_synchronize`, `sync_get_status`, `sync_init_repository`, `sync_connect_remote`,
   `sync_clone_repository`, `sync_list_note_history`, `sync_read_note_revision`,
   `sync_store_access_token`, `sync_has_access_token`;
-- `preferences_get`, `preferences_update`, `preferences_forget_vault`.
+- `preferences_get`, `preferences_update`, `preferences_forget_vault`;
+- `editor_flush_completed`.
 
 Paths crossing the boundary are vault-relative, `/`-separated, NFC strings (the vault
 itself is an absolute path). Events (core → frontend): `notes://changed { paths }`,
-`sync://started`, `sync://finished` (`SyncReportView`), `sync://failed` (`ErrorView`).
+`sync://started`, `sync://finished` (`SyncReportView`), `sync://failed` (`ErrorView`),
+`editor://flush-requested` (`FlushRequestView`).
 
 Errors reach the frontend as `ErrorView { code, params }`. **The core never returns
 user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and may use
@@ -307,7 +309,9 @@ user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and
 Only one sync runs at a time. Note writes and sync share a lock so files are never
 written during checkout or merge.
 
-1. The frontend flushes pending saves.
+1. The core asks the editor to save pending edits: it emits `editor://flush-requested
+   { id }`, the editor saves and calls `editor_flush_completed(id)`, and the core waits
+   at most 2 s (`FlushCoordinator`) before continuing.
 2. Stage everything (respecting `.gitignore`, including deletions). If the tree differs
    from `HEAD`, commit with message `Sync from <device-name>`.
 3. Fetch `refs/heads/<branch>` from `origin` into `refs/remotes/origin/<branch>`.
@@ -338,8 +342,12 @@ operations; the stored remote is left untouched.
 Text written into the repository (commit messages, conflict suffix) is **always English
 and fixed**, regardless of UI language.
 
-**Open note changed by sync**: if the editor has no unsaved edits, reload it. If it does,
-reload from disk and save the unsaved buffer as a conflict copy. Nothing is lost.
+**Open note changed on disk** (by a sync or by another app): if the editor has no
+unsaved edits it reloads the note. If it has unsaved edits, it keeps them and they are
+saved over the file. Decision of 2026-11-22 (option B): the flush before every sync
+makes this rare; the accepted risk is that a change made by another app to the open
+note while it has unsaved edits can be overwritten in the working tree (it stays in
+the Git history if it had been committed).
 
 Auto-sync every N minutes (default 5, `0` disables), plus a manual button and `Mod+S`.
 Auto-save to disk 600 ms after the last keystroke.

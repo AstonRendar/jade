@@ -1,3 +1,4 @@
+pub mod editor;
 pub mod notes;
 pub mod preferences;
 pub mod sync;

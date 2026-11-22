@@ -42,8 +42,12 @@
 
 .main {
   display: grid;
-  place-items: center;
   min-width: 0;
+  min-height: 0;
+}
+
+.placeholder {
+  place-self: center;
 }
 
 .placeholder {

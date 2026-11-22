@@ -49,5 +49,9 @@
     "credentials_unavailable": "The system keychain is not available.",
     "io": "The files could not be read or written.",
     "unexpected": "Something went wrong."
+  },
+  "editor": {
+    "edit": "Edit",
+    "preview": "Preview"
   }
 }

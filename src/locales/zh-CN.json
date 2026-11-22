@@ -49,5 +49,9 @@
     "credentials_unavailable": "系统钥匙串不可用。",
     "io": "无法读取或写入文件。",
     "unexpected": "出现了问题。"
+  },
+  "editor": {
+    "edit": "编辑",
+    "preview": "预览"
   }
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { NoteView } from "../notes/editor/NoteView";
 import { notesGateway } from "../notes/gateway/notesGateway";
+import { useEditor } from "../notes/store/editorStore";
 import { useVault } from "../notes/store/vaultStore";
 import { TreeDialog, VaultTree } from "../notes/ui/VaultTree";
 import { reportingErrors } from "../shared/ui/notificationStore";
@@ -16,13 +18,32 @@ export function AppShell() {
   const [dialog, setDialog] = useState<RootDialog | null>(null);
 
   useEffect(() => {
-    const unlisten = notesGateway.onChanged(() => {
-      void reportingErrors(() => useVault.getState().refresh());
-    });
+    const subscriptions = [
+      notesGateway.onChanged((paths) => {
+        void reportingErrors(async () => {
+          await useVault.getState().refresh();
+          await useEditor.getState().reloadIfChanged(paths);
+        });
+      }),
+      notesGateway.onSynchronized((paths) => {
+        void reportingErrors(() => useEditor.getState().reloadIfChanged(paths));
+      }),
+      notesGateway.onFlushRequested((id) => {
+        void useEditor.getState().answerFlushRequest(id);
+      }),
+    ];
     return () => {
-      void unlisten.then((stop) => stop());
+      for (const subscription of subscriptions) {
+        void subscription.then((stop) => stop());
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (selected !== null) {
+      void reportingErrors(() => useEditor.getState().load(selected));
+    }
+  }, [selected]);
 
   return (
     <div className={styles.shell}>
@@ -57,9 +78,11 @@ export function AppShell() {
         <VaultTree />
       </aside>
       <main className={styles.main}>
-        <p className={styles.placeholder}>
-          {selected ?? t("layout.selectNote")}
-        </p>
+        {selected ? (
+          <NoteView />
+        ) : (
+          <p className={styles.placeholder}>{t("layout.selectNote")}</p>
+        )}
       </main>
       {dialog && <TreeDialog dialog={dialog} onClose={() => setDialog(null)} />}
     </div>
