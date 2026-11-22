@@ -41,3 +41,21 @@ fn forgets_a_deleted_token() {
     // Assert
     assert_eq!(token, Ok(None));
 }
+
+#[test]
+fn can_be_shared_by_reference() {
+    // Arrange
+    let store = InMemoryCredentialStore::default();
+
+    // Act
+    save_through(&store);
+
+    // Assert
+    assert_eq!(store.load(), Ok(Some(SyncMother::token())));
+}
+
+fn save_through(credentials: impl CredentialStore) {
+    credentials
+        .save(&SyncMother::token())
+        .expect("token is saved");
+}

@@ -83,3 +83,22 @@ fn rejects_urls_it_cannot_reach_over_https() {
     // Assert
     assert_eq!(accepted, Vec::<&str>::new());
 }
+
+#[test]
+fn names_the_repository_after_the_last_path_segment() {
+    // Arrange
+    let raws = [
+        "https://git.example.com/team/vault.git",
+        "git@git.example.com:team/notes",
+        "file:///tmp/remotes/journal.git/",
+    ];
+
+    // Act
+    let names: Vec<String> = raws
+        .iter()
+        .map(|raw| RemoteUrl::parse(raw).expect("valid").repository_name())
+        .collect();
+
+    // Assert
+    assert_eq!(names, vec!["vault", "notes", "journal"]);
+}

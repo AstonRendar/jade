@@ -21,3 +21,17 @@ impl From<Option<AccessToken>> for Credentials {
         token.map_or(Self::Anonymous, Self::Token)
     }
 }
+
+impl<C: CredentialStore> CredentialStore for &C {
+    fn load(&self) -> Result<Option<AccessToken>, CredentialStoreError> {
+        (**self).load()
+    }
+
+    fn save(&self, token: &AccessToken) -> Result<(), CredentialStoreError> {
+        (**self).save(token)
+    }
+
+    fn delete(&self) -> Result<(), CredentialStoreError> {
+        (**self).delete()
+    }
+}

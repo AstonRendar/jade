@@ -122,7 +122,7 @@ reconsidered. `lib.rs` only declares the three modules.
   No I/O, no framework.
 - **infrastructure** — concrete implementations of domain ports: `FsNoteRepository`,
   `Git2VersionControl`, `KeyringCredentialStore`, `JsonFilePreferencesRepository`,
-  `SystemClock`, `NotifyVaultWatcher`.
+  `SystemClock`, `HostnameDeviceInfo`.
 
 The **architecture test** (`crates/shared/tests/architecture.rs`) scans every crate in
 the workspace and fails if `src/` contains anything other than `lib.rs` and the three
@@ -147,6 +147,21 @@ kernel plus controllers:
 - maps every application error to an `ErrorCode` for the frontend (§4.7);
 - wires cross-context reactions and the auto-sync scheduler.
 
+Inside it:
+- `wiring.rs` — the `Jade` facade: holds the open vault and the exclusive lock shared
+  by note writes and sync, runs the use cases of every context and returns view models
+  or `ErrorView`. It is generic over the credential store, clock and device so it can be
+  tested with real repositories and in-memory doubles. Cross-context reactions live
+  here (opening a vault remembers it; cloning opens the clone).
+- `commands/` — one async Tauri command per facade method, `<context>_<action>`, run
+  through `spawn_blocking`. No logic.
+- `view_models.rs`, `errors.rs` — `serde` + `ts-rs` types; `cargo test` regenerates
+  `src/shared/bindings/*.ts` (CI fails if they are not committed).
+- `watcher.rs` — `notify` watcher on the open vault, debounced, emits
+  `notes://changed` with visible vault-relative paths.
+- `scheduler.rs` — background thread that runs the sync when the auto-sync interval
+  elapses and the vault is a repository.
+
 It contains no business logic.
 
 ### 4.4 Repository layout
@@ -161,8 +176,9 @@ jade/
 │  ├─ sync/     src/{domain,application,infrastructure}  tests/
 │  └─ preferences/ …
 ├─ src-tauri/                    # composition root + Tauri commands
-│  ├─ src/{main.rs, lib.rs, commands/, view_models/, errors.rs, wiring.rs}
-│  ├─ tests/features/            # cross-context features (e.g. two-device sync)
+│  ├─ src/{main.rs, lib.rs, wiring.rs, commands/, view_models.rs, errors.rs,
+│  │       watcher.rs, scheduler.rs}
+│  ├─ tests/{unit/, functional/, features/}   # facade flows across contexts
 │  ├─ capabilities/  icons/  tauri.conf.json
 ├─ src/                          # frontend, mirrors the contexts
 │  ├─ notes/  sync/  preferences/
@@ -209,7 +225,8 @@ jade/
 - Domain services: `WikiLinkParser` (ignores links in fenced and inline code),
   `LinkResolver` (exact path, then name or partial path, case-insensitive, shortest path
   wins on ambiguity), `BacklinkFinder`, `NoteSearch` (title and line hits, capped).
-- Ports: `NoteRepository`, `VaultWatcher`.
+- Port: `NoteRepository`. Watching the vault for external changes is a shell concern
+  (`src-tauri/src/watcher.rs`), not part of the domain.
 - Use cases: `OpenVault`, `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
   `CreateFolder`, `RenameEntry`, `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
   `ResolveLinks`, `FollowLink` (creates the note if missing).
@@ -247,16 +264,27 @@ Wikilink parsing and resolution exist **only in Rust**. The frontend asks the co
 
 ### 4.7 Command contract and errors
 
-Tauri commands are named `<context>_<use_case>` in snake_case (`notes_save_note`,
-`sync_synchronize_vault`). Paths crossing the boundary are vault-relative,
-`/`-separated, NFC strings. Events (core → frontend): `notes://changed { paths }`,
-`sync://started`, `sync://finished { report }`, `sync://failed { error }`.
+Tauri commands are named `<context>_<action>` in snake_case:
+- `notes_open_vault`, `notes_list_entries`, `notes_read_note`, `notes_save_note`,
+  `notes_create_note`, `notes_create_folder`, `notes_rename_entry`,
+  `notes_delete_entry`, `notes_search`, `notes_find_backlinks`, `notes_resolve_links`,
+  `notes_follow_link`;
+- `sync_synchronize`, `sync_get_status`, `sync_init_repository`, `sync_connect_remote`,
+  `sync_clone_repository`, `sync_list_note_history`, `sync_read_note_revision`,
+  `sync_store_access_token`, `sync_has_access_token`;
+- `preferences_get`, `preferences_update`, `preferences_forget_vault`.
 
-Errors reach the frontend as `{ code: ErrorCode, params }`. **The core never returns
-user-facing text**; the frontend maps `code` to the i18n key `errors.<code>`. Codes:
-`vault_not_open`, `invalid_path`, `already_exists`, `not_found`, `not_a_repository`,
-`no_remote`, `auth_required`, `auth_failed`, `network`, `file_too_large`,
-`push_rejected`, `io`, `unexpected`.
+Paths crossing the boundary are vault-relative, `/`-separated, NFC strings (the vault
+itself is an absolute path). Events (core → frontend): `notes://changed { paths }`,
+`sync://started`, `sync://finished` (`SyncReportView`), `sync://failed` (`ErrorView`).
+
+Errors reach the frontend as `ErrorView { code, params }`. **The core never returns
+user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and may use
+`params` (`path`, `url`, `value`, `detail`). Codes: `vault_not_open`, `vault_not_found`,
+`invalid_path`, `already_exists`, `not_found`, `invalid_move`, `empty_query`,
+`invalid_url`, `invalid_token`, `invalid_preference`, `not_a_repository`,
+`already_a_repository`, `auth_required`, `auth_failed`, `network`, `file_too_large`,
+`push_rejected`, `credentials_unavailable`, `io`, `unexpected`.
 
 ## 5. Sync algorithm (`SynchronizeVault`)
 
@@ -340,7 +368,10 @@ Test files under `tests/` may start with `#![allow(clippy::expect_used)]`; produ
 code may not use `unwrap`/`expect` (enforced by workspace lints).
 
 Coverage thresholds, enforced in CI: domain + application **≥ 95 %** lines; Rust overall
-**≥ 85 %**; frontend **≥ 80 %**.
+**≥ 85 %**; frontend **≥ 80 %**. Excluded from the Rust figure because they only run
+inside the Tauri runtime and contain no logic: `src-tauri/src/{commands/, lib.rs,
+main.rs, scheduler.rs, watcher.rs}` (their pure helpers are still unit tested). The
+`KeyringCredentialStore` adapter is counted but not exercised (no keychain in CI).
 
 ### Unit test conventions
 

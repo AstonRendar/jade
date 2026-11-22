@@ -25,6 +25,19 @@ impl RemoteUrl {
     pub fn network_url(&self) -> &str {
         &self.network
     }
+
+    pub fn repository_name(&self) -> String {
+        let last_segment = self
+            .network
+            .trim_end_matches('/')
+            .rsplit('/')
+            .next()
+            .unwrap_or_default();
+        last_segment
+            .strip_suffix(".git")
+            .unwrap_or(last_segment)
+            .to_string()
+    }
 }
 
 fn network_url_of(raw: &str) -> Option<String> {

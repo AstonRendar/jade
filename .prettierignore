@@ -7,3 +7,4 @@ crates
 package-lock.json
 Cargo.lock
 *.md
+src/shared/bindings

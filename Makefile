@@ -22,8 +22,8 @@ test:
 
 coverage:
 	cargo llvm-cov --workspace --no-report
-	cargo llvm-cov report --fail-under-lines 85
-	cargo llvm-cov report --ignore-filename-regex '(/infrastructure/|/tests/)' --fail-under-lines 95
+	cargo llvm-cov report --ignore-filename-regex 'src-tauri/src/(commands/|lib\.rs|main\.rs|scheduler\.rs|watcher\.rs)' --fail-under-lines 85
+	cargo llvm-cov report --ignore-filename-regex '(/infrastructure/|/tests/|src-tauri/)' --fail-under-lines 95
 	npm run coverage
 
 check: lint test coverage
