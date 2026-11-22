@@ -16,6 +16,10 @@ impl NoteRepository for FsNoteRepository {
         root.as_path().is_dir()
     }
 
+    fn create_root(&self, root: &VaultRoot) -> Result<(), NoteRepositoryError> {
+        fs::create_dir_all(root.as_path()).map_err(storage)
+    }
+
     fn entry_exists(
         &self,
         root: &VaultRoot,

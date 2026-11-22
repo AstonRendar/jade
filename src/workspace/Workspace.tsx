@@ -8,6 +8,7 @@ import { resolveLocale } from "../shared/i18n";
 import { Notifications } from "../shared/ui/Notifications";
 import { reportingErrors } from "../shared/ui/notificationStore";
 import { AppShell } from "./AppShell";
+import { usePlatform } from "./platformStore";
 import { WelcomeScreen } from "./WelcomeScreen";
 
 export function Workspace({ i18n }: { i18n: i18n }) {
@@ -17,6 +18,7 @@ export function Workspace({ i18n }: { i18n: i18n }) {
 
   useEffect(() => {
     void reportingErrors(() => usePreferences.getState().load());
+    void reportingErrors(() => usePlatform.getState().load());
   }, []);
 
   useEffect(() => {

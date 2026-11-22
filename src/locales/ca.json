@@ -8,7 +8,11 @@
     "cloneDestination": "Tria on clonar",
     "chooseFolderAndClone": "Triar carpeta i clonar",
     "recentVaults": "Caixes recents",
-    "noRecentVaults": "Encara no has obert cap caixa."
+    "noRecentVaults": "Encara no has obert cap caixa.",
+    "createVault": "Crear caixa",
+    "vaultName": "Nom de la caixa",
+    "createVaultDestination": "Tria on crear la caixa",
+    "clone": "Clonar"
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",

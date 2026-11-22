@@ -83,3 +83,8 @@ Feature: Manage notes and folders
     When "projects" is renamed to "archive"
     Then "daily.md" contains "See [[archive/plan]]"
     And "archive/notes.md" contains "Back to [[plan]]"
+
+  Scenario: Creating a new vault
+    When a vault named "Journal" is created next to the current one
+    Then the new vault is named "Journal"
+    And creating it again fails because it already exists

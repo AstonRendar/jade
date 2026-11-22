@@ -8,7 +8,11 @@
     "cloneDestination": "Choose where to clone",
     "chooseFolderAndClone": "Choose folder and clone",
     "recentVaults": "Recent vaults",
-    "noRecentVaults": "No vaults opened yet."
+    "noRecentVaults": "No vaults opened yet.",
+    "createVault": "Create vault",
+    "vaultName": "Vault name",
+    "createVaultDestination": "Choose where to create the vault",
+    "clone": "Clone"
   },
   "layout": {
     "selectNote": "Select or create a note.",

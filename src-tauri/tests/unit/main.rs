@@ -217,3 +217,22 @@ fn acknowledging_an_unknown_request_is_harmless() {
     // Assert
     assert!(!coordinator.request(|_| {}, std::time::Duration::from_millis(1)));
 }
+
+#[test]
+fn desktop_opens_any_folder_and_mobile_keeps_vaults_in_app_storage() {
+    // Arrange
+    let data = std::path::Path::new("/data/jade");
+
+    // Act
+    let desktop = jade_lib::platform::capabilities(false, data);
+    let mobile = jade_lib::platform::capabilities(true, data);
+
+    // Assert
+    assert!(desktop.can_open_folders);
+    assert_eq!(desktop.managed_vaults_folder, None);
+    assert!(!mobile.can_open_folders);
+    assert_eq!(
+        mobile.managed_vaults_folder.as_deref(),
+        Some("/data/jade/vaults")
+    );
+}

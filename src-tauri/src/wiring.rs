@@ -3,6 +3,7 @@ use std::sync::{Mutex, MutexGuard};
 
 use jade_notes::application::create_folder::{CreateFolder, CreateFolderRequest};
 use jade_notes::application::create_note::{CreateNote, CreateNoteRequest};
+use jade_notes::application::create_vault::{CreateVault, CreateVaultRequest};
 use jade_notes::application::delete_entry::{DeleteEntry, DeleteEntryRequest};
 use jade_notes::application::find_backlinks::{FindBacklinks, FindBacklinksRequest};
 use jade_notes::application::follow_link::{FollowLink, FollowLinkRequest};
@@ -84,6 +85,14 @@ where
         })?;
         *self.vault.lock().map_err(poisoned)? = Some(path.to_string());
         Ok(info.into())
+    }
+
+    pub fn create_vault(&self, parent: &str, name: &str) -> Result<VaultView, ErrorView> {
+        let info = CreateVault::new(FsNoteRepository).execute(CreateVaultRequest {
+            parent: parent.to_string(),
+            name: name.to_string(),
+        })?;
+        self.open_vault(&info.root.as_path().display().to_string())
     }
 
     pub fn list_entries(&self) -> Result<Vec<EntryView>, ErrorView> {

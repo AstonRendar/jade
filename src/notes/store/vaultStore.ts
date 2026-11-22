@@ -10,6 +10,7 @@ type VaultState = {
   entries: EntryView[];
   selected: string | null;
   open: (path: string) => Promise<void>;
+  createVault: (parent: string, name: string) => Promise<void>;
   clone: (url: string, parent: string) => Promise<void>;
   refresh: () => Promise<void>;
   select: (path: string) => void;
@@ -26,6 +27,10 @@ export const useVault = create<VaultState>((set, get) => ({
   selected: null,
   open: async (path) => {
     const vault = await notesGateway.openVault(path);
+    set({ vault, selected: null, entries: await notesGateway.listEntries() });
+  },
+  createVault: async (parent, name) => {
+    const vault = await notesGateway.createVault(parent, name);
     set({ vault, selected: null, entries: await notesGateway.listEntries() });
   },
   clone: async (url, parent) => {

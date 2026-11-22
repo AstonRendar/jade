@@ -3,18 +3,22 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useVault } from "../notes/store/vaultStore";
 import { usePreferences } from "../preferences/store/preferencesStore";
+import type { CapabilitiesView } from "../shared/bindings/CapabilitiesView";
 import { isErrorView } from "../shared/gateway/call";
+import { PromptDialog } from "../shared/ui/Dialog";
 import {
   reportingErrors,
   useNotifications,
 } from "../shared/ui/notificationStore";
+import { usePlatform } from "./platformStore";
 import styles from "./WelcomeScreen.module.css";
 
 export function WelcomeScreen() {
   const { t } = useTranslation();
   const preferences = usePreferences((state) => state.preferences);
+  const capabilities = usePlatform((state) => state.capabilities);
   const recentVaults = preferences?.recentVaults ?? [];
-  const [cloning, setCloning] = useState(false);
+  const [form, setForm] = useState<"clone" | "create" | null>(null);
 
   const openVault = async (path: string) => {
     try {
@@ -43,15 +47,43 @@ export function WelcomeScreen() {
     <main className={styles.welcome}>
       <h1>{t("welcome.title")}</h1>
       <p className={styles.subtitle}>{t("welcome.subtitle")}</p>
-      <div className={styles.actions}>
-        <button type="button" className={styles.primary} onClick={chooseFolder}>
-          {t("welcome.openFolder")}
-        </button>
-        <button type="button" onClick={() => setCloning(true)}>
-          {t("welcome.cloneRepository")}
-        </button>
-      </div>
-      {cloning && <CloneForm onCancel={() => setCloning(false)} />}
+      {capabilities && (
+        <div className={styles.actions}>
+          {capabilities.canOpenFolders && (
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={chooseFolder}
+            >
+              {t("welcome.openFolder")}
+            </button>
+          )}
+          <button type="button" onClick={() => setForm("create")}>
+            {t("welcome.createVault")}
+          </button>
+          <button type="button" onClick={() => setForm("clone")}>
+            {t("welcome.cloneRepository")}
+          </button>
+        </div>
+      )}
+      {capabilities && form === "clone" && (
+        <CloneForm capabilities={capabilities} onCancel={() => setForm(null)} />
+      )}
+      {capabilities && form === "create" && (
+        <PromptDialog
+          title={t("welcome.vaultName")}
+          submitLabel={t("common.create")}
+          onSubmit={(name) => {
+            setForm(null);
+            void createVault(
+              capabilities,
+              name,
+              t("welcome.createVaultDestination"),
+            );
+          }}
+          onCancel={() => setForm(null)}
+        />
+      )}
       <section className={styles.recent}>
         <h2>{t("welcome.recentVaults")}</h2>
         {recentVaults.length === 0 ? (
@@ -73,16 +105,44 @@ export function WelcomeScreen() {
   );
 }
 
-function CloneForm({ onCancel }: { onCancel: () => void }) {
+async function createVault(
+  capabilities: CapabilitiesView,
+  name: string,
+  title: string,
+) {
+  const parent = await destinationFolder(capabilities, title);
+  if (parent !== null) {
+    await reportingErrors(() => useVault.getState().createVault(parent, name));
+  }
+}
+
+async function destinationFolder(
+  capabilities: CapabilitiesView,
+  title: string,
+): Promise<string | null> {
+  if (capabilities.managedVaultsFolder !== null) {
+    return capabilities.managedVaultsFolder;
+  }
+  const folder = await open({ directory: true, title });
+  return typeof folder === "string" ? folder : null;
+}
+
+function CloneForm({
+  capabilities,
+  onCancel,
+}: {
+  capabilities: CapabilitiesView;
+  onCancel: () => void;
+}) {
   const { t } = useTranslation();
   const [url, setUrl] = useState("");
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    const parent = await open({
-      directory: true,
-      title: t("welcome.cloneDestination"),
-    });
-    if (typeof parent === "string") {
+    const parent = await destinationFolder(
+      capabilities,
+      t("welcome.cloneDestination"),
+    );
+    if (parent !== null) {
       await reportingErrors(() =>
         useVault.getState().clone(url.trim(), parent),
       );
@@ -105,7 +165,9 @@ function CloneForm({ onCancel }: { onCancel: () => void }) {
           {t("common.cancel")}
         </button>
         <button type="submit" className={styles.primary}>
-          {t("welcome.chooseFolderAndClone")}
+          {capabilities.managedVaultsFolder === null
+            ? t("welcome.chooseFolderAndClone")
+            : t("welcome.clone")}
         </button>
       </div>
     </form>

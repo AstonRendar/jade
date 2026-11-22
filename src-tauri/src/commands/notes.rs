@@ -23,6 +23,19 @@ pub async fn notes_open_vault(
 }
 
 #[tauri::command]
+pub async fn notes_create_vault(
+    app: AppHandle,
+    jade: State<'_, Arc<AppJade>>,
+    watcher: State<'_, VaultWatcher>,
+    parent: String,
+    name: String,
+) -> Result<VaultView, ErrorView> {
+    let vault = blocking(&jade, move |jade| jade.create_vault(&parent, &name)).await?;
+    watcher.watch(app, &vault.path)?;
+    Ok(vault)
+}
+
+#[tauri::command]
 pub async fn notes_list_entries(
     jade: State<'_, Arc<AppJade>>,
 ) -> Result<Vec<EntryView>, ErrorView> {
