@@ -457,8 +457,11 @@ main.rs, scheduler.rs, watcher.rs}` (their pure helpers are still unit tested). 
 - Semver; the version is kept in sync in `package.json`, the workspace `Cargo.toml` and
   `tauri.conf.json`.
 - CI (GitHub Actions): on PR → `make check` on ubuntu and macOS (windows joins in its
-  phase). On tag `v*` → `tauri-action` builds macOS and Linux into a draft release.
-  Android and iOS are built locally until signing is set up.
+  phase). `release.yml`: on tag `v*` → `tauri-action` builds macOS (`.dmg`) and Linux
+  (`.deb`, AppImage, built on Ubuntu 22.04 for older glibc) into a draft pre-release;
+  run manually (`workflow_dispatch`) → the same installers as downloadable artifacts
+  for testing. Installers are not signed yet. Android and iOS are built locally until
+  signing is set up.
 
 ## 11. Roadmap
 
