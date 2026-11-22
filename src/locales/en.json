@@ -12,7 +12,8 @@
   },
   "layout": {
     "selectNote": "Select or create a note.",
-    "closeVault": "Close vault"
+    "closeVault": "Close vault",
+    "showNotes": "Show notes"
   },
   "tree": {
     "label": "Vault",

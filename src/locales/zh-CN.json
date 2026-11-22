@@ -12,7 +12,8 @@
   },
   "layout": {
     "selectNote": "选择或新建一篇笔记。",
-    "closeVault": "关闭库"
+    "closeVault": "关闭库",
+    "showNotes": "显示笔记"
   },
   "tree": {
     "label": "库",

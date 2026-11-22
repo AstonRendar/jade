@@ -28,6 +28,7 @@ export function AppShell() {
   const selected = useVault((state) => state.selected);
   const close = useVault((state) => state.close);
   const [overlay, setOverlay] = useState<Overlay | null>(null);
+  const [navigationOpen, setNavigationOpen] = useState(false);
 
   useEffect(() => {
     void reportingErrors(() => useSync.getState().refresh());
@@ -60,6 +61,16 @@ export function AppShell() {
     };
   }, []);
 
+  useEffect(
+    () =>
+      useVault.subscribe((state, previous) => {
+        if (state.selected !== previous.selected) {
+          setNavigationOpen(false);
+        }
+      }),
+    [],
+  );
+
   useEffect(() => {
     if (selected !== null) {
       void reportingErrors(() => useEditor.getState().load(selected));
@@ -90,7 +101,19 @@ export function AppShell() {
   const closeOverlay = () => setOverlay(null);
 
   return (
-    <div className={styles.shell} data-with-panel={selected !== null}>
+    <div
+      className={styles.shell}
+      data-testid="app-shell"
+      data-with-panel={selected !== null}
+      data-navigation={navigationOpen ? "open" : "closed"}
+    >
+      {navigationOpen && (
+        <div
+          className={styles.backdrop}
+          data-testid="navigation-backdrop"
+          onClick={() => setNavigationOpen(false)}
+        />
+      )}
       <aside className={styles.sidebar}>
         <header className={styles.header}>
           <span className={styles.vaultName}>{vault?.name}</span>
@@ -131,6 +154,16 @@ export function AppShell() {
         <SyncStatus />
       </aside>
       <main className={styles.main}>
+        <div className={styles.mobileBar}>
+          <button
+            type="button"
+            aria-label={t("layout.showNotes")}
+            onClick={() => setNavigationOpen(true)}
+          >
+            ☰
+          </button>
+          <span>{vault?.name}</span>
+        </div>
         {selected ? (
           <NoteView />
         ) : (

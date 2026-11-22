@@ -12,7 +12,8 @@
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",
-    "closeVault": "Tancar la caixa"
+    "closeVault": "Tancar la caixa",
+    "showNotes": "Mostrar les notes"
   },
   "tree": {
     "label": "Caixa",
