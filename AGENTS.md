@@ -365,8 +365,8 @@ Auto-save to disk 600 ms after the last keystroke.
   `core.autocrlf=false`. File contents are never rewritten.
 - Files larger than 100 MB block the commit with `file_too_large` (GitHub limit).
 - Commit author: the repository/global Git identity; fallback `Jade <jade@localhost>`.
-- Authentication: HTTPS with a GitHub token (username `x-access-token`). Phase 1: a
-  personal access token pasted in Settings; phase 2: GitHub OAuth device flow.
+- Authentication: HTTPS with a token (username `x-access-token`) pasted in Settings;
+  sign-in through a GitHub App with device flow comes in phase 4.
   Credential callbacks give up after 2 attempts to avoid libgit2 retry loops.
 - Wikilink syntax supported: `[[Target]]`, `[[Target|Alias]]`, `[[Target#Heading]]`,
   `![[Embed]]`. Following a missing link creates the note at the vault root.
@@ -479,18 +479,23 @@ wikilink autocomplete and Mod+click navigation; preview toggle; quick switcher
 restore; sync with status indicator; preferences (language, token, auto-sync, remote,
 init repository); external change watcher; light/dark theme.
 
-**Phase 2 — Ubuntu + GitHub login.** Linux build in CI, platform fixes, OAuth device
-flow, renaming a note updates links to it.
+**Phase 2 — Ubuntu.** Linux installers in CI, platform fixes found on a real Ubuntu,
+renaming a note updates links to it.
 
-**Phase 3 — Android.** Vaults in app storage (clone-based), Android Keystore, mobile
-layout.
+**Phase 3 — Android.** Vaults in app storage (clone-based), Android credential store,
+mobile layout.
 
-**Phase 4 — Editor.** Obsidian-style live preview, embedded images via the asset
+**Phase 4 — Sign in with GitHub.** GitHub App with device flow (decision of
+2026-11-22, option C): the user picks which repositories Jade may access, tokens expire
+and are refreshed automatically. Until then a pasted token (ideally fine-grained and
+limited to the vault repository) is the only authentication.
+
+**Phase 5 — Editor.** Obsidian-style live preview, embedded images via the asset
 protocol, visual conflict merge view.
 
-**Phase 5 — Windows.** Windows build in CI and platform fixes.
+**Phase 6 — Windows.** Windows build in CI and platform fixes.
 
-**Phase 6 — iOS.** As phase 3, plus Files app integration.
+**Phase 7 — iOS.** As phase 3, plus Files app integration.
 
 ## 12. Development environment
 

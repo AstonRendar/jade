@@ -23,7 +23,8 @@ without needing to know Git — and without a proprietary sync service.
 - **Compatible with Obsidian.** Same file format and link syntax (`[[Note]]`,
   `[[Note|alias]]`, `[[Note#Heading]]`, `![[image.png]]`). A vault opens in both apps.
 - **Your storage, your rules.** Any Git host reachable over HTTPS works. Your token is
-  kept in the operating system's credential store.
+  kept in the operating system's credential store. For GitHub, a fine-grained token
+  limited to your notes repository with *Contents: read and write* is enough.
 - **Multilingual.** English, Spanish, Simplified Chinese and Catalan.
 
 ## Platforms
@@ -54,11 +55,12 @@ A vault without a remote is still versioned locally and can be connected to one 
 |---|---|---|
 | 0 | Foundations: architecture, CI, synchronisation core | Done |
 | 1 | MVP on macOS: vault, editor, links, search, backlinks, history, sync | Done |
-| 2 | Ubuntu, sign in with GitHub, link updates on rename | Next |
+| 2 | Ubuntu, link updates on rename | In progress |
 | 3 | Android | Planned |
-| 4 | Live preview, embedded images, visual conflict merge | Planned |
-| 5 | Windows | Planned |
-| 6 | iOS | Planned |
+| 4 | Sign in with GitHub (per-repository access, expiring tokens) | Planned |
+| 5 | Live preview, embedded images, visual conflict merge | Planned |
+| 6 | Windows | Planned |
+| 7 | iOS | Planned |
 
 ## Building from source
 
