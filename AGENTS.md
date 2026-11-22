@@ -66,6 +66,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Device name | `gethostname` (infrastructure only: `DeviceInfo` adapter) |
 | Native dialogs | `tauri-plugin-dialog` (folder picker) |
 | Errors | `thiserror` |
+| Serialisation | `serde`, `serde_json` (view models and persistence adapters only) |
 | Logging | `tracing` |
 | Rust tests | `cargo test`, `mockall`, `cucumber` (Gherkin), `tempfile`, `cargo-llvm-cov` |
 | TS types from Rust | `ts-rs`, generated into `src/shared/bindings/` and committed |
@@ -141,7 +142,8 @@ kernel plus controllers:
 - builds the infrastructure adapters and injects them into the use cases;
 - exposes Tauri commands — thin functions that map a serialisable input to a use-case
   request, run it (blocking work through `spawn_blocking`) and map the response or
-  error to a serialisable view model (`serde` + `ts-rs` live **only** here);
+  error to a serialisable view model (`ts-rs` lives **only** here; `serde` only here and in
+  infrastructure adapters that persist documents);
 - maps every application error to an `ErrorCode` for the frontend (§4.7);
 - wires cross-context reactions and the auto-sync scheduler.
 
@@ -236,11 +238,12 @@ Wikilink parsing and resolution exist **only in Rust**. The frontend asks the co
   `CheckAccessToken`.
 
 **`preferences`**
-- Value objects: `Locale` (`en`, `es`, `zh-CN`, `ca` only), `Theme`, `RecentVaults`
-  (deduplicated, most recent first, max 8).
-- Aggregate: `Preferences`.
-- Port: `PreferencesRepository`.
-- Use cases: `GetPreferences`, `UpdatePreferences`, `RememberVault`.
+- Value objects: `Locale` (`en`, `es`, `zh-CN`, `ca` only), `Theme` (`system`, `light`,
+  `dark`), `AutoSyncMinutes` (0 disables, max a day, default 5), `RecentVaults`
+  (absolute paths, deduplicated, most recent first, max 8).
+- Aggregate: `Preferences` (no locale means "follow the system").
+- Port: `PreferencesRepository`; adapter `JsonFilePreferencesRepository` (atomic writes).
+- Use cases: `GetPreferences`, `UpdatePreferences`, `RememberVault`, `ForgetVault`.
 
 ### 4.7 Command contract and errors
 

@@ -1,1 +1,3 @@
+mod json_file_preferences_repository;
 
+pub use json_file_preferences_repository::JsonFilePreferencesRepository;
