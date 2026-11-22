@@ -14,7 +14,11 @@
     "createVaultDestination": "Choose where to create the vault",
     "clone": "Clone",
     "cloning": "Cloning the repository…",
-    "cloningDetail": "This can take a moment, depending on the size of your notes."
+    "cloningDetail": "This can take a moment, depending on the size of your notes.",
+    "deleteVault": "Delete {{name}} from this device",
+    "deleteVaultTitle": "Delete “{{name}}” from this device?",
+    "deleteVaultMessage": "Its files will be removed from this device to free space. Changes that were not synchronised will be lost; the remote repository is not touched.",
+    "delete": "Delete"
   },
   "layout": {
     "selectNote": "Select or create a note.",

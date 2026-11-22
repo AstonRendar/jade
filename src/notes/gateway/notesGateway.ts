@@ -4,6 +4,7 @@ import type { EntryView } from "../../shared/bindings/EntryView";
 import type { FlushRequestView } from "../../shared/bindings/FlushRequestView";
 import type { BacklinkView } from "../../shared/bindings/BacklinkView";
 import type { FollowedLinkView } from "../../shared/bindings/FollowedLinkView";
+import type { PreferencesView } from "../../shared/bindings/PreferencesView";
 import type { SearchHitView } from "../../shared/bindings/SearchHitView";
 import type { SyncReportView } from "../../shared/bindings/SyncReportView";
 import type { VaultView } from "../../shared/bindings/VaultView";
@@ -13,6 +14,8 @@ export const notesGateway = {
   openVault: (path: string) => call<VaultView>("notes_open_vault", { path }),
   createVault: (parent: string, name: string) =>
     call<VaultView>("notes_create_vault", { parent, name }),
+  deleteVault: (path: string) =>
+    call<PreferencesView>("notes_delete_vault", { path }),
   listEntries: () => call<EntryView[]>("notes_list_entries"),
   createNote: (folder: string | null, title: string) =>
     call<string>("notes_create_note", { folder, title }),

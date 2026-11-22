@@ -14,7 +14,11 @@
     "createVaultDestination": "选择新建库的位置",
     "clone": "克隆",
     "cloning": "正在克隆仓库…",
-    "cloningDetail": "这可能需要一点时间，取决于笔记的大小。"
+    "cloningDetail": "这可能需要一点时间，取决于笔记的大小。",
+    "deleteVault": "从此设备删除 {{name}}",
+    "deleteVaultTitle": "从此设备删除“{{name}}”？",
+    "deleteVaultMessage": "它的文件将从此设备中删除以释放空间。尚未同步的更改将会丢失；远程仓库不受影响。",
+    "delete": "删除"
   },
   "layout": {
     "selectNote": "选择或新建一篇笔记。",

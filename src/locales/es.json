@@ -14,7 +14,11 @@
     "createVaultDestination": "Elige dónde crear la bóveda",
     "clone": "Clonar",
     "cloning": "Clonando el repositorio…",
-    "cloningDetail": "Puede tardar un poco, según el tamaño de tus notas."
+    "cloningDetail": "Puede tardar un poco, según el tamaño de tus notas.",
+    "deleteVault": "Eliminar {{name}} de este dispositivo",
+    "deleteVaultTitle": "¿Eliminar «{{name}}» de este dispositivo?",
+    "deleteVaultMessage": "Sus archivos se borrarán de este dispositivo para liberar espacio. Los cambios que no se hayan sincronizado se perderán; el repositorio remoto no se toca.",
+    "delete": "Eliminar"
   },
   "layout": {
     "selectNote": "Selecciona o crea una nota.",
