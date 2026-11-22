@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { useVault } from "../notes/store/vaultStore";
 import { usePreferences } from "../preferences/store/preferencesStore";
 import dialogStyles from "../shared/ui/Dialog.module.css";
 import { reportingErrors } from "../shared/ui/notificationStore";
@@ -17,6 +18,7 @@ const LANGUAGES = [
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const preferences = usePreferences((state) => state.preferences);
+  const vaultOpen = useVault((state) => state.vault !== null);
   const status = useSync((state) => state.status);
   const [locale, setLocale] = useState(preferences?.locale ?? "");
   const [theme, setTheme] = useState(preferences?.theme ?? "system");
@@ -53,7 +55,9 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
       ) {
         await syncGateway.connectRemote(trimmedRemote);
       }
-      await useSync.getState().refresh();
+      if (vaultOpen) {
+        await useSync.getState().refresh();
+      }
     });
   };
 
@@ -135,7 +139,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
             {t("settings.removeToken")}
           </button>
         )}
-        {status?.isRepository ? (
+        {!vaultOpen ? null : status?.isRepository ? (
           <label>
             {t("settings.remote")}
             <input

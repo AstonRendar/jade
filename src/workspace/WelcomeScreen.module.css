@@ -82,3 +82,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.settings {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 1.2em;
+}

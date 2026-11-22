@@ -11,6 +11,7 @@ import {
   useNotifications,
 } from "../shared/ui/notificationStore";
 import { usePlatform } from "./platformStore";
+import { SettingsDialog } from "./SettingsDialog";
 import styles from "./WelcomeScreen.module.css";
 
 export function WelcomeScreen() {
@@ -18,7 +19,9 @@ export function WelcomeScreen() {
   const preferences = usePreferences((state) => state.preferences);
   const capabilities = usePlatform((state) => state.capabilities);
   const recentVaults = preferences?.recentVaults ?? [];
-  const [form, setForm] = useState<"clone" | "create" | null>(null);
+  const [form, setForm] = useState<"clone" | "create" | "settings" | null>(
+    null,
+  );
 
   const openVault = async (path: string) => {
     try {
@@ -45,6 +48,16 @@ export function WelcomeScreen() {
 
   return (
     <main className={styles.welcome}>
+      <button
+        type="button"
+        className={styles.settings}
+        title={t("settings.title")}
+        aria-label={t("settings.title")}
+        onClick={() => setForm("settings")}
+      >
+        ⚙
+      </button>
+      {form === "settings" && <SettingsDialog onClose={() => setForm(null)} />}
       <h1>{t("welcome.title")}</h1>
       <p className={styles.subtitle}>{t("welcome.subtitle")}</p>
       {capabilities && (
