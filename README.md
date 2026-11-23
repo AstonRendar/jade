@@ -56,11 +56,18 @@ A vault without a remote is still versioned locally and can be connected to one 
 | 0 | Foundations: architecture, CI, synchronisation core | Done |
 | 1 | MVP on macOS: vault, editor, links, search, backlinks, history, sync | Done |
 | 2 | Ubuntu, link updates on rename | In progress |
-| 3 | Android | Planned |
-| 4 | Sign in with GitHub (per-repository access, expiring tokens) | Planned |
-| 5 | Live preview, embedded images, visual conflict merge | Planned |
-| 6 | Windows | Planned |
-| 7 | iOS | Planned |
+| 3 | Android | In progress |
+| 4 | Properties and Bases | Planned |
+| 5 | Editor: live preview, callouts, embeds, math, diagrams, footnotes | Planned |
+| 6 | Knowledge views: graph, canvas, tags, outline, bookmarks, search operators | Planned |
+| 7 | Workflow: tabs and panes, command palette, templates, daily notes, workspaces | Planned |
+| 8 | Sign in with GitHub (per-repository access, expiring tokens) | Planned |
+| 9 | Windows | Planned |
+| 10 | iOS | Planned |
+
+The goal of phases 4–7 is parity with Obsidian's built-in features. Community plugins,
+Obsidian Publish and Obsidian Sync are out of scope. Each feature is tracked as an issue
+in its phase milestone.
 
 ## Building from source
 

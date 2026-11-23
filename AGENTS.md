@@ -21,9 +21,9 @@ Goals:
 - Full format compatibility with Obsidian vaults: a vault opens in both apps.
 - UI available in English, Spanish, Simplified Chinese and Catalan.
 
-Non-goals (do not implement unless the maintainer asks): plugin system; pull requests,
-issues, Actions or any GitHub feature beyond the repository itself; real-time
-collaboration; proprietary sync services.
+Non-goals (do not implement unless the maintainer asks): plugin system, Obsidian
+Publish and Obsidian Sync; pull requests, issues, Actions or any GitHub feature beyond
+the repository itself; real-time collaboration; proprietary sync services.
 
 Licence: **GPL-3.0-only**. Public repository: `AstonRendar/jade`.
 
@@ -377,7 +377,7 @@ Auto-save to disk 600 ms after the last keystroke.
 - Files larger than 100 MB block the commit with `file_too_large` (GitHub limit).
 - Commit author: the repository/global Git identity; fallback `Jade <jade@localhost>`.
 - Authentication: HTTPS with a token (username `x-access-token`) pasted in Settings;
-  sign-in through a GitHub App with device flow comes in phase 4.
+  sign-in through a GitHub App with device flow comes in phase 8.
   Credential callbacks give up after 2 attempts to avoid libgit2 retry loops.
 - Wikilink syntax supported: `[[Target]]`, `[[Target|Alias]]`, `[[Target#Heading]]`,
   `![[Embed]]`. Following a missing link creates the note at the vault root.
@@ -496,17 +496,38 @@ renaming a note updates links to it.
 **Phase 3 — Android.** Vaults in app storage (clone-based), Android credential store,
 mobile layout.
 
-**Phase 4 — Sign in with GitHub.** GitHub App with device flow (decision of
+**Phase 4 — Properties and Bases.** Frontmatter properties shown as fields when reading
+and edited as a form (text, list, number, checkbox, date, date and time, tags, aliases),
+value suggestions from the vault, property types in `.obsidian/types.json`, properties
+view; `.base` files with every view type (table, cards, list, kanban), the full
+expression language (filters, formulas, functions, summaries, group by), editing from the
+view, embedded bases.
+
+**Phase 5 — Editor.** Obsidian-style live preview, callouts, embedded notes, images, PDF,
+audio and video via the asset protocol, math, Mermaid diagrams, footnotes, highlights,
+comments, tables, task lists, folding, block references, page preview on hover,
+attachments by paste or drop, visual conflict merge view.
+
+**Phase 6 — Knowledge views.** Graph view (global and local), canvas (`.canvas`, JSON
+Canvas), tags view, outline, outgoing links and unlinked mentions, bookmarks, search
+operators, footnotes view.
+
+**Phase 7 — Workflow.** Tabs and split panes, command palette, configurable hotkeys,
+slash commands, templates, daily notes, unique note creator, note composer, random note,
+word count, file recovery snapshots, workspaces, slides, audio recorder, export to PDF,
+settings parity (files and links, appearance, CSS snippets), `jade://` links, web viewer.
+
+Phases 4–7 aim at parity with Obsidian's built-in features (decision of 2026-11-23).
+Community plugins, Obsidian Publish and Obsidian Sync are out of scope.
+
+**Phase 8 — Sign in with GitHub.** GitHub App with device flow (decision of
 2026-11-22, option C): the user picks which repositories Jade may access, tokens expire
 and are refreshed automatically. Until then a pasted token (ideally fine-grained and
 limited to the vault repository) is the only authentication.
 
-**Phase 5 — Editor.** Obsidian-style live preview, embedded images via the asset
-protocol, visual conflict merge view.
+**Phase 9 — Windows.** Windows build in CI and platform fixes.
 
-**Phase 6 — Windows.** Windows build in CI and platform fixes.
-
-**Phase 7 — iOS.** As phase 3, plus Files app integration.
+**Phase 10 — iOS.** As phase 3, plus Files app integration.
 
 ## 12. Development environment
 
