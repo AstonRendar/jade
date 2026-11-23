@@ -1,3 +1,5 @@
+mod data;
+mod expression;
 mod folding;
 mod note_path;
 mod search_query;
@@ -5,6 +7,8 @@ mod vault_path;
 mod vault_root;
 mod wiki_link;
 
+pub use data::Data;
+pub use expression::{BinaryOperator, Expression, InvalidExpressionError};
 pub(crate) use folding::fold;
 pub use note_path::{InvalidNotePathError, NotePath};
 pub use search_query::{EmptySearchQueryError, SearchQuery};

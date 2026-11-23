@@ -18,6 +18,16 @@ Feature: Notes and history through the app
     When the app on "laptop" follows the link "Someday"
     Then the vault on "laptop" lists "Someday.md"
 
+  Scenario: Querying a base
+    Given the folder "notes" has the file "Index.base" with "views:\n  - order: [file.name, status, file.tags, file.links]"
+    And the folder "notes" has the file "Ideas.md" with "---\nstatus: open\ntags: [idea]\n---\nsee [[a]]"
+    Then the base "Index.base" on "laptop" shows "Ideas.md" with "Ideas.md | open | idea | a"
+
+  Scenario: A malformed base is reported with its code
+    Given the folder "notes" has the file "Broken.base" with "views: ["
+    When the app on "laptop" queries the base "Broken.base"
+    Then the app on "laptop" fails with "invalid_base"
+
   Scenario: Deleting a note
     When the app on "laptop" deletes "a.md"
     Then the vault on "laptop" does not list "a.md"

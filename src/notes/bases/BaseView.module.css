@@ -1,0 +1,115 @@
+.base {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  min-height: 0;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.views {
+  display: flex;
+  gap: 4px;
+}
+
+.views button {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  padding: 2px 8px;
+}
+
+.views button[aria-selected="true"] {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.count {
+  margin-inline-start: auto;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.error {
+  padding: 16px;
+  color: var(--danger-text);
+}
+
+.scroller {
+  overflow: auto;
+  min-height: 0;
+}
+
+.table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
+  padding: 4px 8px;
+  text-align: start;
+  vertical-align: top;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table th button {
+  all: unset;
+  cursor: pointer;
+}
+
+.table th[aria-sort="ascending"] button::after {
+  content: " ↑";
+}
+
+.table th[aria-sort="descending"] button::after {
+  content: " ↓";
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  border-radius: 10px;
+  background: var(--selected);
+  padding: 0 8px;
+}
+
+.link {
+  all: unset;
+  cursor: pointer;
+  color: var(--accent-text);
+}
+
+.link:hover {
+  text-decoration: underline;
+}

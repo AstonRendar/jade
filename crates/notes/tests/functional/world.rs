@@ -1,6 +1,7 @@
 use jade_notes::application::error::NotesError;
 use jade_notes::application::follow_link::FollowedLink;
 use jade_notes::application::open_vault::VaultInfo;
+use jade_notes::application::query_base::QueryBaseResponse;
 use jade_notes::application::resolve_links::ResolvedLink;
 use jade_notes::domain::service::{Backlink, SearchHit};
 use tempfile::TempDir;
@@ -16,6 +17,7 @@ pub struct NotesWorld {
     pub resolved: Vec<ResolvedLink>,
     pub hits: Vec<SearchHit>,
     pub last_vault_name: Option<String>,
+    pub base: Option<QueryBaseResponse>,
 }
 
 impl NotesWorld {
@@ -29,6 +31,7 @@ impl NotesWorld {
             resolved: Vec::new(),
             hits: Vec::new(),
             last_vault_name: None,
+            base: None,
         }
     }
 

@@ -1,4 +1,4 @@
-use crate::domain::model::{Note, VaultEntry};
+use crate::domain::model::{FileMetadata, Note, VaultEntry};
 use crate::domain::value_object::{NotePath, VaultPath, VaultRoot};
 
 pub trait NoteRepository {
@@ -24,6 +24,12 @@ pub trait NoteRepository {
     ) -> Result<(), NoteRepositoryError>;
     fn delete(&self, root: &VaultRoot, path: &VaultPath) -> Result<(), NoteRepositoryError>;
     fn notes(&self, root: &VaultRoot) -> Result<Vec<Note>, NoteRepositoryError>;
+    fn read_text(&self, root: &VaultRoot, path: &VaultPath) -> Result<String, NoteRepositoryError>;
+    fn metadata(
+        &self,
+        root: &VaultRoot,
+        path: &VaultPath,
+    ) -> Result<FileMetadata, NoteRepositoryError>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

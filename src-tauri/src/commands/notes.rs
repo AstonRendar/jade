@@ -5,8 +5,8 @@ use tauri::{AppHandle, State};
 use super::{blocking, AppJade};
 use crate::errors::ErrorView;
 use crate::view_models::{
-    BacklinkView, EntryView, FollowedLinkView, PreferencesView, ResolvedLinkView, SearchHitView,
-    VaultView,
+    BacklinkView, BaseTableView, EntryView, FollowedLinkView, PreferencesView, ResolvedLinkView,
+    SearchHitView, VaultView,
 };
 use crate::watcher::VaultWatcher;
 
@@ -100,6 +100,15 @@ pub async fn notes_search(
     query: String,
 ) -> Result<Vec<SearchHitView>, ErrorView> {
     blocking(&jade, move |jade| jade.search(&query)).await
+}
+
+#[tauri::command]
+pub async fn notes_query_base(
+    jade: State<'_, Arc<AppJade>>,
+    path: String,
+    view: Option<String>,
+) -> Result<BaseTableView, ErrorView> {
+    blocking(&jade, move |jade| jade.query_base(&path, view)).await
 }
 
 #[tauri::command]

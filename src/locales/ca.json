@@ -60,7 +60,8 @@
     "push_rejected": "Un altre dispositiu no ha parat de modificar el repositori. Torna-ho a provar.",
     "credentials_unavailable": "El clauer del sistema no està disponible.",
     "io": "No s'han pogut llegir o escriure els fitxers.",
-    "unexpected": "Alguna cosa ha anat malament."
+    "unexpected": "Alguna cosa ha anat malament.",
+    "invalid_base": "Aquesta base no és vàlida: {{detail}}"
   },
   "editor": {
     "edit": "Editar",
@@ -102,5 +103,26 @@
     "remote": "Repositori remot",
     "versionFolder": "Versionar aquesta carpeta",
     "save": "Desar"
+  },
+  "bases": {
+    "untitledView": "Vista",
+    "results_one": "{{count}} resultat",
+    "results_other": "{{count}} resultats",
+    "properties": {
+      "file": {
+        "name": "Nom del fitxer",
+        "basename": "Nom",
+        "path": "Camí",
+        "folder": "Carpeta",
+        "ext": "Extensió",
+        "size": "Mida",
+        "ctime": "Creat",
+        "mtime": "Modificat",
+        "tags": "Etiquetes",
+        "links": "Enllaços",
+        "properties": "Propietats",
+        "file": "Fitxer"
+      }
+    }
   }
 }

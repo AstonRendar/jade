@@ -8,6 +8,7 @@ pub mod find_backlinks;
 pub mod follow_link;
 pub mod list_vault_entries;
 pub mod open_vault;
+pub mod query_base;
 pub mod read_note;
 pub mod rename_entry;
 pub mod resolve_links;

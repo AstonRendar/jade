@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BaseView } from "../notes/bases/BaseView";
+import { isBase } from "../notes/bases/isBase";
 import { NoteView } from "../notes/editor/NoteView";
 import { notesGateway } from "../notes/gateway/notesGateway";
 import { useEditor } from "../notes/store/editorStore";
@@ -26,6 +28,7 @@ export function AppShell() {
   const { t } = useTranslation();
   const vault = useVault((state) => state.vault);
   const selected = useVault((state) => state.selected);
+  const selectedNote = selected !== null && !isBase(selected) ? selected : null;
   const close = useVault((state) => state.close);
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [navigationOpen, setNavigationOpen] = useState(false);
@@ -72,10 +75,10 @@ export function AppShell() {
   );
 
   useEffect(() => {
-    if (selected !== null) {
-      void reportingErrors(() => useEditor.getState().load(selected));
+    if (selectedNote !== null) {
+      void reportingErrors(() => useEditor.getState().load(selectedNote));
     }
-  }, [selected]);
+  }, [selectedNote]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -104,7 +107,7 @@ export function AppShell() {
     <div
       className={styles.shell}
       data-testid="app-shell"
-      data-with-panel={selected !== null}
+      data-with-panel={selectedNote !== null}
       data-navigation={navigationOpen ? "open" : "closed"}
     >
       {navigationOpen && (
@@ -164,13 +167,15 @@ export function AppShell() {
           </button>
           <span>{vault?.name}</span>
         </div>
-        {selected ? (
+        {selected !== null && isBase(selected) ? (
+          <BaseView key={selected} path={selected} />
+        ) : selectedNote ? (
           <NoteView />
         ) : (
           <p className={styles.placeholder}>{t("layout.selectNote")}</p>
         )}
       </main>
-      {selected && <SidePanel path={selected} />}
+      {selectedNote && <SidePanel path={selectedNote} />}
       {overlay?.kind === "switcher" && <QuickSwitcher onClose={closeOverlay} />}
       {overlay?.kind === "search" && <SearchDialog onClose={closeOverlay} />}
       {overlay?.kind === "settings" && (

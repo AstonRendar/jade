@@ -1,3 +1,4 @@
+mod expression;
 mod note_path;
 mod search_query;
 mod vault_path;

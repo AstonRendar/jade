@@ -60,7 +60,8 @@
     "push_rejected": "Otro dispositivo no ha dejado de modificar el repositorio. Vuelve a intentarlo.",
     "credentials_unavailable": "El llavero del sistema no está disponible.",
     "io": "No se han podido leer o escribir los archivos.",
-    "unexpected": "Algo ha ido mal."
+    "unexpected": "Algo ha ido mal.",
+    "invalid_base": "Esta base no es válida: {{detail}}"
   },
   "editor": {
     "edit": "Editar",
@@ -102,5 +103,26 @@
     "remote": "Repositorio remoto",
     "versionFolder": "Versionar esta carpeta",
     "save": "Guardar"
+  },
+  "bases": {
+    "untitledView": "Vista",
+    "results_one": "{{count}} resultado",
+    "results_other": "{{count}} resultados",
+    "properties": {
+      "file": {
+        "name": "Nombre de archivo",
+        "basename": "Nombre",
+        "path": "Ruta",
+        "folder": "Carpeta",
+        "ext": "Extensión",
+        "size": "Tamaño",
+        "ctime": "Creado",
+        "mtime": "Modificado",
+        "tags": "Etiquetas",
+        "links": "Enlaces",
+        "properties": "Propiedades",
+        "file": "Archivo"
+      }
+    }
   }
 }

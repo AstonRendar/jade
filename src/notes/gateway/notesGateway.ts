@@ -3,6 +3,7 @@ import type { ChangedPathsView } from "../../shared/bindings/ChangedPathsView";
 import type { EntryView } from "../../shared/bindings/EntryView";
 import type { FlushRequestView } from "../../shared/bindings/FlushRequestView";
 import type { BacklinkView } from "../../shared/bindings/BacklinkView";
+import type { BaseTableView } from "../../shared/bindings/BaseTableView";
 import type { FollowedLinkView } from "../../shared/bindings/FollowedLinkView";
 import type { PreferencesView } from "../../shared/bindings/PreferencesView";
 import type { SearchHitView } from "../../shared/bindings/SearchHitView";
@@ -25,6 +26,8 @@ export const notesGateway = {
   deleteEntry: (path: string) => call<null>("notes_delete_entry", { path }),
   readNote: (path: string) => call<string>("notes_read_note", { path }),
   search: (query: string) => call<SearchHitView[]>("notes_search", { query }),
+  queryBase: (path: string, view: string | null) =>
+    call<BaseTableView>("notes_query_base", { path, view }),
   findBacklinks: (path: string) =>
     call<BacklinkView[]>("notes_find_backlinks", { path }),
   saveNote: (path: string, content: string) =>
