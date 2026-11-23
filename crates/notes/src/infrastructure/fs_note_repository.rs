@@ -1,8 +1,9 @@
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::domain::model::{EntryKind, Note, VaultEntry};
+use crate::domain::model::{EntryKind, FileMetadata, Note, VaultEntry};
 use crate::domain::port::{NoteRepository, NoteRepositoryError};
 use crate::domain::value_object::{NotePath, VaultPath, VaultRoot};
 
@@ -102,6 +103,30 @@ impl NoteRepository for FsNoteRepository {
             })
             .collect()
     }
+
+    fn read_text(&self, root: &VaultRoot, path: &VaultPath) -> Result<String, NoteRepositoryError> {
+        fs::read_to_string(location(root, path)).map_err(|error| failure(error, path))
+    }
+
+    fn metadata(
+        &self,
+        root: &VaultRoot,
+        path: &VaultPath,
+    ) -> Result<FileMetadata, NoteRepositoryError> {
+        let metadata = fs::metadata(location(root, path)).map_err(|error| failure(error, path))?;
+        let modified_ms = metadata.modified().map_or(0, milliseconds);
+        Ok(FileMetadata {
+            size: metadata.len(),
+            created_ms: metadata.created().map_or(modified_ms, milliseconds),
+            modified_ms,
+        })
+    }
+}
+
+fn milliseconds(time: SystemTime) -> i64 {
+    time.duration_since(UNIX_EPOCH).map_or(0, |elapsed| {
+        i64::try_from(elapsed.as_millis()).unwrap_or(i64::MAX)
+    })
 }
 
 fn location(root: &VaultRoot, path: &VaultPath) -> PathBuf {
