@@ -1,11 +1,21 @@
 mod backlink_finder;
+mod base_query;
+mod expression_evaluator;
+mod file_catalog;
+mod frontmatter;
 mod link_resolver;
 mod link_rewriter;
 mod note_search;
+mod tag_parser;
 mod wiki_link_parser;
 
 pub use backlink_finder::{Backlink, BacklinkFinder};
+pub use base_query::BaseQuery;
+pub use expression_evaluator::{ExpressionEvaluator, Scope, Value};
+pub use file_catalog::FileCatalog;
+pub use frontmatter::Frontmatter;
 pub use link_resolver::LinkResolver;
 pub use link_rewriter::{LinkRewriter, NoteMove};
 pub use note_search::{NoteSearch, SearchHit};
+pub use tag_parser::TagParser;
 pub use wiki_link_parser::{LocatedLink, WikiLinkParser};

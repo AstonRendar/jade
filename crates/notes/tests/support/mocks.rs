@@ -1,6 +1,6 @@
-use jade_notes::domain::model::{Note, VaultEntry};
-use jade_notes::domain::port::{NoteRepository, NoteRepositoryError};
-use jade_notes::domain::value_object::{NotePath, VaultPath, VaultRoot};
+use jade_notes::domain::model::{FileMetadata, Note, VaultEntry};
+use jade_notes::domain::port::{DataFormat, DataFormatError, NoteRepository, NoteRepositoryError};
+use jade_notes::domain::value_object::{Data, NotePath, VaultPath, VaultRoot};
 use mockall::mock;
 
 mock! {
@@ -18,5 +18,15 @@ mock! {
         fn rename(&self, root: &VaultRoot, from: &VaultPath, to: &VaultPath) -> Result<(), NoteRepositoryError>;
         fn delete(&self, root: &VaultRoot, path: &VaultPath) -> Result<(), NoteRepositoryError>;
         fn notes(&self, root: &VaultRoot) -> Result<Vec<Note>, NoteRepositoryError>;
+        fn read_text(&self, root: &VaultRoot, path: &VaultPath) -> Result<String, NoteRepositoryError>;
+        fn metadata(&self, root: &VaultRoot, path: &VaultPath) -> Result<FileMetadata, NoteRepositoryError>;
+    }
+}
+
+mock! {
+    pub DataFormat {}
+
+    impl DataFormat for DataFormat {
+        fn parse(&self, text: &str) -> Result<Data, DataFormatError>;
     }
 }

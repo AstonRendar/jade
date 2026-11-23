@@ -1,5 +1,10 @@
 mod backlink_finder;
+mod base_query;
+mod expression_evaluator;
+mod file_catalog;
+mod frontmatter;
 mod link_resolver;
 mod link_rewriter;
 mod note_search;
+mod tag_parser;
 mod wiki_link_parser;
