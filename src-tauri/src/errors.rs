@@ -28,6 +28,7 @@ pub enum ErrorCode {
     InvalidUrl,
     InvalidToken,
     InvalidPreference,
+    InvalidBase,
     NotARepository,
     AlreadyARepository,
     AuthRequired,
@@ -80,6 +81,7 @@ impl From<NotesError> for ErrorView {
             }
             NotesError::NotFound(path) => Self::with(ErrorCode::NotFound, "path", path.as_str()),
             NotesError::InvalidMove => Self::new(ErrorCode::InvalidMove),
+            NotesError::InvalidBase(detail) => Self::with(ErrorCode::InvalidBase, "detail", detail),
             NotesError::Storage(detail) => Self::with(ErrorCode::Io, "detail", detail),
         }
     }

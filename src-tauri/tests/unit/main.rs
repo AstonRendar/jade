@@ -126,6 +126,7 @@ fn maps_every_notes_failure() {
         NotesError::EmptyQuery,
         NotesError::NotFound(path),
         NotesError::Storage("disk".to_string()),
+        NotesError::InvalidBase("views".to_string()),
     ];
 
     // Act
@@ -143,6 +144,7 @@ fn maps_every_notes_failure() {
             ErrorCode::EmptyQuery,
             ErrorCode::NotFound,
             ErrorCode::Io,
+            ErrorCode::InvalidBase,
         ]
     );
 }

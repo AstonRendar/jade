@@ -1,7 +1,8 @@
 use jade_notes::application::follow_link::FollowedLink;
 use jade_notes::application::open_vault::VaultInfo;
+use jade_notes::application::query_base::QueryBaseResponse;
 use jade_notes::application::resolve_links::ResolvedLink;
-use jade_notes::domain::model::{EntryKind, VaultEntry};
+use jade_notes::domain::model::{Cell, EntryKind, TableColumn, TableRow, VaultEntry};
 use jade_notes::domain::service::{Backlink, SearchHit};
 use jade_preferences::domain::model::Preferences;
 use jade_sync::application::get_repository_status::RepositoryState;
@@ -251,6 +252,140 @@ impl From<Preferences> for PreferencesView {
             theme: preferences.theme().as_str().to_string(),
             auto_sync_minutes: preferences.auto_sync_minutes().value(),
             recent_vaults: preferences.recent_vaults().paths().to_vec(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
+#[ts(export)]
+pub enum CellView {
+    Null,
+    Boolean {
+        value: bool,
+    },
+    Number {
+        value: f64,
+    },
+    Text {
+        value: String,
+    },
+    Date {
+        milliseconds: f64,
+    },
+    List {
+        items: Vec<CellView>,
+    },
+    Link {
+        target: String,
+        label: Option<String>,
+    },
+    File {
+        path: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct BaseViewSummaryView {
+    pub name: String,
+    pub kind: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct BaseColumnView {
+    pub key: String,
+    pub display_name: Option<String>,
+    pub width: Option<u32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct BaseRowView {
+    pub path: String,
+    pub cells: Vec<CellView>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct BaseTableView {
+    pub views: Vec<BaseViewSummaryView>,
+    pub view: u32,
+    pub columns: Vec<BaseColumnView>,
+    pub rows: Vec<BaseRowView>,
+    pub total: u32,
+}
+
+impl From<Cell> for CellView {
+    fn from(cell: Cell) -> Self {
+        match cell {
+            Cell::Null => Self::Null,
+            Cell::Boolean(value) => Self::Boolean { value },
+            Cell::Number(value) => Self::Number { value },
+            Cell::Text(value) => Self::Text { value },
+            Cell::Date(milliseconds) => Self::Date {
+                milliseconds: milliseconds as f64,
+            },
+            Cell::List(items) => Self::List {
+                items: items.into_iter().map(Self::from).collect(),
+            },
+            Cell::Link { target, label } => Self::Link { target, label },
+            Cell::File(path) => Self::File {
+                path: path.as_str().to_string(),
+            },
+        }
+    }
+}
+
+impl From<TableColumn> for BaseColumnView {
+    fn from(column: TableColumn) -> Self {
+        Self {
+            key: column.key,
+            display_name: column.display_name,
+            width: column.width,
+        }
+    }
+}
+
+impl From<TableRow> for BaseRowView {
+    fn from(row: TableRow) -> Self {
+        Self {
+            path: row.path.as_str().to_string(),
+            cells: row.cells.into_iter().map(CellView::from).collect(),
+        }
+    }
+}
+
+impl From<QueryBaseResponse> for BaseTableView {
+    fn from(response: QueryBaseResponse) -> Self {
+        Self {
+            views: response
+                .views
+                .into_iter()
+                .map(|view| BaseViewSummaryView {
+                    name: view.name,
+                    kind: view.kind,
+                })
+                .collect(),
+            view: u32::try_from(response.view).unwrap_or(u32::MAX),
+            columns: response
+                .table
+                .columns
+                .into_iter()
+                .map(BaseColumnView::from)
+                .collect(),
+            rows: response
+                .table
+                .rows
+                .into_iter()
+                .map(BaseRowView::from)
+                .collect(),
+            total: u32::try_from(response.table.total).unwrap_or(u32::MAX),
         }
     }
 }

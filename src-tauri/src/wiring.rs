@@ -11,12 +11,13 @@ use jade_notes::application::find_backlinks::{FindBacklinks, FindBacklinksReques
 use jade_notes::application::follow_link::{FollowLink, FollowLinkRequest};
 use jade_notes::application::list_vault_entries::{ListVaultEntries, ListVaultEntriesRequest};
 use jade_notes::application::open_vault::{OpenVault, OpenVaultRequest};
+use jade_notes::application::query_base::{QueryBase, QueryBaseRequest};
 use jade_notes::application::read_note::{ReadNote, ReadNoteRequest};
 use jade_notes::application::rename_entry::{RenameEntry, RenameEntryRequest};
 use jade_notes::application::resolve_links::{ResolveLinks, ResolveLinksRequest};
 use jade_notes::application::save_note::{SaveNote, SaveNoteRequest};
 use jade_notes::application::search_notes::{SearchNotes, SearchNotesRequest};
-use jade_notes::infrastructure::FsNoteRepository;
+use jade_notes::infrastructure::{FsNoteRepository, YamlDataFormat};
 use jade_preferences::application::forget_vault::{ForgetVault, ForgetVaultRequest};
 use jade_preferences::application::get_preferences::GetPreferences;
 use jade_preferences::application::remember_vault::{RememberVault, RememberVaultRequest};
@@ -42,8 +43,8 @@ use jade_sync::infrastructure::Git2VersionControl;
 
 use crate::errors::{ErrorCode, ErrorView};
 use crate::view_models::{
-    BacklinkView, EntryView, FollowedLinkView, PreferencesView, RepositoryStatusView,
-    ResolvedLinkView, RevisionView, SearchHitView, SyncReportView, VaultView,
+    BacklinkView, BaseTableView, EntryView, FollowedLinkView, PreferencesView,
+    RepositoryStatusView, ResolvedLinkView, RevisionView, SearchHitView, SyncReportView, VaultView,
 };
 
 const HISTORY_LIMIT: usize = 100;
@@ -173,6 +174,16 @@ where
             path: path.to_string(),
         })?;
         Ok(backlinks.into_iter().map(BacklinkView::from).collect())
+    }
+
+    pub fn query_base(&self, path: &str, view: Option<String>) -> Result<BaseTableView, ErrorView> {
+        let response =
+            QueryBase::new(FsNoteRepository, YamlDataFormat).execute(QueryBaseRequest {
+                vault_root: self.vault()?,
+                path: path.to_string(),
+                view,
+            })?;
+        Ok(BaseTableView::from(response))
     }
 
     pub fn resolve_links(&self, targets: Vec<String>) -> Result<Vec<ResolvedLinkView>, ErrorView> {

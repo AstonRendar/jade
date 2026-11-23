@@ -1,5 +1,5 @@
 use cucumber::{given, then, when};
-use jade_lib::view_models::ConflictCopyView;
+use jade_lib::view_models::{CellView, ConflictCopyView};
 
 use crate::world::AppWorld;
 
@@ -347,4 +347,40 @@ fn listing_fails_with(world: &mut AppWorld, device: String, code: String) {
 #[then(expr = "the folder {string} still exists")]
 fn the_folder_still_exists(world: &mut AppWorld, folder: String) {
     assert!(world.path(&folder).is_dir());
+}
+
+#[given(expr = "the folder {string} has the file {string} with {string}")]
+fn the_folder_has_a_file(world: &mut AppWorld, folder: String, file: String, content: String) {
+    let path = world.path(&folder).join(file);
+    std::fs::write(path, content.replace("\\n", "\n")).expect("file is written");
+}
+
+#[when(expr = "the app on {string} queries the base {string}")]
+fn the_app_queries_a_base(world: &mut AppWorld, device: String, path: String) {
+    let result = world.app(&device).query_base(&path, None);
+    world.record(&device, result);
+}
+
+#[then(expr = "the base {string} on {string} shows {string} with {string}")]
+fn the_base_shows(world: &mut AppWorld, path: String, device: String, row: String, cells: String) {
+    let table = world
+        .app(&device)
+        .query_base(&path, None)
+        .expect("the base is queried");
+    let found = table
+        .rows
+        .iter()
+        .find(|candidate| candidate.path == row)
+        .expect("the row is shown");
+    let actual: Vec<String> = found.cells.iter().map(cell_text).collect();
+    assert_eq!(actual.join(" | "), cells);
+}
+
+fn cell_text(cell: &CellView) -> String {
+    match cell {
+        CellView::Text { value } => value.clone(),
+        CellView::List { items } => items.iter().map(cell_text).collect::<Vec<_>>().join(", "),
+        CellView::Link { target, .. } => target.clone(),
+        other => format!("{other:?}"),
+    }
 }
