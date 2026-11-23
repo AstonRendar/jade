@@ -127,6 +127,7 @@ fn maps_every_notes_failure() {
         NotesError::NotFound(path),
         NotesError::Storage("disk".to_string()),
         NotesError::InvalidBase("views".to_string()),
+        NotesError::InvalidProperty("a".to_string()),
     ];
 
     // Act
@@ -145,6 +146,7 @@ fn maps_every_notes_failure() {
             ErrorCode::NotFound,
             ErrorCode::Io,
             ErrorCode::InvalidBase,
+            ErrorCode::InvalidProperty,
         ]
     );
 }

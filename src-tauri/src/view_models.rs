@@ -1,14 +1,17 @@
 use jade_notes::application::follow_link::FollowedLink;
+use jade_notes::application::list_properties::PropertySummary;
 use jade_notes::application::open_vault::VaultInfo;
 use jade_notes::application::query_base::QueryBaseResponse;
+use jade_notes::application::read_properties::NoteProperties;
 use jade_notes::application::resolve_links::ResolvedLink;
 use jade_notes::domain::model::{Cell, EntryKind, TableColumn, TableRow, VaultEntry};
 use jade_notes::domain::service::{Backlink, SearchHit};
+use jade_notes::domain::value_object::{Data, PropertyType};
 use jade_preferences::domain::model::Preferences;
 use jade_sync::application::get_repository_status::RepositoryState;
 use jade_sync::application::synchronize_vault::SyncReport;
 use jade_sync::domain::port::Revision;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, TS)]
@@ -386,6 +389,146 @@ impl From<QueryBaseResponse> for BaseTableView {
                 .map(BaseRowView::from)
                 .collect(),
             total: u32::try_from(response.table.total).unwrap_or(u32::MAX),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
+#[ts(export)]
+pub enum PropertyValueView {
+    Null,
+    Boolean { value: bool },
+    Number { value: f64 },
+    Text { value: String },
+    List { items: Vec<PropertyValueView> },
+    Map { entries: Vec<PropertyView> },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct PropertyView {
+    pub key: String,
+    pub value: PropertyValueView,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct NotePropertiesView {
+    pub properties: Vec<PropertyView>,
+    pub body_start: u32,
+    pub valid: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum PropertyTypeView {
+    Text,
+    List,
+    Number,
+    Checkbox,
+    Date,
+    DateTime,
+    Tags,
+    Aliases,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct PropertySummaryView {
+    pub name: String,
+    pub kind: PropertyTypeView,
+    pub count: u32,
+    pub values: Vec<String>,
+}
+
+impl From<Data> for PropertyValueView {
+    fn from(data: Data) -> Self {
+        match data {
+            Data::Null => Self::Null,
+            Data::Boolean(value) => Self::Boolean { value },
+            Data::Number(value) => Self::Number { value },
+            Data::Text(value) => Self::Text { value },
+            Data::List(items) => Self::List {
+                items: items.into_iter().map(Self::from).collect(),
+            },
+            Data::Map(entries) => Self::Map {
+                entries: entries.into_iter().map(PropertyView::from).collect(),
+            },
+        }
+    }
+}
+
+impl From<PropertyValueView> for Data {
+    fn from(value: PropertyValueView) -> Self {
+        match value {
+            PropertyValueView::Null => Self::Null,
+            PropertyValueView::Boolean { value } => Self::Boolean(value),
+            PropertyValueView::Number { value } => Self::Number(value),
+            PropertyValueView::Text { value } => Self::Text(value),
+            PropertyValueView::List { items } => {
+                Self::List(items.into_iter().map(Self::from).collect())
+            }
+            PropertyValueView::Map { entries } => Self::Map(
+                entries
+                    .into_iter()
+                    .map(|property| (property.key, Self::from(property.value)))
+                    .collect(),
+            ),
+        }
+    }
+}
+
+impl From<(String, Data)> for PropertyView {
+    fn from((key, value): (String, Data)) -> Self {
+        Self {
+            key,
+            value: PropertyValueView::from(value),
+        }
+    }
+}
+
+impl NotePropertiesView {
+    pub fn new(properties: NoteProperties, content: &str) -> Self {
+        let prefix = content.get(..properties.body_start).unwrap_or_default();
+        Self {
+            properties: properties
+                .properties
+                .into_iter()
+                .map(PropertyView::from)
+                .collect(),
+            body_start: u32::try_from(prefix.encode_utf16().count()).unwrap_or(u32::MAX),
+            valid: properties.valid,
+        }
+    }
+}
+
+impl From<PropertyType> for PropertyTypeView {
+    fn from(kind: PropertyType) -> Self {
+        match kind {
+            PropertyType::Text => Self::Text,
+            PropertyType::List => Self::List,
+            PropertyType::Number => Self::Number,
+            PropertyType::Checkbox => Self::Checkbox,
+            PropertyType::Date => Self::Date,
+            PropertyType::DateTime => Self::DateTime,
+            PropertyType::Tags => Self::Tags,
+            PropertyType::Aliases => Self::Aliases,
+        }
+    }
+}
+
+impl From<PropertySummary> for PropertySummaryView {
+    fn from(summary: PropertySummary) -> Self {
+        Self {
+            name: summary.name,
+            kind: PropertyTypeView::from(summary.kind),
+            count: u32::try_from(summary.count).unwrap_or(u32::MAX),
+            values: summary.values,
         }
     }
 }

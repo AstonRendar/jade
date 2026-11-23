@@ -1,5 +1,7 @@
 use cucumber::{given, then, when};
-use jade_lib::view_models::{CellView, ConflictCopyView};
+use jade_lib::view_models::{
+    CellView, ConflictCopyView, PropertyTypeView, PropertyValueView, PropertyView,
+};
 
 use crate::world::AppWorld;
 
@@ -383,4 +385,59 @@ fn cell_text(cell: &CellView) -> String {
         CellView::Link { target, .. } => target.clone(),
         other => format!("{other:?}"),
     }
+}
+
+#[when(expr = "the app on {string} sets the property {string} of {string} to true")]
+fn the_app_sets_a_property(world: &mut AppWorld, device: String, key: String, path: String) {
+    let app = world.app(&device);
+    let content = app.read_note(&path).expect("note is read");
+    let mut properties = app
+        .read_properties(content.clone())
+        .expect("properties are read")
+        .properties;
+    properties.push(PropertyView {
+        key,
+        value: PropertyValueView::Boolean { value: true },
+    });
+    let written = app
+        .write_properties(content, properties)
+        .expect("properties are written");
+    app.save_note(&path, &written).expect("note is saved");
+}
+
+#[then(expr = "{string} on {string} has the properties {string} and the body {string}")]
+fn a_note_has_properties(
+    world: &mut AppWorld,
+    path: String,
+    device: String,
+    keys: String,
+    body: String,
+) {
+    let app = world.app(&device);
+    let content = app.read_note(&path).expect("note is read");
+    let read = app
+        .read_properties(content.clone())
+        .expect("properties are read");
+    let actual: Vec<String> = read
+        .properties
+        .iter()
+        .map(|property| property.key.clone())
+        .collect();
+    assert_eq!(actual.join(", "), keys);
+    let units: Vec<u16> = content.encode_utf16().collect();
+    let start = usize::try_from(read.body_start).expect("fits");
+    assert_eq!(String::from_utf16_lossy(&units[start..]), body);
+}
+
+#[then(expr = "the vault on {string} knows the property {string} as a checkbox")]
+fn the_vault_knows_a_property(world: &mut AppWorld, device: String, name: String) {
+    let summaries = world
+        .app(&device)
+        .list_properties()
+        .expect("properties are listed");
+    let summary = summaries
+        .iter()
+        .find(|summary| summary.name == name)
+        .expect("the property is listed");
+    assert_eq!(summary.kind, PropertyTypeView::Checkbox);
 }

@@ -228,7 +228,8 @@ jade/
   `.md`; title derived from the file name), `WikiLink` (target, heading, alias, embed
   flag), `SearchQuery` (Unicode- and case-insensitive matching), `Data` (a parsed
   YAML document: null, boolean, number, text, list, map), `Expression` (the Bases
-  expression language, parsed with operator precedence).
+  expression language, parsed with operator precedence), `PropertyType` (Obsidian's
+  property types, read from `.obsidian/types.json` or inferred from the value).
 - Model: `Note` (path + content), `FileRecord` (a vault file with its metadata and, for
   notes, properties, tags and link targets), `Base` (global filters, formulas, display
   names and views; an empty base gets one table of file names), `BaseTable` (columns
@@ -239,6 +240,8 @@ jade/
   `LinkRewriter` (points links at moved notes, keeping headings, aliases and embeds;
   keeps the link text when it still resolves, uses the title when it is unambiguous
   and the path otherwise), `Frontmatter` (splits the YAML block from the body),
+  `FrontmatterWriter` (writes properties back as YAML Obsidian reads, quoting text that
+  YAML would read as something else; an empty list of properties removes the block),
   `TagParser` (inline `#tags`, nested, outside code), `FileCatalog` (builds
   `FileRecord`s), `ExpressionEvaluator` (`file.*`, `note.*`, bare properties, `this`,
   `formula.*`, global functions and methods per type), `BaseQuery` (filters, sort keys
@@ -250,7 +253,11 @@ jade/
   `CreateFolder`, `RenameEntry` (always updates links to the moved notes in the whole
   vault — decision of 2026-11-22), `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
   `ResolveLinks`, `FollowLink` (creates the note if missing), `QueryBase` (one view of a
-  `.base` file over every file in the vault; malformed notes count without properties).
+  `.base` file over every file in the vault; malformed notes count without properties),
+  `ReadProperties` (the frontmatter of a text and where its body starts; malformed YAML
+  is reported and left in the body), `WriteProperties` (rejects blank or repeated
+  names), `ListProperties` (every property in the vault with its type, count and the
+  values used, for suggestions). `.obsidian/types.json` is only read.
 
 Wikilink parsing and resolution exist **only in Rust**. The frontend asks the core
 (`ResolveLinks`) instead of reimplementing them.
@@ -292,7 +299,9 @@ Tauri commands are named `<context>_<action>` in snake_case:
   vault kept in the app storage, closes it if open and forgets it), `notes_list_entries`, `notes_read_note`, `notes_save_note`,
   `notes_create_note`, `notes_create_folder`, `notes_rename_entry`,
   `notes_delete_entry`, `notes_search`, `notes_find_backlinks`, `notes_resolve_links`,
-  `notes_follow_link`, `notes_query_base` (`BaseTableView`);
+  `notes_follow_link`, `notes_query_base` (`BaseTableView`), `notes_read_properties`
+  (`bodyStart` in UTF-16 units, as JavaScript slices strings), `notes_write_properties`,
+  `notes_list_properties`;
 - `sync_synchronize`, `sync_get_status`, `sync_init_repository`, `sync_connect_remote`,
   `sync_clone_repository`, `sync_list_note_history`, `sync_read_note_revision`,
   `sync_store_access_token`, `sync_has_access_token`;
@@ -310,7 +319,8 @@ user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and
 `invalid_path`, `already_exists`, `not_found`, `invalid_move`, `empty_query`,
 `invalid_url`, `invalid_token`, `invalid_preference`, `not_a_repository`,
 `already_a_repository`, `auth_required`, `auth_failed`, `network`, `file_too_large`,
-`push_rejected`, `credentials_unavailable`, `invalid_base`, `io`, `unexpected`.
+`push_rejected`, `credentials_unavailable`, `invalid_base`, `invalid_property`, `io`,
+`unexpected`.
 
 ### 4.8 Frontend conventions
 

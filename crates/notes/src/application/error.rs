@@ -20,6 +20,8 @@ pub enum NotesError {
     NotFound(VaultPath),
     #[error("a folder cannot be moved inside itself")]
     InvalidMove,
+    #[error("invalid property `{0}`")]
+    InvalidProperty(String),
     #[error("invalid base: {0}")]
     InvalidBase(String),
     #[error("storage failure: {0}")]

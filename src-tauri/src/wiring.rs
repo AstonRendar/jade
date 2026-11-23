@@ -9,14 +9,17 @@ use jade_notes::application::delete_vault::{DeleteVault, DeleteVaultRequest};
 use jade_notes::application::error::NotesError;
 use jade_notes::application::find_backlinks::{FindBacklinks, FindBacklinksRequest};
 use jade_notes::application::follow_link::{FollowLink, FollowLinkRequest};
+use jade_notes::application::list_properties::{ListProperties, ListPropertiesRequest};
 use jade_notes::application::list_vault_entries::{ListVaultEntries, ListVaultEntriesRequest};
 use jade_notes::application::open_vault::{OpenVault, OpenVaultRequest};
 use jade_notes::application::query_base::{QueryBase, QueryBaseRequest};
 use jade_notes::application::read_note::{ReadNote, ReadNoteRequest};
+use jade_notes::application::read_properties::{ReadProperties, ReadPropertiesRequest};
 use jade_notes::application::rename_entry::{RenameEntry, RenameEntryRequest};
 use jade_notes::application::resolve_links::{ResolveLinks, ResolveLinksRequest};
 use jade_notes::application::save_note::{SaveNote, SaveNoteRequest};
 use jade_notes::application::search_notes::{SearchNotes, SearchNotesRequest};
+use jade_notes::application::write_properties::{WriteProperties, WritePropertiesRequest};
 use jade_notes::infrastructure::{FsNoteRepository, YamlDataFormat};
 use jade_preferences::application::forget_vault::{ForgetVault, ForgetVaultRequest};
 use jade_preferences::application::get_preferences::GetPreferences;
@@ -43,8 +46,9 @@ use jade_sync::infrastructure::Git2VersionControl;
 
 use crate::errors::{ErrorCode, ErrorView};
 use crate::view_models::{
-    BacklinkView, BaseTableView, EntryView, FollowedLinkView, PreferencesView,
-    RepositoryStatusView, ResolvedLinkView, RevisionView, SearchHitView, SyncReportView, VaultView,
+    BacklinkView, BaseTableView, EntryView, FollowedLinkView, NotePropertiesView, PreferencesView,
+    PropertySummaryView, PropertyView, RepositoryStatusView, ResolvedLinkView, RevisionView,
+    SearchHitView, SyncReportView, VaultView,
 };
 
 const HISTORY_LIMIT: usize = 100;
@@ -184,6 +188,39 @@ where
                 view,
             })?;
         Ok(BaseTableView::from(response))
+    }
+
+    pub fn read_properties(&self, content: String) -> Result<NotePropertiesView, ErrorView> {
+        let properties = ReadProperties::new(YamlDataFormat).execute(ReadPropertiesRequest {
+            content: content.clone(),
+        })?;
+        Ok(NotePropertiesView::new(properties, &content))
+    }
+
+    pub fn write_properties(
+        &self,
+        content: String,
+        properties: Vec<PropertyView>,
+    ) -> Result<String, ErrorView> {
+        Ok(WriteProperties.execute(WritePropertiesRequest {
+            content,
+            properties: properties
+                .into_iter()
+                .map(|property| (property.key, property.value.into()))
+                .collect(),
+        })?)
+    }
+
+    pub fn list_properties(&self) -> Result<Vec<PropertySummaryView>, ErrorView> {
+        let summaries = ListProperties::new(FsNoteRepository, YamlDataFormat).execute(
+            ListPropertiesRequest {
+                vault_root: self.vault()?,
+            },
+        )?;
+        Ok(summaries
+            .into_iter()
+            .map(PropertySummaryView::from)
+            .collect())
     }
 
     pub fn resolve_links(&self, targets: Vec<String>) -> Result<Vec<ResolvedLinkView>, ErrorView> {

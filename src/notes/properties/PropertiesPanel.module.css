@@ -1,0 +1,152 @@
+.panel {
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 16px 8px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--border);
+}
+
+.list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(110px, 180px) 1fr;
+  align-items: start;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.row dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  padding-top: 4px;
+  min-width: 0;
+}
+
+.row dd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.icon {
+  width: 1.2em;
+  text-align: center;
+  flex: none;
+}
+
+.key,
+.value,
+.itemInput,
+.newName {
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 2px 6px;
+}
+
+.key {
+  color: var(--muted);
+  width: 100%;
+}
+
+.value {
+  flex: 1;
+}
+
+.key:hover,
+.value:hover,
+.itemInput:hover,
+.key:focus,
+.value:focus,
+.itemInput:focus,
+.newName {
+  border-color: var(--border);
+  outline: none;
+}
+
+.itemInput {
+  flex: 1;
+  min-width: 80px;
+}
+
+.chips {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 10px;
+  background: var(--selected);
+  padding: 0 8px;
+}
+
+.chip button,
+.remove {
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.remove {
+  margin-inline-start: auto;
+  visibility: hidden;
+}
+
+.row:hover .remove,
+.remove:focus {
+  visibility: visible;
+}
+
+.add {
+  margin-top: 4px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.link {
+  all: unset;
+  cursor: pointer;
+  color: var(--accent-text);
+}
+
+.readonly {
+  color: var(--muted);
+}
+
+@media (hover: none) {
+  .remove {
+    visibility: visible;
+  }
+}
+
+@media (max-width: 600px) {
+  .row {
+    grid-template-columns: minmax(80px, 110px) 1fr;
+  }
+}

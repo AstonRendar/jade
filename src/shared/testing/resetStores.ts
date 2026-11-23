@@ -1,4 +1,5 @@
 import { useEditor } from "../../notes/store/editorStore";
+import { usePropertyCatalog } from "../../notes/store/propertyStore";
 import { useVault } from "../../notes/store/vaultStore";
 import { usePreferences } from "../../preferences/store/preferencesStore";
 import { useSync } from "../../sync/store/syncStore";
@@ -8,6 +9,7 @@ import { useNotifications } from "../ui/notificationStore";
 export function resetStores() {
   useEditor.getState().reset();
   useVault.setState(useVault.getInitialState(), true);
+  usePropertyCatalog.setState(usePropertyCatalog.getInitialState(), true);
   usePreferences.setState(usePreferences.getInitialState(), true);
   useNotifications.setState(useNotifications.getInitialState(), true);
   useSync.setState(useSync.getInitialState(), true);

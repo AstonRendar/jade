@@ -61,7 +61,8 @@
     "credentials_unavailable": "The system keychain is not available.",
     "io": "The files could not be read or written.",
     "unexpected": "Something went wrong.",
-    "invalid_base": "This base is not valid: {{detail}}"
+    "invalid_base": "This base is not valid: {{detail}}",
+    "invalid_property": "That property name is empty or already used: {{value}}"
   },
   "editor": {
     "edit": "Edit",
@@ -124,5 +125,15 @@
         "file": "File"
       }
     }
+  },
+  "properties": {
+    "title": "Properties",
+    "add": "Add property",
+    "name": "Property name",
+    "remove": "Remove {{name}}",
+    "removeValue": "Remove {{value}}",
+    "addValue": "Add a value to {{name}}",
+    "addValuePlaceholder": "Add…",
+    "invalid": "The properties block is not valid YAML; edit it as text."
   }
 }

@@ -61,7 +61,8 @@
     "credentials_unavailable": "El clauer del sistema no està disponible.",
     "io": "No s'han pogut llegir o escriure els fitxers.",
     "unexpected": "Alguna cosa ha anat malament.",
-    "invalid_base": "Aquesta base no és vàlida: {{detail}}"
+    "invalid_base": "Aquesta base no és vàlida: {{detail}}",
+    "invalid_property": "Aquest nom de propietat és buit o ja existeix: {{value}}"
   },
   "editor": {
     "edit": "Editar",
@@ -124,5 +125,15 @@
         "file": "Fitxer"
       }
     }
+  },
+  "properties": {
+    "title": "Propietats",
+    "add": "Afegeix una propietat",
+    "name": "Nom de la propietat",
+    "remove": "Elimina {{name}}",
+    "removeValue": "Treu {{value}}",
+    "addValue": "Afegeix un valor a {{name}}",
+    "addValuePlaceholder": "Afegeix…",
+    "invalid": "El bloc de propietats no és YAML vàlid; edita’l com a text."
   }
 }
