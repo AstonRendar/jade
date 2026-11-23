@@ -70,6 +70,21 @@ describe("navigation, history, sync and settings", () => {
     );
   });
 
+  it("opens a base from the tree as a table and a note from the base", async () => {
+    // Arrange
+    await openVault();
+
+    // Act
+    await userEvent.click(screen.getByRole("treeitem", { name: "Index.base" }));
+    await userEvent.click(
+      await screen.findByRole("button", { name: "ideas.md" }),
+    );
+
+    // Assert
+    expect(called("notes_read_note")).toEqual([{ path: "ideas.md" }]);
+    await screen.findByRole("heading", { level: 1, name: "ideas" });
+  });
+
   it("finds text in every note and opens a hit", async () => {
     // Arrange
     await openVault();
@@ -263,11 +278,25 @@ describe("navigation, history, sync and settings", () => {
           { path: "ideas.md", kind: "note" },
           { path: "projects", kind: "folder" },
           { path: "projects/plan.md", kind: "note" },
+          { path: "Index.base", kind: "file" },
         ];
       case "notes_read_note":
         return args.path === "ideas.md"
           ? "Notes about jade"
           : "current content";
+      case "notes_query_base":
+        return {
+          views: [{ name: "Table", kind: "table" }],
+          view: 0,
+          columns: [{ key: "file.name", displayName: null, width: null }],
+          rows: [
+            {
+              path: "ideas.md",
+              cells: [{ type: "text", value: "ideas.md" }],
+            },
+          ],
+          total: 1,
+        };
       case "notes_search":
         return [{ path: "ideas.md", line: 1, text: "Notes about jade" }];
       case "notes_find_backlinks":

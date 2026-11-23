@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ConfirmDialog, PromptDialog } from "../../shared/ui/Dialog";
 import { ContextMenu, type MenuItem } from "../../shared/ui/ContextMenu";
 import { reportingErrors } from "../../shared/ui/notificationStore";
+import { isBase } from "../bases/isBase";
 import { useVault } from "../store/vaultStore";
 import { buildTree, parentOf, type TreeNode } from "./buildTree";
 import styles from "./VaultTree.module.css";
@@ -109,7 +110,7 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
   const activate = () => {
     if (isFolder) {
       onToggle(node.path);
-    } else if (node.kind === "note") {
+    } else if (opens(node)) {
       select(node.path);
     }
   };
@@ -118,7 +119,7 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
       role="treeitem"
       aria-label={node.name}
       aria-expanded={isFolder ? isOpen : undefined}
-      aria-selected={node.kind === "note" ? selected === node.path : undefined}
+      aria-selected={opens(node) ? selected === node.path : undefined}
       tabIndex={0}
       onClick={(event) => {
         event.stopPropagation();
@@ -162,6 +163,10 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
       )}
     </li>
   );
+}
+
+function opens(node: TreeNode): boolean {
+  return node.kind === "note" || isBase(node.path);
 }
 
 export function TreeDialog({

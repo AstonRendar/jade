@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { reportingErrors } from "../../shared/ui/notificationStore";
-import { notesGateway } from "../gateway/notesGateway";
 import { useEditor } from "../store/editorStore";
 import { useVault } from "../store/vaultStore";
+import { followLink } from "../ui/followLink";
 import { MarkdownEditor } from "./MarkdownEditor";
 import styles from "./NoteView.module.css";
 import { Preview } from "./Preview";
@@ -49,22 +48,11 @@ export function NoteView() {
           value={draft}
           notes={notes}
           onChange={edit}
-          onFollow={follow}
+          onFollow={followLink}
         />
       ) : (
-        <Preview source={draft} onFollow={follow} />
+        <Preview source={draft} onFollow={followLink} />
       )}
     </section>
   );
-}
-
-function follow(target: string) {
-  void reportingErrors(async () => {
-    await useEditor.getState().flush();
-    const followed = await notesGateway.followLink(target);
-    if (followed.created) {
-      await useVault.getState().refresh();
-    }
-    useVault.getState().select(followed.path);
-  });
 }

@@ -60,7 +60,8 @@
     "push_rejected": "Another device kept changing the repository. Try again.",
     "credentials_unavailable": "The system keychain is not available.",
     "io": "The files could not be read or written.",
-    "unexpected": "Something went wrong."
+    "unexpected": "Something went wrong.",
+    "invalid_base": "This base is not valid: {{detail}}"
   },
   "editor": {
     "edit": "Edit",
@@ -102,5 +103,26 @@
     "remote": "Remote repository",
     "versionFolder": "Version this folder",
     "save": "Save"
+  },
+  "bases": {
+    "untitledView": "View",
+    "results_one": "{{count}} result",
+    "results_other": "{{count}} results",
+    "properties": {
+      "file": {
+        "name": "File name",
+        "basename": "Name",
+        "path": "Path",
+        "folder": "Folder",
+        "ext": "Extension",
+        "size": "Size",
+        "ctime": "Created",
+        "mtime": "Modified",
+        "tags": "Tags",
+        "links": "Links",
+        "properties": "Properties",
+        "file": "File"
+      }
+    }
   }
 }

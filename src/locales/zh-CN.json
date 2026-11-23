@@ -60,7 +60,8 @@
     "push_rejected": "其他设备一直在修改仓库，请重试。",
     "credentials_unavailable": "系统钥匙串不可用。",
     "io": "无法读取或写入文件。",
-    "unexpected": "出现了问题。"
+    "unexpected": "出现了问题。",
+    "invalid_base": "此数据库无效：{{detail}}"
   },
   "editor": {
     "edit": "编辑",
@@ -102,5 +103,26 @@
     "remote": "远程仓库",
     "versionFolder": "为此文件夹启用版本管理",
     "save": "保存"
+  },
+  "bases": {
+    "untitledView": "视图",
+    "results_one": "{{count}} 个结果",
+    "results_other": "{{count}} 个结果",
+    "properties": {
+      "file": {
+        "name": "文件名",
+        "basename": "名称",
+        "path": "路径",
+        "folder": "文件夹",
+        "ext": "扩展名",
+        "size": "大小",
+        "ctime": "创建时间",
+        "mtime": "修改时间",
+        "tags": "标签",
+        "links": "链接",
+        "properties": "属性",
+        "file": "文件"
+      }
+    }
   }
 }

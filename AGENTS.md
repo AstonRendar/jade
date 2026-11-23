@@ -69,6 +69,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Errors | `thiserror` |
 | HTTP | `reqwest` (blocking, rustls) — only when an adapter needs HTTP (decision of 2026-11-22) |
 | Serialisation | `serde`, `serde_json` (view models and persistence adapters only) |
+| YAML | `yaml-rust2` (infrastructure only: `YamlDataFormat` reads frontmatter and `.base` files) — decision of 2026-11-23 |
 | Logging | `tracing` |
 | Rust tests | `cargo test`, `mockall`, `cucumber` (Gherkin), `tempfile`, `cargo-llvm-cov` |
 | TS types from Rust | `ts-rs`, generated into `src/shared/bindings/` and committed |
@@ -90,7 +91,7 @@ justification.
 
 | Context | Responsibility |
 |---|---|
-| `notes` | Vault contents: notes, folders, paths, wikilinks and their resolution, backlinks, search |
+| `notes` | Vault contents: notes, folders, paths, wikilinks and their resolution, backlinks, search, properties and Bases |
 | `sync` | Versioning and synchronisation: repository lifecycle, commits, remote, merge and conflict policy, note history, credentials |
 | `preferences` | App preferences: language, theme, auto-sync interval, recent vaults |
 
@@ -225,21 +226,31 @@ jade/
 - Value objects: `VaultRoot`, `VaultPath` (any vault-relative path: `/`-separated, NFC,
   no `..`/absolute/empty components), `NotePath` (a `VaultPath` whose file name ends in
   `.md`; title derived from the file name), `WikiLink` (target, heading, alias, embed
-  flag), `SearchQuery` (Unicode- and case-insensitive matching).
-- Model: `Note` (path + content).
+  flag), `SearchQuery` (Unicode- and case-insensitive matching), `Data` (a parsed
+  YAML document: null, boolean, number, text, list, map), `Expression` (the Bases
+  expression language, parsed with operator precedence).
+- Model: `Note` (path + content), `FileRecord` (a vault file with its metadata and, for
+  notes, properties, tags and link targets), `Base` (global filters, formulas, display
+  names and views; an empty base gets one table of file names), `BaseTable` (columns
+  and rows of typed `Cell`s).
 - Domain services: `WikiLinkParser` (ignores links in fenced and inline code),
   `LinkResolver` (exact path, then name or partial path, case-insensitive, shortest path
   wins on ambiguity), `BacklinkFinder`, `NoteSearch` (title and line hits, capped),
   `LinkRewriter` (points links at moved notes, keeping headings, aliases and embeds;
   keeps the link text when it still resolves, uses the title when it is unambiguous
-  and the path otherwise).
-- Port: `NoteRepository`. Watching the vault for external changes is a shell concern
+  and the path otherwise), `Frontmatter` (splits the YAML block from the body),
+  `TagParser` (inline `#tags`, nested, outside code), `FileCatalog` (builds
+  `FileRecord`s), `ExpressionEvaluator` (`file.*`, `note.*`, bare properties, `this`,
+  `formula.*`, global functions and methods per type), `BaseQuery` (filters, sort keys
+  with empty values last, limit, columns).
+- Ports: `NoteRepository`, `DataFormat` (adapter `YamlDataFormat`). Watching the vault for external changes is a shell concern
   (`src-tauri/src/watcher.rs`), not part of the domain.
 - Use cases: `OpenVault`, `CreateVault` (a new folder inside a parent), `DeleteVault` (only a
   vault directly inside a given container: the app storage on mobile), `ListVaultEntries`, `ReadNote`, `SaveNote`, `CreateNote`,
   `CreateFolder`, `RenameEntry` (always updates links to the moved notes in the whole
   vault — decision of 2026-11-22), `DeleteEntry`, `SearchNotes`, `FindBacklinks`,
-  `ResolveLinks`, `FollowLink` (creates the note if missing).
+  `ResolveLinks`, `FollowLink` (creates the note if missing), `QueryBase` (one view of a
+  `.base` file over every file in the vault; malformed notes count without properties).
 
 Wikilink parsing and resolution exist **only in Rust**. The frontend asks the core
 (`ResolveLinks`) instead of reimplementing them.
@@ -281,7 +292,7 @@ Tauri commands are named `<context>_<action>` in snake_case:
   vault kept in the app storage, closes it if open and forgets it), `notes_list_entries`, `notes_read_note`, `notes_save_note`,
   `notes_create_note`, `notes_create_folder`, `notes_rename_entry`,
   `notes_delete_entry`, `notes_search`, `notes_find_backlinks`, `notes_resolve_links`,
-  `notes_follow_link`;
+  `notes_follow_link`, `notes_query_base` (`BaseTableView`);
 - `sync_synchronize`, `sync_get_status`, `sync_init_repository`, `sync_connect_remote`,
   `sync_clone_repository`, `sync_list_note_history`, `sync_read_note_revision`,
   `sync_store_access_token`, `sync_has_access_token`;
@@ -299,7 +310,7 @@ user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and
 `invalid_path`, `already_exists`, `not_found`, `invalid_move`, `empty_query`,
 `invalid_url`, `invalid_token`, `invalid_preference`, `not_a_repository`,
 `already_a_repository`, `auth_required`, `auth_failed`, `network`, `file_too_large`,
-`push_rejected`, `credentials_unavailable`, `io`, `unexpected`.
+`push_rejected`, `credentials_unavailable`, `invalid_base`, `io`, `unexpected`.
 
 ### 4.8 Frontend conventions
 
