@@ -1,9 +1,11 @@
 use jade_notes::application::error::NotesError;
 use jade_notes::application::follow_link::FollowedLink;
+use jade_notes::application::list_properties::PropertySummary;
 use jade_notes::application::open_vault::VaultInfo;
 use jade_notes::application::query_base::QueryBaseResponse;
 use jade_notes::application::resolve_links::ResolvedLink;
 use jade_notes::domain::service::{Backlink, SearchHit};
+use jade_notes::domain::value_object::Data;
 use tempfile::TempDir;
 
 #[derive(Debug, cucumber::World)]
@@ -18,6 +20,9 @@ pub struct NotesWorld {
     pub hits: Vec<SearchHit>,
     pub last_vault_name: Option<String>,
     pub base: Option<QueryBaseResponse>,
+    pub properties: Vec<(String, Data)>,
+    pub written: String,
+    pub summaries: Vec<PropertySummary>,
 }
 
 impl NotesWorld {
@@ -32,6 +37,9 @@ impl NotesWorld {
             hits: Vec::new(),
             last_vault_name: None,
             base: None,
+            properties: Vec::new(),
+            written: String::new(),
+            summaries: Vec::new(),
         }
     }
 

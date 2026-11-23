@@ -3,6 +3,7 @@ mod base_query;
 mod expression_evaluator;
 mod file_catalog;
 mod frontmatter;
+mod frontmatter_writer;
 mod link_resolver;
 mod link_rewriter;
 mod note_search;

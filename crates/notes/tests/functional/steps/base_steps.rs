@@ -15,8 +15,11 @@ fn the_file_contains(world: &mut NotesWorld, path: String, step: &Step) {
         .docstring
         .as_deref()
         .expect("the step has a text block");
-    std::fs::write(format!("{}/{path}", world.root()), content.trim_start())
-        .expect("file is written");
+    let file = std::path::PathBuf::from(format!("{}/{path}", world.root()));
+    if let Some(folder) = file.parent() {
+        std::fs::create_dir_all(folder).expect("folder exists");
+    }
+    std::fs::write(file, content.trim_start()).expect("file is written");
 }
 
 #[when(expr = "the base {string} is queried")]
