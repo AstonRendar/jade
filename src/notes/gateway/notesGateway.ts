@@ -5,7 +5,10 @@ import type { FlushRequestView } from "../../shared/bindings/FlushRequestView";
 import type { BacklinkView } from "../../shared/bindings/BacklinkView";
 import type { BaseTableView } from "../../shared/bindings/BaseTableView";
 import type { FollowedLinkView } from "../../shared/bindings/FollowedLinkView";
+import type { NotePropertiesView } from "../../shared/bindings/NotePropertiesView";
 import type { PreferencesView } from "../../shared/bindings/PreferencesView";
+import type { PropertySummaryView } from "../../shared/bindings/PropertySummaryView";
+import type { PropertyView } from "../../shared/bindings/PropertyView";
 import type { SearchHitView } from "../../shared/bindings/SearchHitView";
 import type { SyncReportView } from "../../shared/bindings/SyncReportView";
 import type { VaultView } from "../../shared/bindings/VaultView";
@@ -26,6 +29,11 @@ export const notesGateway = {
   deleteEntry: (path: string) => call<null>("notes_delete_entry", { path }),
   readNote: (path: string) => call<string>("notes_read_note", { path }),
   search: (query: string) => call<SearchHitView[]>("notes_search", { query }),
+  readProperties: (content: string) =>
+    call<NotePropertiesView>("notes_read_properties", { content }),
+  writeProperties: (content: string, properties: PropertyView[]) =>
+    call<string>("notes_write_properties", { content, properties }),
+  listProperties: () => call<PropertySummaryView[]>("notes_list_properties"),
   queryBase: (path: string, view: string | null) =>
     call<BaseTableView>("notes_query_base", { path, view }),
   findBacklinks: (path: string) =>

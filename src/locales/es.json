@@ -61,7 +61,8 @@
     "credentials_unavailable": "El llavero del sistema no está disponible.",
     "io": "No se han podido leer o escribir los archivos.",
     "unexpected": "Algo ha ido mal.",
-    "invalid_base": "Esta base no es válida: {{detail}}"
+    "invalid_base": "Esta base no es válida: {{detail}}",
+    "invalid_property": "Ese nombre de propiedad está vacío o ya existe: {{value}}"
   },
   "editor": {
     "edit": "Editar",
@@ -124,5 +125,15 @@
         "file": "Archivo"
       }
     }
+  },
+  "properties": {
+    "title": "Propiedades",
+    "add": "Añadir propiedad",
+    "name": "Nombre de la propiedad",
+    "remove": "Eliminar {{name}}",
+    "removeValue": "Quitar {{value}}",
+    "addValue": "Añadir un valor a {{name}}",
+    "addValuePlaceholder": "Añadir…",
+    "invalid": "El bloque de propiedades no es YAML válido; edítalo como texto."
   }
 }

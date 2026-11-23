@@ -195,6 +195,10 @@ describe("Workspace", () => {
         return entries;
       case "notes_create_note":
         return `${args.folder}/${args.title}.md`;
+      case "notes_read_properties":
+        return { properties: [], bodyStart: 0, valid: true };
+      case "notes_list_properties":
+        return [];
       case "notes_read_note":
         return "";
       case "notes_find_backlinks":

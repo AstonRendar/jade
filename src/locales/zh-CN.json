@@ -61,7 +61,8 @@
     "credentials_unavailable": "系统钥匙串不可用。",
     "io": "无法读取或写入文件。",
     "unexpected": "出现了问题。",
-    "invalid_base": "此数据库无效：{{detail}}"
+    "invalid_base": "此数据库无效：{{detail}}",
+    "invalid_property": "该属性名称为空或已存在：{{value}}"
   },
   "editor": {
     "edit": "编辑",
@@ -124,5 +125,15 @@
         "file": "文件"
       }
     }
+  },
+  "properties": {
+    "title": "属性",
+    "add": "添加属性",
+    "name": "属性名称",
+    "remove": "删除 {{name}}",
+    "removeValue": "移除 {{value}}",
+    "addValue": "为 {{name}} 添加值",
+    "addValuePlaceholder": "添加…",
+    "invalid": "属性块不是有效的 YAML，请以文本方式编辑。"
   }
 }

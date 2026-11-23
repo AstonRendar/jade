@@ -79,6 +79,10 @@ describe("navigation drawer on narrow screens", () => {
         return { path: "/vaults/work", name: "work" };
       case "notes_list_entries":
         return [{ path: "ideas.md", kind: "note" }];
+      case "notes_read_properties":
+        return { properties: [], bodyStart: 0, valid: true };
+      case "notes_list_properties":
+        return [];
       case "notes_read_note":
         return "";
       case "notes_find_backlinks":

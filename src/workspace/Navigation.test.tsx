@@ -280,6 +280,10 @@ describe("navigation, history, sync and settings", () => {
           { path: "projects/plan.md", kind: "note" },
           { path: "Index.base", kind: "file" },
         ];
+      case "notes_read_properties":
+        return { properties: [], bodyStart: 0, valid: true };
+      case "notes_list_properties":
+        return [];
       case "notes_read_note":
         return args.path === "ideas.md"
           ? "Notes about jade"
