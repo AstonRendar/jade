@@ -5,8 +5,8 @@ use tauri::{AppHandle, State};
 use super::{blocking, AppJade};
 use crate::errors::ErrorView;
 use crate::view_models::{
-    BacklinkView, BaseTableView, EntryView, FollowedLinkView, PreferencesView, ResolvedLinkView,
-    SearchHitView, VaultView,
+    BacklinkView, BaseTableView, EntryView, FollowedLinkView, NotePropertiesView, PreferencesView,
+    PropertySummaryView, PropertyView, ResolvedLinkView, SearchHitView, VaultView,
 };
 use crate::watcher::VaultWatcher;
 
@@ -100,6 +100,33 @@ pub async fn notes_search(
     query: String,
 ) -> Result<Vec<SearchHitView>, ErrorView> {
     blocking(&jade, move |jade| jade.search(&query)).await
+}
+
+#[tauri::command]
+pub async fn notes_read_properties(
+    jade: State<'_, Arc<AppJade>>,
+    content: String,
+) -> Result<NotePropertiesView, ErrorView> {
+    blocking(&jade, move |jade| jade.read_properties(content)).await
+}
+
+#[tauri::command]
+pub async fn notes_write_properties(
+    jade: State<'_, Arc<AppJade>>,
+    content: String,
+    properties: Vec<PropertyView>,
+) -> Result<String, ErrorView> {
+    blocking(&jade, move |jade| {
+        jade.write_properties(content, properties)
+    })
+    .await
+}
+
+#[tauri::command]
+pub async fn notes_list_properties(
+    jade: State<'_, Arc<AppJade>>,
+) -> Result<Vec<PropertySummaryView>, ErrorView> {
+    blocking(&jade, |jade| jade.list_properties()).await
 }
 
 #[tauri::command]

@@ -28,6 +28,12 @@ Feature: Notes and history through the app
     When the app on "laptop" queries the base "Broken.base"
     Then the app on "laptop" fails with "invalid_base"
 
+  Scenario: Editing properties as a form
+    Given the folder "notes" has the file "Ideas.md" with "---\nstatus: 🌱 open\n---\nbody"
+    When the app on "laptop" sets the property "done" of "Ideas.md" to true
+    Then "Ideas.md" on "laptop" has the properties "status, done" and the body "body"
+    And the vault on "laptop" knows the property "done" as a checkbox
+
   Scenario: Deleting a note
     When the app on "laptop" deletes "a.md"
     Then the vault on "laptop" does not list "a.md"
