@@ -115,6 +115,22 @@ describe("images", () => {
     expect(useImages.getState().urls["a.png"]).toContain("Recursos%2Fa.png");
   });
 
+  it("resolves the known images again when the vault changes on disk", async () => {
+    // Arrange
+    await useImages.getState().resolve(["a.png", "missing.png"]);
+
+    // Act
+    await useImages.getState().refresh();
+
+    // Assert
+    expect(resolved).toEqual([
+      ["a.png", "missing.png"],
+      ["a.png", "missing.png"],
+    ]);
+    expect(useImages.getState().urls["a.png"]).toContain("a.png");
+    expect(useImages.getState().urls["missing.png"]).toBeNull();
+  });
+
   it("does not resolve images without an open vault", async () => {
     // Arrange
     useVault.setState({ vault: null });

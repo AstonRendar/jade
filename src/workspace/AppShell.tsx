@@ -46,7 +46,7 @@ export function AppShell() {
     void reportingErrors(() => useSync.getState().refresh());
     const subscriptions = [
       notesGateway.onChanged((paths) => {
-        useImages.getState().forget();
+        void reportingErrors(() => useImages.getState().refresh());
         void reportingErrors(async () => {
           await useVault.getState().refresh();
           await useEditor.getState().reloadIfChanged(paths);
