@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 
 use git2::build::{CheckoutBuilder, RepoBuilder};
 use git2::{
-    Commit, ErrorCode, FetchOptions, Index, IndexAddOption, Oid, PushOptions, Repository,
-    RepositoryInitOptions, Signature, Sort, StatusOptions, Tree,
+    BranchType, Commit, ErrorCode, FetchOptions, Index, IndexAddOption, ObjectType, Oid,
+    PushOptions, Repository, RepositoryInitOptions, Signature, Sort, StatusOptions, Tree,
 };
 
 use super::git2_authentication::{network_or_backend, Git2Authentication};
@@ -135,6 +135,80 @@ impl VersionControl for Git2VersionControl {
             .remote_anonymous(url.network_url())
             .and_then(|mut remote| remote.fetch(&[refspec], Some(&mut options), None))
             .map_err(|error| authentication.error(error))
+    }
+
+    fn fetch_branches(
+        &self,
+        dir: &WorkingDirectory,
+        url: &RemoteUrl,
+        credentials: &Credentials,
+    ) -> Result<(), VersionControlError> {
+        let repository = open(dir)?;
+        let authentication = Git2Authentication::new(credentials);
+        let mut options = FetchOptions::new();
+        options.remote_callbacks(authentication.callbacks());
+        let refspec = format!("+refs/heads/*:refs/remotes/{ORIGIN}/*");
+        repository
+            .remote_anonymous(url.network_url())
+            .and_then(|mut remote| remote.fetch(&[refspec], Some(&mut options), None))
+            .map_err(|error| authentication.error(error))
+    }
+
+    fn branches(&self, dir: &WorkingDirectory) -> Result<Vec<BranchName>, VersionControlError> {
+        let repository = open(dir)?;
+        let mut names = BTreeSet::new();
+        for branch in repository.branches(None).map_err(backend)? {
+            let (branch, kind) = branch.map_err(backend)?;
+            let Ok(Some(name)) = branch.name() else {
+                continue;
+            };
+            let name = match kind {
+                BranchType::Local => name,
+                BranchType::Remote => match name.strip_prefix(&format!("{ORIGIN}/")) {
+                    Some(name) if name != "HEAD" => name,
+                    _ => continue,
+                },
+            };
+            if let Ok(name) = BranchName::parse(name) {
+                names.insert(name.as_str().to_string());
+            }
+        }
+        if let Ok(current) = current_branch(&repository) {
+            names.insert(current.as_str().to_string());
+        }
+        Ok(names
+            .into_iter()
+            .filter_map(|name| BranchName::parse(&name).ok())
+            .collect())
+    }
+
+    fn switch_branch(
+        &self,
+        dir: &WorkingDirectory,
+        branch: &BranchName,
+    ) -> Result<(), VersionControlError> {
+        let repository = open(dir)?;
+        let reference = match repository.find_branch(branch.as_str(), BranchType::Local) {
+            Ok(local) => local.into_reference(),
+            Err(_) => {
+                let commit = repository
+                    .find_reference(&tracking_ref(branch))
+                    .and_then(|tracking| tracking.peel_to_commit())
+                    .map_err(|_| VersionControlError::BranchNotFound(branch.clone()))?;
+                let mut local = repository
+                    .branch(branch.as_str(), &commit, false)
+                    .map_err(backend)?;
+                local
+                    .set_upstream(Some(&format!("{ORIGIN}/{}", branch.as_str())))
+                    .map_err(backend)?;
+                local.into_reference()
+            }
+        };
+        let target = reference.peel(ObjectType::Commit).map_err(backend)?;
+        repository
+            .checkout_tree(&target, Some(CheckoutBuilder::new().safe()))
+            .map_err(backend)?;
+        repository.set_head(&local_ref(branch)).map_err(backend)
     }
 
     fn merge_remote(
