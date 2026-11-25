@@ -51,4 +51,134 @@ describe("renderMarkdown", () => {
     expect(html).toContain("<h1>Title</h1>");
     expect(html).toContain("<strong>bold</strong>");
   });
+
+  it("renders callouts with their kind, icon and title", () => {
+    // Arrange
+    const source = "> [!warning] Mind the gap\n> Body **text**";
+
+    // Act
+    const html = renderMarkdown(source);
+
+    // Assert
+    expect(html).toContain('<div class="callout" data-callout="warning">');
+    expect(html).toContain("Mind the gap</span></div>");
+    expect(html).toContain("<p>Body <strong>text</strong></p>");
+    expect(html).not.toContain("[!warning]");
+  });
+
+  it("renders foldable callouts, aliases and callouts without a body", () => {
+    // Arrange
+    const sources = [
+      "> [!faq]- Why?\n> Because.",
+      "> [!tip]+\n> Open by default",
+      "> [!unknown] Only a title",
+    ];
+
+    // Act
+    const [folded, open, bare] = sources.map(renderMarkdown);
+
+    // Assert
+    expect(folded).toContain(
+      '<details class="callout" data-callout="question">',
+    );
+    expect(folded).not.toContain(" open>");
+    expect(open).toContain('data-callout="tip" open>');
+    expect(open).toContain("Tip</span>");
+    expect(bare).toContain('data-callout="note"');
+    expect(bare).toContain("Only a title");
+    expect(bare).not.toContain("<p>");
+  });
+
+  it("keeps plain quotes as quotes", () => {
+    // Arrange
+    const source = "> Just a quote";
+
+    // Act
+    const html = renderMarkdown(source);
+
+    // Assert
+    expect(html).toBe("<blockquote>\n<p>Just a quote</p>\n</blockquote>\n");
+  });
+
+  it("renders task lists with checkboxes", () => {
+    // Arrange
+    const source = "- [ ] Write\n- [x] Publish\n- Plain";
+
+    // Act
+    const html = renderMarkdown(source);
+
+    // Assert
+    expect(html).toContain(
+      '<li class="task-item"><input class="task" type="checkbox" disabled> Write</li>',
+    );
+    expect(html).toContain(
+      '<li class="task-item done"><input class="task" type="checkbox" disabled checked> Publish</li>',
+    );
+    expect(html).toContain("<li>Plain</li>");
+  });
+
+  it("renders highlights and hides comments", () => {
+    // Arrange
+    const source =
+      "A ==marked **word**== and %%hidden%% text\n\n%%\nblock\ncomment\n%%\n\nAfter == not == marked";
+
+    // Act
+    const html = renderMarkdown(source);
+
+    // Assert
+    expect(html).toContain("<mark>marked <strong>word</strong></mark>");
+    expect(html).toContain(
+      "A <mark>marked <strong>word</strong></mark> and text",
+    );
+    expect(html).not.toContain("hidden");
+    expect(html).not.toContain("block");
+    expect(html).toContain("After == not == marked");
+  });
+
+  it("renders tags but not headings, numbers or anchors", () => {
+    // Arrange
+    const source =
+      "#idea and #saga/norte/ in text, issue #12, [[Note#Part]], `#code`";
+
+    // Act
+    const html = renderMarkdown(source);
+
+    // Assert
+    expect(html).toContain('<span class="tag">#idea</span>');
+    expect(html).toContain('<span class="tag">#saga/norte</span>');
+    expect(html).toContain("issue #12");
+    expect(html).toContain("<code>#code</code>");
+    expect(html.match(/class="tag"/g)).toHaveLength(2);
+  });
+
+  it("wraps tables and labels code blocks with their language", () => {
+    // Arrange
+    const source =
+      "| a | b |\n|---|---|\n| 1 | 2 |\n\n```rust\nfn main() {}\n```\n\n```\nplain\n```";
+
+    // Act
+    const html = renderMarkdown(source);
+
+    // Assert
+    expect(html).toContain('<div class="table"><table>');
+    expect(html).toContain(
+      '<div class="code-block"><span class="code-language">rust</span><pre>',
+    );
+    expect(html).toContain("<pre><code>plain");
+  });
+
+  it("marks embeds so they render as cards", () => {
+    // Arrange
+    const source = "![[Portada.webp]] and [[Plan]]";
+
+    // Act
+    const html = renderMarkdown(source);
+
+    // Assert
+    expect(html).toContain(
+      '<a class="wikilink embed" href="#" data-target="Portada.webp">',
+    );
+    expect(html).toContain('<a class="wikilink" href="#" data-target="Plan">');
+    expect(html).not.toContain("!<a");
+  });
 });

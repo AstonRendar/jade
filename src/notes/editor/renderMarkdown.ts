@@ -1,9 +1,12 @@
 import MarkdownIt from "markdown-it";
+import { installRules } from "./markdownRules";
 
 const markdown = new MarkdownIt({ html: false, linkify: true });
+installRules(markdown);
 
 markdown.inline.ruler.before("link", "wikilink", (state, silent) => {
-  const start = state.pos;
+  const embed = state.src.startsWith("![[", state.pos);
+  const start = embed ? state.pos + 1 : state.pos;
   if (state.src.slice(start, start + 2) !== "[[") {
     return false;
   }
@@ -17,16 +20,19 @@ markdown.inline.ruler.before("link", "wikilink", (state, silent) => {
   }
   if (!silent) {
     const token = state.push("wikilink", "", 0);
-    token.meta = link;
+    token.meta = { ...link, embed };
   }
   state.pos = end + 2;
   return true;
 });
 
 markdown.renderer.rules.wikilink = (tokens, index) => {
-  const { target, label } = tokens[index]?.meta as Wikilink;
+  const { target, label, embed } = tokens[index]?.meta as Wikilink & {
+    embed: boolean;
+  };
   const escape = markdown.utils.escapeHtml;
-  return `<a class="wikilink" href="#" data-target="${escape(target)}">${escape(label)}</a>`;
+  const kind = embed ? "wikilink embed" : "wikilink";
+  return `<a class="${kind}" href="#" data-target="${escape(target)}">${escape(label)}</a>`;
 };
 
 type Wikilink = { target: string; label: string };
