@@ -33,6 +33,8 @@ Feature: Notes and history through the app
     When the app on "laptop" sets the property "done" of "Ideas.md" to true
     Then "Ideas.md" on "laptop" has the properties "status, done" and the body "body"
     And the vault on "laptop" knows the property "done" as a checkbox
+    When the app on "laptop" makes "status" a list
+    Then the vault on "laptop" knows the property "status" as a list
 
   Scenario: Deleting a note
     When the app on "laptop" deletes "a.md"

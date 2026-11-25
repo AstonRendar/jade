@@ -19,6 +19,7 @@ use jade_notes::application::rename_entry::{RenameEntry, RenameEntryRequest};
 use jade_notes::application::resolve_links::{ResolveLinks, ResolveLinksRequest};
 use jade_notes::application::save_note::{SaveNote, SaveNoteRequest};
 use jade_notes::application::search_notes::{SearchNotes, SearchNotesRequest};
+use jade_notes::application::set_property_type::{SetPropertyType, SetPropertyTypeRequest};
 use jade_notes::application::write_properties::{WriteProperties, WritePropertiesRequest};
 use jade_notes::infrastructure::{FsNoteRepository, YamlDataFormat};
 use jade_preferences::application::forget_vault::{ForgetVault, ForgetVaultRequest};
@@ -221,6 +222,19 @@ where
             .into_iter()
             .map(PropertySummaryView::from)
             .collect())
+    }
+
+    pub fn set_property_type(&self, name: &str, kind: &str) -> Result<(), ErrorView> {
+        let _exclusive = self.exclusive()?;
+        Ok(
+            SetPropertyType::new(FsNoteRepository, YamlDataFormat).execute(
+                SetPropertyTypeRequest {
+                    vault_root: self.vault()?,
+                    name: name.to_string(),
+                    kind: kind.to_string(),
+                },
+            )?,
+        )
     }
 
     pub fn resolve_links(&self, targets: Vec<String>) -> Result<Vec<ResolvedLinkView>, ErrorView> {

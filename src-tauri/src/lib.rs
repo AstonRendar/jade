@@ -58,6 +58,7 @@ pub fn run() {
             notes::notes_read_properties,
             notes::notes_write_properties,
             notes::notes_list_properties,
+            notes::notes_set_property_type,
             notes::notes_find_backlinks,
             notes::notes_resolve_links,
             notes::notes_follow_link,

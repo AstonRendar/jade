@@ -429,8 +429,16 @@ fn a_note_has_properties(
     assert_eq!(String::from_utf16_lossy(&units[start..]), body);
 }
 
-#[then(expr = "the vault on {string} knows the property {string} as a checkbox")]
-fn the_vault_knows_a_property(world: &mut AppWorld, device: String, name: String) {
+#[when(expr = "the app on {string} makes {string} a list")]
+fn the_app_makes_a_list(world: &mut AppWorld, device: String, name: String) {
+    world
+        .app(&device)
+        .set_property_type(&name, "multitext")
+        .expect("the type is stored");
+}
+
+#[then(expr = "the vault on {string} knows the property {string} as a {word}")]
+fn the_vault_knows_a_property(world: &mut AppWorld, device: String, name: String, kind: String) {
     let summaries = world
         .app(&device)
         .list_properties()
@@ -439,5 +447,9 @@ fn the_vault_knows_a_property(world: &mut AppWorld, device: String, name: String
         .iter()
         .find(|summary| summary.name == name)
         .expect("the property is listed");
-    assert_eq!(summary.kind, PropertyTypeView::Checkbox);
+    let expected = match kind.as_str() {
+        "checkbox" => PropertyTypeView::Checkbox,
+        _ => PropertyTypeView::List,
+    };
+    assert_eq!(summary.kind, expected);
 }

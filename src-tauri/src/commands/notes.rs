@@ -130,6 +130,15 @@ pub async fn notes_list_properties(
 }
 
 #[tauri::command]
+pub async fn notes_set_property_type(
+    jade: State<'_, Arc<AppJade>>,
+    name: String,
+    kind: String,
+) -> Result<(), ErrorView> {
+    blocking(&jade, move |jade| jade.set_property_type(&name, &kind)).await
+}
+
+#[tauri::command]
 pub async fn notes_query_base(
     jade: State<'_, Arc<AppJade>>,
     path: String,
