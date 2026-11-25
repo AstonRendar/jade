@@ -1,3 +1,4 @@
+mod attachments;
 mod create_entries;
 mod create_vault;
 mod delete_entry;

@@ -1,3 +1,4 @@
+mod attachment_folder;
 mod data;
 mod expression;
 mod folding;
@@ -8,6 +9,7 @@ mod vault_path;
 mod vault_root;
 mod wiki_link;
 
+pub use attachment_folder::AttachmentFolder;
 pub use data::Data;
 pub use expression::{BinaryOperator, Expression, InvalidExpressionError};
 pub(crate) use folding::fold;
