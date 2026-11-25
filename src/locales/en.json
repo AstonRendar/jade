@@ -149,6 +149,7 @@
     "placeholder": "Search files and text…",
     "files": "Files",
     "content": "In notes",
-    "hint": "Type to find files by name and notes by their text."
+    "hint": "Type to find files by name and notes by their text.",
+    "searching": "Searching…"
   }
 }

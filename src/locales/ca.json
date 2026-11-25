@@ -149,6 +149,7 @@
     "placeholder": "Cerca fitxers i text…",
     "files": "Fitxers",
     "content": "A les notes",
-    "hint": "Escriu per trobar fitxers pel nom i notes pel text."
+    "hint": "Escriu per trobar fitxers pel nom i notes pel text.",
+    "searching": "Cercant…"
   }
 }

@@ -9,6 +9,7 @@ import { fuzzyMatch } from "./fuzzyMatch";
 import styles from "./SearchPanel.module.css";
 
 const SEARCH_DELAY_MS = 200;
+const CONTEXT_BEFORE_MATCH = 24;
 const MAX_FILES = 50;
 
 type FileResult = {
@@ -24,7 +25,10 @@ export function SearchPanel({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const entries = useVault((state) => state.entries);
   const [query, setQuery] = useState("");
-  const [hits, setHits] = useState<SearchHitView[]>([]);
+  const [found, setFound] = useState<{ query: string; hits: SearchHitView[] }>({
+    query: "",
+    hits: [],
+  });
 
   useEffect(() => {
     if (query.trim() === "") {
@@ -32,7 +36,7 @@ export function SearchPanel({ onClose }: { onClose: () => void }) {
     }
     const timer = setTimeout(() => {
       void reportingErrors(async () =>
-        setHits(await notesGateway.search(query)),
+        setFound({ query, hits: await notesGateway.search(query) }),
       );
     }, SEARCH_DELAY_MS);
     return () => clearTimeout(timer);
@@ -47,7 +51,8 @@ export function SearchPanel({ onClose }: { onClose: () => void }) {
         query,
       )
     : [];
-  const groups = searching ? groupByFile(hits) : [];
+  const loading = searching && found.query !== query;
+  const groups = searching && !loading ? groupByFile(found.hits) : [];
 
   return (
     <section className={styles.panel} aria-label={t("search.title")}>
@@ -95,9 +100,16 @@ export function SearchPanel({ onClose }: { onClose: () => void }) {
             </ul>
             <h3 className={styles.heading}>
               {t("search.content")}
-              <span className={styles.count}>
-                {groups.reduce((total, group) => total + group.hits.length, 0)}
-              </span>
+              {loading ? (
+                <span className={styles.count}>{t("search.searching")}</span>
+              ) : (
+                <span className={styles.count}>
+                  {groups.reduce(
+                    (total, group) => total + group.hits.length,
+                    0,
+                  )}
+                </span>
+              )}
             </h3>
             {groups.map((group) => (
               <div key={group.path} className={styles.group}>
@@ -198,7 +210,12 @@ function highlightPositions(text: string, positions: number[]): ReactNode[] {
 
 function highlightText(text: string, query: string): ReactNode[] {
   const needle = query.trim().toLocaleLowerCase();
-  const lower = text.toLocaleLowerCase();
+  const first = needle ? text.toLocaleLowerCase().indexOf(needle) : -1;
+  const shown =
+    first > CONTEXT_BEFORE_MATCH
+      ? `…${text.slice(first - CONTEXT_BEFORE_MATCH)}`
+      : text;
+  const lower = shown.toLocaleLowerCase();
   const parts: ReactNode[] = [];
   let from = 0;
   for (
@@ -207,12 +224,12 @@ function highlightText(text: string, query: string): ReactNode[] {
     at = lower.indexOf(needle, from)
   ) {
     parts.push(
-      text.slice(from, at),
-      <mark key={at}>{text.slice(at, at + needle.length)}</mark>,
+      shown.slice(from, at),
+      <mark key={at}>{shown.slice(at, at + needle.length)}</mark>,
     );
     from = at + needle.length;
   }
-  parts.push(text.slice(from));
+  parts.push(shown.slice(from));
   return parts;
 }
 
