@@ -8,7 +8,7 @@ fn resolves_an_exact_vault_path() {
     let notes = NoteMother::paths(&["plan.md", "projects/plan.md"]);
 
     // Act
-    let resolved = LinkResolver.resolve("projects/plan", &notes);
+    let resolved = LinkResolver::new(&notes).resolve("projects/plan");
 
     // Assert
     assert_eq!(resolved, Some(NoteMother::path("projects/plan.md")));
@@ -20,7 +20,7 @@ fn resolves_a_note_name_ignoring_case() {
     let notes = NoteMother::paths(&["projects/Meeting Notes.md"]);
 
     // Act
-    let resolved = LinkResolver.resolve("meeting notes", &notes);
+    let resolved = LinkResolver::new(&notes).resolve("meeting notes");
 
     // Assert
     assert_eq!(
@@ -35,7 +35,7 @@ fn prefers_the_shortest_path_when_a_name_is_ambiguous() {
     let notes = NoteMother::paths(&["archive/2025/plan.md", "work/plan.md", "zeta/deep/plan.md"]);
 
     // Act
-    let resolved = LinkResolver.resolve("plan", &notes);
+    let resolved = LinkResolver::new(&notes).resolve("plan");
 
     // Assert
     assert_eq!(resolved, Some(NoteMother::path("work/plan.md")));
@@ -47,7 +47,7 @@ fn accepts_targets_written_with_the_extension() {
     let notes = NoteMother::paths(&["plan.md"]);
 
     // Act
-    let resolved = LinkResolver.resolve("plan.md", &notes);
+    let resolved = LinkResolver::new(&notes).resolve("plan.md");
 
     // Assert
     assert_eq!(resolved, Some(NoteMother::path("plan.md")));
@@ -59,7 +59,7 @@ fn resolves_partial_folder_paths() {
     let notes = NoteMother::paths(&["work/projects/plan.md", "home/plan.md"]);
 
     // Act
-    let resolved = LinkResolver.resolve("projects/plan", &notes);
+    let resolved = LinkResolver::new(&notes).resolve("projects/plan");
 
     // Assert
     assert_eq!(resolved, Some(NoteMother::path("work/projects/plan.md")));
@@ -71,7 +71,7 @@ fn resolves_nothing_when_no_note_matches() {
     let notes = NoteMother::paths(&["plan.md"]);
 
     // Act
-    let resolved = LinkResolver.resolve("missing", &notes);
+    let resolved = LinkResolver::new(&notes).resolve("missing");
 
     // Assert
     assert_eq!(resolved, None);
@@ -83,7 +83,7 @@ fn matches_decomposed_targets_with_composed_names() {
     let notes = NoteMother::paths(&["Caf\u{e9}.md"]);
 
     // Act
-    let resolved = LinkResolver.resolve("Cafe\u{301}", &notes);
+    let resolved = LinkResolver::new(&notes).resolve("Cafe\u{301}");
 
     // Assert
     assert_eq!(resolved, Some(NoteMother::path("Caf\u{e9}.md")));

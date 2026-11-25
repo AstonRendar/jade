@@ -1,6 +1,7 @@
 use jade_shared::application::use_case::UseCase;
 
 use super::error::{vault_root, NotesError};
+use crate::domain::model::EntryKind;
 use crate::domain::port::NoteRepository;
 use crate::domain::service::LinkResolver;
 use crate::domain::value_object::NotePath;
@@ -35,15 +36,17 @@ impl<R: NoteRepository> UseCase for ResolveLinks<R> {
         let root = vault_root(&request.vault_root)?;
         let paths: Vec<NotePath> = self
             .repository
-            .notes(&root)?
+            .list(&root)?
             .into_iter()
-            .map(|note| note.path().clone())
+            .filter(|entry| entry.kind == EntryKind::Note)
+            .filter_map(|entry| NotePath::from_vault_path(entry.path).ok())
             .collect();
+        let resolver = LinkResolver::new(&paths);
         Ok(request
             .targets
             .into_iter()
             .map(|target| ResolvedLink {
-                note: LinkResolver.resolve(&target, &paths),
+                note: resolver.resolve(&target),
                 target,
             })
             .collect())
