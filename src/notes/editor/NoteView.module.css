@@ -366,5 +366,31 @@
 
 .preview :global(img) {
   max-width: 100%;
+  height: auto;
   border-radius: var(--radius);
+}
+
+.preview :global(img.embed-image) {
+  cursor: zoom-in;
+}
+
+.preview :global(.embed-image.missing) {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px dashed var(--danger);
+  border-radius: var(--radius);
+  color: var(--danger-text);
+  font-size: 0.9em;
+}
+
+.preview :global(.embed-image.missing)::before {
+  content: "🖼 ";
+}
+
+.attach {
+  border: none;
+  background: none;
+  font-size: 1.1em;
+  padding: 2px 6px;
+  cursor: pointer;
 }

@@ -145,5 +145,9 @@
     "label": "Open notes",
     "close": "Close {{name}}",
     "openInNewTab": "Open in new tab"
+  },
+  "images": {
+    "attach": "Insert image",
+    "viewer": "Image"
   }
 }

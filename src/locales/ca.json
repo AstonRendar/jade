@@ -145,5 +145,9 @@
     "label": "Notes obertes",
     "close": "Tanca {{name}}",
     "openInNewTab": "Obre en una pestanya nova"
+  },
+  "images": {
+    "attach": "Insereix una imatge",
+    "viewer": "Imatge"
   }
 }

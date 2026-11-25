@@ -4,6 +4,7 @@ import { ConfirmDialog, PromptDialog } from "../../shared/ui/Dialog";
 import { ContextMenu, type MenuItem } from "../../shared/ui/ContextMenu";
 import { reportingErrors } from "../../shared/ui/notificationStore";
 import { isBase } from "../bases/isBase";
+import { isImage } from "../images/imageFiles";
 import { useVault } from "../store/vaultStore";
 import { buildTree, parentOf, type TreeNode } from "./buildTree";
 import styles from "./VaultTree.module.css";
@@ -183,7 +184,7 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
 }
 
 function opens(node: TreeNode): boolean {
-  return node.kind === "note" || isBase(node.path);
+  return node.kind === "note" || isBase(node.path) || isImage(node.path);
 }
 
 export function TreeDialog({

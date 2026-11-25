@@ -75,7 +75,9 @@ describe("renderMarkdown", () => {
     ];
 
     // Act
-    const [folded, open, bare] = sources.map(renderMarkdown);
+    const [folded, open, bare] = sources.map((source) =>
+      renderMarkdown(source),
+    );
 
     // Assert
     expect(folded).toContain(
@@ -169,16 +171,52 @@ describe("renderMarkdown", () => {
 
   it("marks embeds so they render as cards", () => {
     // Arrange
-    const source = "![[Portada.webp]] and [[Plan]]";
+    const source = "![[Capítulo 1]] and [[Plan]]";
 
     // Act
     const html = renderMarkdown(source);
 
     // Assert
     expect(html).toContain(
-      '<a class="wikilink embed" href="#" data-target="Portada.webp">',
+      '<a class="wikilink embed" href="#" data-target="Capítulo 1">',
     );
     expect(html).toContain('<a class="wikilink" href="#" data-target="Plan">');
     expect(html).not.toContain("!<a");
+  });
+
+  it("shows image embeds and Markdown images from their resolved files", () => {
+    // Arrange
+    const source =
+      "![[Portada.webp|300]] ![[Mapa.png|200x100]] ![alt text](Recursos/Mi%20mapa.png) ![web](https://example.com/a.png)";
+    const images = {
+      "Portada.webp": "asset://Recursos/Portada.webp",
+      "Mapa.png": "asset://Mapa.png",
+      "Recursos/Mi mapa.png": "asset://Recursos/Mi%20mapa.png",
+    };
+
+    // Act
+    const html = renderMarkdown(source, images);
+
+    // Assert
+    expect(html).toContain(
+      '<img class="embed-image" src="asset://Recursos/Portada.webp" alt="" data-image="Portada.webp" width="300" loading="lazy">',
+    );
+    expect(html).toContain('data-image="Mapa.png" width="200" height="100"');
+    expect(html).toContain('alt="alt text" data-image="Recursos/Mi mapa.png"');
+    expect(html).toContain('src="https://example.com/a.png" alt="web"');
+  });
+
+  it("shows the name of images that cannot be found", () => {
+    // Arrange
+    const source = "![[Missing.png]] ![x](nope.jpg)";
+
+    // Act
+    const html = renderMarkdown(source, {});
+
+    // Assert
+    expect(html).toContain(
+      '<span class="embed-image missing" data-image="Missing.png">Missing.png</span>',
+    );
+    expect(html).toContain('data-image="nope.jpg">nope.jpg</span>');
   });
 });

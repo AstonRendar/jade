@@ -13,6 +13,8 @@ use jade_shared::application::use_case::UseCase;
 use crate::support::mocks::{MockDataFormat, MockNoteRepository};
 use crate::support::mothers::VAULT;
 
+type Written = Arc<Mutex<Option<(String, Vec<u8>)>>>;
+
 fn path(raw: &str) -> VaultPath {
     VaultPath::parse(raw).expect("valid path")
 }
@@ -220,7 +222,7 @@ fn given_existing(repository: &mut MockNoteRepository, paths: &'static [&'static
         .returning(move |_, candidate| Ok(paths.contains(&candidate.as_str())));
 }
 
-fn expect_written(repository: &mut MockNoteRepository) -> Arc<Mutex<Option<(String, Vec<u8>)>>> {
+fn expect_written(repository: &mut MockNoteRepository) -> Written {
     let written = Arc::new(Mutex::new(None));
     let sink = Arc::clone(&written);
     repository

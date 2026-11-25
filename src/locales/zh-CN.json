@@ -145,5 +145,9 @@
     "label": "打开的笔记",
     "close": "关闭 {{name}}",
     "openInNewTab": "在新标签页中打开"
+  },
+  "images": {
+    "attach": "插入图片",
+    "viewer": "图片"
   }
 }

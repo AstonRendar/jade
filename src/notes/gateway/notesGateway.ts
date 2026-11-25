@@ -1,4 +1,6 @@
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import type { AttachmentView } from "../../shared/bindings/AttachmentView";
 import type { ChangedPathsView } from "../../shared/bindings/ChangedPathsView";
 import type { EntryView } from "../../shared/bindings/EntryView";
 import type { FlushRequestView } from "../../shared/bindings/FlushRequestView";
@@ -6,6 +8,7 @@ import type { BacklinkView } from "../../shared/bindings/BacklinkView";
 import type { BaseTableView } from "../../shared/bindings/BaseTableView";
 import type { FollowedLinkView } from "../../shared/bindings/FollowedLinkView";
 import type { NotePropertiesView } from "../../shared/bindings/NotePropertiesView";
+import type { ResolvedLinkView } from "../../shared/bindings/ResolvedLinkView";
 import type { PreferencesView } from "../../shared/bindings/PreferencesView";
 import type { PropertySummaryView } from "../../shared/bindings/PropertySummaryView";
 import type { PropertyView } from "../../shared/bindings/PropertyView";
@@ -34,6 +37,16 @@ export const notesGateway = {
   writeProperties: (content: string, properties: PropertyView[]) =>
     call<string>("notes_write_properties", { content, properties }),
   listProperties: () => call<PropertySummaryView[]>("notes_list_properties"),
+  resolveFiles: (targets: string[]) =>
+    call<ResolvedLinkView[]>("notes_resolve_files", { targets }),
+  saveAttachment: (note: string, fileName: string, content: Uint8Array) =>
+    call<AttachmentView>("notes_save_attachment", content, {
+      headers: {
+        "x-note": encodeURIComponent(note),
+        "x-file-name": encodeURIComponent(fileName),
+      },
+    }),
+  fileUrl: (vault: string, path: string) => convertFileSrc(`${vault}/${path}`),
   queryBase: (path: string, view: string | null) =>
     call<BaseTableView>("notes_query_base", { path, view }),
   findBacklinks: (path: string) =>

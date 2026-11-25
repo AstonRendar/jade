@@ -145,5 +145,9 @@
     "label": "Notas abiertas",
     "close": "Cerrar {{name}}",
     "openInNewTab": "Abrir en pestaña nueva"
+  },
+  "images": {
+    "attach": "Insertar imagen",
+    "viewer": "Imagen"
   }
 }
