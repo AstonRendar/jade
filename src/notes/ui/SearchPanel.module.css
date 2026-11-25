@@ -1,0 +1,139 @@
+.panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+
+.input {
+  box-sizing: border-box;
+  width: calc(100% - 16px);
+  min-width: 0;
+  margin: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.results {
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 12px 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.count {
+  margin-inline-start: auto;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--hover);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file,
+.hit,
+.groupTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.file {
+  padding: 3px 12px;
+}
+
+.file:hover,
+.hit:hover,
+.groupTitle:hover {
+  background: var(--hover);
+}
+
+.name {
+  flex: none;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.85em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group {
+  margin-bottom: 4px;
+}
+
+.groupTitle {
+  padding: 3px 12px;
+  font-weight: 600;
+}
+
+.hit {
+  display: block;
+  padding: 2px 12px 2px 28px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.9em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel mark {
+  background: none;
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+.hit mark {
+  background: var(--highlight);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.hint {
+  margin: 8px 12px;
+  color: var(--muted);
+  font-size: 0.9em;
+}

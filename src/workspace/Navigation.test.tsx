@@ -157,14 +157,59 @@ describe("navigation, history, sync and settings", () => {
 
     // Act
     await userEvent.keyboard("{Meta>}{Shift>}f{/Shift}{/Meta}");
-    await userEvent.type(screen.getByRole("combobox"), "jade");
+    await userEvent.type(
+      screen.getByRole("searchbox", { name: "Search files and text…" }),
+      "jade",
+    );
     await userEvent.click(
-      await screen.findByRole("option", { name: /Notes about jade/ }),
+      await screen.findByRole("button", { name: /Notes about jade/ }),
     );
 
     // Assert
     await waitFor(() => expect(useVault.getState().selected).toBe("ideas.md"));
     expect(called("notes_search")).toContainEqual({ query: "jade" });
+  });
+
+  it("finds files by name and opens them, also in a new tab", async () => {
+    // Arrange
+    await openVault();
+    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+    const box = screen.getByRole("searchbox", {
+      name: "Search files and text…",
+    });
+
+    // Act
+    await userEvent.type(box, "pln");
+    const files = screen
+      .getAllByRole("button", { name: /plan/ })
+      .map((button) => button.textContent);
+    await userEvent.keyboard("{Enter}");
+    const opened = useVault.getState().selected;
+    await userEvent.clear(box);
+    await userEvent.type(box, "idea");
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /^ideas/ })[0] as HTMLElement,
+      { metaKey: true },
+    );
+
+    // Assert
+    expect(files[0]).toBe("planprojects");
+    expect(opened).toBe("projects/plan.md");
+    expect(useVault.getState().tabs).toEqual(["projects/plan.md", "ideas.md"]);
+  });
+
+  it("goes back to the tree from the search panel", async () => {
+    // Arrange
+    await openVault();
+    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    // Act
+    const hint = screen.getByText(/Type to find files/);
+    await userEvent.keyboard("{Escape}");
+
+    // Assert
+    expect(hint).not.toBeInTheDocument();
+    expect(screen.getByRole("treeitem", { name: "ideas" })).toBeInTheDocument();
   });
 
   it("lists the backlinks of the open note", async () => {

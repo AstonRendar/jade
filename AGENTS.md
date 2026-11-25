@@ -347,6 +347,11 @@ user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and
   every sync stalled (measured on a Pixel 8 on 2026-11-25; the same requests from the
   Mac on the same network took 0.2 s). Commits are named after the device model
   (`ro.product.model`) because Android's hostname is always `localhost`.
+- Sidebar: the file tree (indent guides per open folder) or, with `⌕` / `Mod+Shift+F`, the
+  search panel: files by fuzzy name (`fuzzyMatch`: letters in order, word starts and
+  consecutive letters score higher, at most one jump into the middle of a word; folders
+  are matched only when the query has a `/`) and note text grouped by file. `Mod+O`
+  uses the same file matching.
 - Tests use `mockIPC(..., { shouldMockEvents: true })`, record the commands invoked and
   assert on them; they unmount and flush pending promises before `clearMocks`.
 
