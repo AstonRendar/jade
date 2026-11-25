@@ -36,9 +36,11 @@ use jade_sync::application::get_repository_status::{
     GetRepositoryStatus, GetRepositoryStatusRequest,
 };
 use jade_sync::application::init_repository::{InitRepository, InitRepositoryRequest};
+use jade_sync::application::list_branches::{ListBranches, ListBranchesRequest};
 use jade_sync::application::list_note_history::{ListNoteHistory, ListNoteHistoryRequest};
 use jade_sync::application::read_note_revision::{ReadNoteRevision, ReadNoteRevisionRequest};
 use jade_sync::application::store_access_token::{StoreAccessToken, StoreAccessTokenRequest};
+use jade_sync::application::switch_branch::{SwitchBranch, SwitchBranchRequest};
 use jade_sync::application::synchronize_vault::{SynchronizeVault, SynchronizeVaultRequest};
 use jade_sync::domain::port::{Clock, CredentialStore, DeviceInfo};
 use jade_sync::domain::value_object::RemoteUrl;
@@ -46,9 +48,9 @@ use jade_sync::infrastructure::Git2VersionControl;
 
 use crate::errors::{ErrorCode, ErrorView};
 use crate::view_models::{
-    BacklinkView, BaseTableView, EntryView, FollowedLinkView, NotePropertiesView, PreferencesView,
-    PropertySummaryView, PropertyView, RepositoryStatusView, ResolvedLinkView, RevisionView,
-    SearchHitView, SyncReportView, VaultView,
+    BacklinkView, BaseTableView, BranchListView, EntryView, FollowedLinkView, NotePropertiesView,
+    PreferencesView, PropertySummaryView, PropertyView, RepositoryStatusView, ResolvedLinkView,
+    RevisionView, SearchHitView, SyncReportView, VaultView,
 };
 
 const HISTORY_LIMIT: usize = 100;
@@ -260,6 +262,27 @@ where
             working_directory: self.vault()?,
         })?;
         Ok(report.into())
+    }
+
+    pub fn list_branches(&self) -> Result<BranchListView, ErrorView> {
+        let list = ListBranches::new(Git2VersionControl, &self.credentials).execute(
+            ListBranchesRequest {
+                working_directory: self.vault()?,
+            },
+        )?;
+        Ok(list.into())
+    }
+
+    pub fn switch_branch(&self, branch: &str) -> Result<(), ErrorView> {
+        let _exclusive = self.exclusive()?;
+        Ok(
+            SwitchBranch::new(Git2VersionControl, &self.credentials, &self.device).execute(
+                SwitchBranchRequest {
+                    working_directory: self.vault()?,
+                    branch: branch.to_string(),
+                },
+            )?,
+        )
     }
 
     pub fn init_repository(&self) -> Result<(), ErrorView> {

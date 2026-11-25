@@ -88,7 +88,12 @@
     "pending_one": "{{count}} pending",
     "pending_other": "{{count}} pending",
     "localOnly": "local only",
-    "conflictCopy": "Both devices changed “{{original}}”. The other version was saved as “{{copy}}”."
+    "conflictCopy": "Both devices changed “{{original}}”. The other version was saved as “{{copy}}”.",
+    "chooseBranch": "Choose branch",
+    "branchPlaceholder": "Branch…",
+    "currentBranch": "current",
+    "switchingBranch": "Switching to {{branch}}…",
+    "switchingBranchDetail": "Pending edits are saved on the current branch first."
   },
   "settings": {
     "title": "Settings",

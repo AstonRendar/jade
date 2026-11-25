@@ -17,12 +17,13 @@ import { syncGateway } from "../sync/gateway/syncGateway";
 import { useSync } from "../sync/store/syncStore";
 import { SyncStatus } from "../sync/ui/SyncStatus";
 import styles from "./AppShell.module.css";
+import { BranchPicker } from "./BranchPicker";
 import { SettingsDialog } from "./SettingsDialog";
 import { TabBar } from "./TabBar";
 import { SidePanel } from "./SidePanel";
 
 type Overlay =
-  | { kind: "switcher" | "search" | "settings" }
+  | { kind: "switcher" | "search" | "settings" | "branches" }
   | { kind: "newNote" | "newFolder"; folder: null };
 
 export function AppShell() {
@@ -168,7 +169,7 @@ export function AppShell() {
           </button>
         </header>
         <VaultTree />
-        <SyncStatus />
+        <SyncStatus onChooseBranch={() => setOverlay({ kind: "branches" })} />
       </aside>
       <main className={styles.main}>
         <div className={styles.mobileBar}>
@@ -193,6 +194,7 @@ export function AppShell() {
       {selectedNote && <SidePanel path={selectedNote} />}
       {overlay?.kind === "switcher" && <QuickSwitcher onClose={closeOverlay} />}
       {overlay?.kind === "search" && <SearchDialog onClose={closeOverlay} />}
+      {overlay?.kind === "branches" && <BranchPicker onClose={closeOverlay} />}
       {overlay?.kind === "settings" && (
         <SettingsDialog onClose={closeOverlay} />
       )}

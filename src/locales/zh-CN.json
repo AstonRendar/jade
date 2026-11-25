@@ -88,7 +88,12 @@
     "pending_one": "{{count}} 项待提交",
     "pending_other": "{{count}} 项待提交",
     "localOnly": "仅本地",
-    "conflictCopy": "两台设备都修改了“{{original}}”。另一版本已保存为“{{copy}}”。"
+    "conflictCopy": "两台设备都修改了“{{original}}”。另一版本已保存为“{{copy}}”。",
+    "chooseBranch": "选择分支",
+    "branchPlaceholder": "分支…",
+    "currentBranch": "当前",
+    "switchingBranch": "正在切换到 {{branch}}…",
+    "switchingBranchDetail": "切换前会先在当前分支保存未同步的修改。"
   },
   "settings": {
     "title": "设置",

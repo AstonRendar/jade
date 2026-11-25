@@ -34,6 +34,18 @@ pub trait VersionControl {
         branch: &BranchName,
         credentials: &Credentials,
     ) -> Result<(), VersionControlError>;
+    fn fetch_branches(
+        &self,
+        dir: &WorkingDirectory,
+        url: &RemoteUrl,
+        credentials: &Credentials,
+    ) -> Result<(), VersionControlError>;
+    fn branches(&self, dir: &WorkingDirectory) -> Result<Vec<BranchName>, VersionControlError>;
+    fn switch_branch(
+        &self,
+        dir: &WorkingDirectory,
+        branch: &BranchName,
+    ) -> Result<(), VersionControlError>;
     fn merge_remote(
         &self,
         dir: &WorkingDirectory,
@@ -86,6 +98,8 @@ pub enum VersionControlError {
     FileTooLarge(TrackedPath),
     #[error("`{0:?}` not found")]
     PathNotFound(TrackedPath),
+    #[error("branch `{0:?}` not found")]
+    BranchNotFound(BranchName),
     #[error("version control failure: {0}")]
     Backend(String),
 }

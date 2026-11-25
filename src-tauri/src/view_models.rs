@@ -9,6 +9,7 @@ use jade_notes::domain::service::{Backlink, SearchHit};
 use jade_notes::domain::value_object::{Data, PropertyType};
 use jade_preferences::domain::model::Preferences;
 use jade_sync::application::get_repository_status::RepositoryState;
+use jade_sync::application::list_branches::BranchList;
 use jade_sync::application::synchronize_vault::SyncReport;
 use jade_sync::domain::port::Revision;
 use serde::{Deserialize, Serialize};
@@ -529,6 +530,27 @@ impl From<PropertySummary> for PropertySummaryView {
             kind: PropertyTypeView::from(summary.kind),
             count: u32::try_from(summary.count).unwrap_or(u32::MAX),
             values: summary.values,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct BranchListView {
+    pub current: String,
+    pub branches: Vec<String>,
+}
+
+impl From<BranchList> for BranchListView {
+    fn from(list: BranchList) -> Self {
+        Self {
+            current: list.current.as_str().to_string(),
+            branches: list
+                .branches
+                .iter()
+                .map(|branch| branch.as_str().to_string())
+                .collect(),
         }
     }
 }

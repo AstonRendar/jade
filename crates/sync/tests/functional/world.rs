@@ -13,6 +13,8 @@ use jade_sync::infrastructure::{Git2VersionControl, InMemoryCredentialStore};
 use tempfile::TempDir;
 
 use crate::doubles::{FixedClock, NamedDevice};
+use jade_sync::application::list_branches::BranchList;
+use jade_sync::application::switch_branch::SwitchBranchError;
 
 #[derive(Debug, cucumber::World)]
 #[world(init = Self::new)]
@@ -24,6 +26,8 @@ pub struct SyncWorld {
     pub status: Option<RepositoryState>,
     pub history: Vec<Revision>,
     pub init_result: Option<Result<(), InitRepositoryError>>,
+    pub branches: Option<BranchList>,
+    pub switch_result: Option<Result<(), SwitchBranchError>>,
     devices: HashMap<String, PathBuf>,
 }
 
@@ -37,6 +41,8 @@ impl SyncWorld {
             status: None,
             history: Vec::new(),
             init_result: None,
+            branches: None,
+            switch_result: None,
             devices: HashMap::new(),
         }
     }
