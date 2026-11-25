@@ -325,18 +325,22 @@ impl VersionControl for Git2VersionControl {
 }
 
 fn open(dir: &WorkingDirectory) -> Result<Repository, VersionControlError> {
-    Repository::open(dir.as_path()).map_err(|error| match error.code() {
+    let repository = Repository::open(dir.as_path()).map_err(|error| match error.code() {
         ErrorCode::NotFound => VersionControlError::NotARepository,
         _ => backend(error),
-    })
+    })?;
+    configure(&repository)?;
+    Ok(repository)
 }
 
 fn configure(repository: &Repository) -> Result<(), VersionControlError> {
     let mut config = repository.config().map_err(backend)?;
-    config
-        .set_bool("core.precomposeunicode", true)
-        .map_err(backend)?;
-    config.set_bool("core.autocrlf", false).map_err(backend)
+    for (key, value) in [("core.precomposeunicode", true), ("core.autocrlf", false)] {
+        if config.get_bool(key).ok() != Some(value) {
+            config.set_bool(key, value).map_err(backend)?;
+        }
+    }
+    Ok(())
 }
 
 fn current_branch(repository: &Repository) -> Result<BranchName, VersionControlError> {

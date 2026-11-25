@@ -94,3 +94,44 @@ fn clone_remote(world: &mut SyncWorld, device: &str) {
 fn initialise(working_directory: String) -> Result<(), InitRepositoryError> {
     InitRepository::new(Git2VersionControl).execute(InitRepositoryRequest { working_directory })
 }
+
+#[given(expr = "a repository created by another tool on device {string}")]
+fn a_repository_created_elsewhere(world: &mut SyncWorld, device: String) {
+    let dir = world.add_device(&device);
+    let repository = git2::Repository::init(dir).expect("repository is created");
+    let mut config = repository.config().expect("config is readable");
+    let _ = config.remove("core.precomposeunicode");
+}
+
+#[given(expr = "{string} writes {string} with decomposed accents")]
+fn a_device_writes_decomposed(world: &mut SyncWorld, device: String, path: String) {
+    let decomposed: String =
+        unicode_normalization::UnicodeNormalization::nfd(path.as_str()).collect();
+    fs::write(world.device_dir(&device).join(decomposed), "text").expect("note is written");
+}
+
+#[then(expr = "the repository on {string} composes Unicode file names")]
+fn the_repository_composes(world: &mut SyncWorld, device: String) {
+    let repository = git2::Repository::open(world.device_dir(&device)).expect("repository opens");
+    let config = repository.config().expect("config is readable");
+    assert_eq!(config.get_bool("core.precomposeunicode").ok(), Some(true));
+    assert_eq!(config.get_bool("core.autocrlf").ok(), Some(false));
+}
+
+#[then(expr = "the last commit on {string} names the note {string}")]
+fn the_last_commit_names(world: &mut SyncWorld, device: String, path: String) {
+    let repository = git2::Repository::open(world.device_dir(&device)).expect("repository opens");
+    let tree = repository
+        .head()
+        .and_then(|head| head.peel_to_tree())
+        .expect("a commit exists");
+    let names: Vec<String> = tree
+        .iter()
+        .map(|entry| String::from_utf8_lossy(entry.name_bytes()).into_owned())
+        .collect();
+    if cfg!(target_os = "macos") {
+        assert_eq!(names, vec![path]);
+    } else {
+        assert_eq!(names.len(), 1);
+    }
+}
