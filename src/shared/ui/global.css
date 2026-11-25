@@ -44,13 +44,13 @@
     --danger-text: #fdc9ae;
     --backdrop: rgba(0, 0, 0, 0.55);
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --highlight: rgba(250, 204, 21, 0.28);
-  --callout-note: #60a5fa;
-  --callout-info: #22d3ee;
-  --callout-success: #5cc49a;
-  --callout-warning: #f5b544;
-  --callout-danger: #fb7d4a;
-  --callout-example: #a78bfa;
+    --highlight: rgba(250, 204, 21, 0.28);
+    --callout-note: #60a5fa;
+    --callout-info: #22d3ee;
+    --callout-success: #5cc49a;
+    --callout-warning: #f5b544;
+    --callout-danger: #fb7d4a;
+    --callout-example: #a78bfa;
     color-scheme: dark;
   }
 }
