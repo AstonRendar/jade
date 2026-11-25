@@ -71,8 +71,6 @@
   "navigation": {
     "quickSwitcher": "Open note",
     "quickSwitcherPlaceholder": "Type a note name…",
-    "search": "Search",
-    "searchPlaceholder": "Search all notes…",
     "backlinks": "Backlinks",
     "noBacklinks": "No other note links here."
   },
@@ -145,6 +143,14 @@
     "label": "Open notes",
     "close": "Close {{name}}",
     "openInNewTab": "Open in new tab"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search files and text…",
+    "files": "Files",
+    "content": "In notes",
+    "hint": "Type to find files by name and notes by their text.",
+    "searching": "Searching…"
   },
   "images": {
     "attach": "Insert image",

@@ -21,12 +21,14 @@ type Call = { command: string; args: Record<string, unknown> };
 
 describe("navigation, history, sync and settings", () => {
   let calls: Call[];
+  let searchHits: { path: string; line: number; text: string }[];
   let preferences: PreferencesView;
   let status: RepositoryStatusView;
 
   beforeEach(() => {
     resetStores();
     calls = [];
+    searchHits = [{ path: "ideas.md", line: 1, text: "Notes about jade" }];
     preferences = {
       locale: "en",
       theme: "system",
@@ -157,14 +159,83 @@ describe("navigation, history, sync and settings", () => {
 
     // Act
     await userEvent.keyboard("{Meta>}{Shift>}f{/Shift}{/Meta}");
-    await userEvent.type(screen.getByRole("combobox"), "jade");
+    await userEvent.type(
+      screen.getByRole("searchbox", { name: "Search files and text…" }),
+      "jade",
+    );
     await userEvent.click(
-      await screen.findByRole("option", { name: /Notes about jade/ }),
+      await screen.findByRole("button", { name: /Notes about jade/ }),
     );
 
     // Assert
     await waitFor(() => expect(useVault.getState().selected).toBe("ideas.md"));
     expect(called("notes_search")).toContainEqual({ query: "jade" });
+  });
+
+  it("finds files by name and opens them, also in a new tab", async () => {
+    // Arrange
+    await openVault();
+    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+    const box = screen.getByRole("searchbox", {
+      name: "Search files and text…",
+    });
+
+    // Act
+    await userEvent.type(box, "pln");
+    const files = screen
+      .getAllByRole("button", { name: /plan/ })
+      .map((button) => button.textContent);
+    await userEvent.keyboard("{Enter}");
+    const opened = useVault.getState().selected;
+    await userEvent.clear(box);
+    await userEvent.type(box, "idea");
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /^ideas/ })[0] as HTMLElement,
+      { metaKey: true },
+    );
+
+    // Assert
+    expect(files[0]).toBe("planprojects");
+    expect(opened).toBe("projects/plan.md");
+    expect(useVault.getState().tabs).toEqual(["projects/plan.md", "ideas.md"]);
+  });
+
+  it("shows long text hits from shortly before the match", async () => {
+    // Arrange
+    searchHits = [
+      {
+        path: "ideas.md",
+        line: 4,
+        text: "A very long introduction that goes on and on before the word jade appears",
+      },
+    ];
+    await openVault();
+    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    // Act
+    await userEvent.type(
+      screen.getByRole("searchbox", { name: "Search files and text…" }),
+      "jade",
+    );
+
+    // Assert
+    expect(screen.getByText("Searching…")).toBeInTheDocument();
+    const hit = await screen.findByRole("button", { name: /appears/ });
+    expect(hit.textContent).toBe("… and on before the word jade appears");
+  });
+
+  it("goes back to the tree from the search panel", async () => {
+    // Arrange
+    await openVault();
+    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    // Act
+    const hint = screen.getByText(/Type to find files/);
+    await userEvent.keyboard("{Escape}");
+
+    // Assert
+    expect(hint).not.toBeInTheDocument();
+    expect(screen.getByRole("treeitem", { name: "ideas" })).toBeInTheDocument();
   });
 
   it("lists the backlinks of the open note", async () => {
@@ -407,7 +478,7 @@ describe("navigation, history, sync and settings", () => {
           total: 1,
         };
       case "notes_search":
-        return [{ path: "ideas.md", line: 1, text: "Notes about jade" }];
+        return searchHits;
       case "notes_find_backlinks":
         return [{ source: "ideas.md", line: 3, text: "see [[plan]]" }];
       case "sync_get_status":

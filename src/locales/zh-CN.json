@@ -71,8 +71,6 @@
   "navigation": {
     "quickSwitcher": "打开笔记",
     "quickSwitcherPlaceholder": "输入笔记名称…",
-    "search": "搜索",
-    "searchPlaceholder": "搜索所有笔记…",
     "backlinks": "反向链接",
     "noBacklinks": "没有其他笔记链接到这里。"
   },
@@ -145,6 +143,14 @@
     "label": "打开的笔记",
     "close": "关闭 {{name}}",
     "openInNewTab": "在新标签页中打开"
+  },
+  "search": {
+    "title": "搜索",
+    "placeholder": "搜索文件和文本…",
+    "files": "文件",
+    "content": "笔记内容",
+    "hint": "输入以按名称查找文件，或按文本查找笔记。",
+    "searching": "正在搜索…"
   },
   "images": {
     "attach": "插入图片",

@@ -10,7 +10,7 @@ import { useEditor } from "../notes/store/editorStore";
 import { useImages } from "../notes/store/imageStore";
 import { useVault } from "../notes/store/vaultStore";
 import { QuickSwitcher } from "../notes/ui/QuickSwitcher";
-import { SearchDialog } from "../notes/ui/SearchDialog";
+import { SearchPanel } from "../notes/ui/SearchPanel";
 import { TreeDialog, VaultTree } from "../notes/ui/VaultTree";
 import {
   reportingErrors,
@@ -26,7 +26,7 @@ import { TabBar } from "./TabBar";
 import { SidePanel } from "./SidePanel";
 
 type Overlay =
-  | { kind: "switcher" | "search" | "settings" | "branches" }
+  | { kind: "switcher" | "settings" | "branches" }
   | { kind: "newNote" | "newFolder"; folder: null };
 
 export function AppShell() {
@@ -40,6 +40,7 @@ export function AppShell() {
   const close = useVault((state) => state.close);
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [navigationOpen, setNavigationOpen] = useState(false);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     void reportingErrors(() => useSync.getState().refresh());
@@ -116,7 +117,8 @@ export function AppShell() {
         setOverlay({ kind: "switcher" });
       } else if (key === "f" && event.shiftKey) {
         event.preventDefault();
-        setOverlay({ kind: "search" });
+        setSearching(true);
+        setNavigationOpen(true);
       } else if (key === "s") {
         event.preventDefault();
         void reportingErrors(() => useSync.getState().synchronize());
@@ -145,6 +147,15 @@ export function AppShell() {
       <aside className={styles.sidebar}>
         <header className={styles.header}>
           <span className={styles.vaultName}>{vault?.name}</span>
+          <button
+            type="button"
+            title={t("search.title")}
+            aria-label={t("search.title")}
+            aria-pressed={searching}
+            onClick={() => setSearching(!searching)}
+          >
+            ⌕
+          </button>
           <button
             type="button"
             title={t("tree.newNote")}
@@ -178,7 +189,11 @@ export function AppShell() {
             ⏏
           </button>
         </header>
-        <VaultTree />
+        {searching ? (
+          <SearchPanel onClose={() => setSearching(false)} />
+        ) : (
+          <VaultTree />
+        )}
         <SyncStatus onChooseBranch={() => setOverlay({ kind: "branches" })} />
       </aside>
       <main className={styles.main}>
@@ -205,7 +220,6 @@ export function AppShell() {
       </main>
       {selectedNote && <SidePanel path={selectedNote} />}
       {overlay?.kind === "switcher" && <QuickSwitcher onClose={closeOverlay} />}
-      {overlay?.kind === "search" && <SearchDialog onClose={closeOverlay} />}
       {overlay?.kind === "branches" && <BranchPicker onClose={closeOverlay} />}
       {overlay?.kind === "settings" && (
         <SettingsDialog onClose={closeOverlay} />

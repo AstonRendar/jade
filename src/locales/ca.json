@@ -71,8 +71,6 @@
   "navigation": {
     "quickSwitcher": "Obrir nota",
     "quickSwitcherPlaceholder": "Escriu el nom d'una nota…",
-    "search": "Cercar",
-    "searchPlaceholder": "Cercar a totes les notes…",
     "backlinks": "Enllaços entrants",
     "noBacklinks": "Cap altra nota no enllaça aquí."
   },
@@ -145,6 +143,14 @@
     "label": "Notes obertes",
     "close": "Tanca {{name}}",
     "openInNewTab": "Obre en una pestanya nova"
+  },
+  "search": {
+    "title": "Cerca",
+    "placeholder": "Cerca fitxers i text…",
+    "files": "Fitxers",
+    "content": "A les notes",
+    "hint": "Escriu per trobar fitxers pel nom i notes pel text.",
+    "searching": "Cercant…"
   },
   "images": {
     "attach": "Insereix una imatge",

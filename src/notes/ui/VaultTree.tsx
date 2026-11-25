@@ -1,4 +1,4 @@
-import { useMemo, useState, type MouseEvent } from "react";
+import { useMemo, useState, type CSSProperties, type MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { ConfirmDialog, PromptDialog } from "../../shared/ui/Dialog";
 import { ContextMenu, type MenuItem } from "../../shared/ui/ContextMenu";
@@ -8,6 +8,10 @@ import { isImage } from "../images/imageFiles";
 import { useVault } from "../store/vaultStore";
 import { buildTree, parentOf, type TreeNode } from "./buildTree";
 import styles from "./VaultTree.module.css";
+
+const ROW_PADDING = 8;
+const INDENT = 14;
+const CHEVRON_CENTER = 5;
 
 type Dialog =
   | { kind: "newNote"; folder: string | null }
@@ -158,7 +162,7 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
         className={styles.row}
         data-kind={node.kind}
         data-selected={selected === node.path}
-        style={{ paddingInlineStart: `${8 + depth * 14}px` }}
+        style={{ paddingInlineStart: `${rowIndent(depth)}px` }}
       >
         {isFolder && (
           <span className={styles.chevron}>{isOpen ? "▾" : "▸"}</span>
@@ -166,7 +170,10 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
         {node.name}
       </span>
       {isFolder && isOpen && (
-        <ul role="group">
+        <ul
+          role="group"
+          style={{ "--guide": `${guideOffset(depth)}px` } as CSSProperties}
+        >
           {node.children.map((child) => (
             <TreeItem
               key={child.path}
@@ -181,6 +188,14 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
       )}
     </li>
   );
+}
+
+function rowIndent(depth: number): number {
+  return ROW_PADDING + depth * INDENT;
+}
+
+function guideOffset(depth: number): number {
+  return rowIndent(depth) + CHEVRON_CENTER;
 }
 
 function opens(node: TreeNode): boolean {
