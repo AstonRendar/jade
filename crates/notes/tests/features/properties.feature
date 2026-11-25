@@ -24,3 +24,19 @@ Feature: Note properties
       | anyo | number | 1     | 1024             |
       | tags | tags   | 1     | saga             |
       | tipo | text   | 2     | lugar, personaje |
+
+  Scenario: Changing a property type is stored where Obsidian reads it
+    Given the note "Ana.md" contains "---\nanyo: '1024'\n---\n"
+    When the type of the property "anyo" is set to "number"
+    And the properties of the vault are listed
+    Then the vault properties are:
+      | name | type   | count | values |
+      | anyo | number | 1     | 1024   |
+    And the file ".obsidian/types.json" reads:
+      """
+      {
+        "types": {
+          "anyo": "number"
+        }
+      }
+      """

@@ -9,3 +9,4 @@ mod properties;
 mod query_base;
 mod read_and_save;
 mod rename_entry;
+mod set_property_type;

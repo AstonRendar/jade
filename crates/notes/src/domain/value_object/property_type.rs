@@ -27,6 +27,23 @@ impl PropertyType {
         })
     }
 
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Text => "text",
+            Self::List => "multitext",
+            Self::Number => "number",
+            Self::Checkbox => "checkbox",
+            Self::Date => "date",
+            Self::DateTime => "datetime",
+            Self::Tags => "tags",
+            Self::Aliases => "aliases",
+        }
+    }
+
+    pub fn is_assignable(self) -> bool {
+        !matches!(self, Self::Tags | Self::Aliases)
+    }
+
     pub fn infer(key: &str, value: &Data) -> Option<Self> {
         match key {
             "tags" => return Some(Self::Tags),

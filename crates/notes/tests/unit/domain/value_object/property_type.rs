@@ -85,3 +85,32 @@ fn infers_the_type_from_the_name_and_the_value() {
         ]
     );
 }
+
+#[test]
+fn names_each_type_as_obsidian_stores_it_and_keeps_tags_and_aliases_fixed() {
+    // Arrange
+    let names = [
+        "text",
+        "multitext",
+        "number",
+        "checkbox",
+        "date",
+        "datetime",
+        "tags",
+        "aliases",
+    ];
+
+    // Act
+    let kinds: Vec<PropertyType> = names
+        .iter()
+        .map(|name| PropertyType::from_name(name).expect("known type"))
+        .collect();
+
+    // Assert
+    assert_eq!(
+        kinds.iter().map(|kind| kind.name()).collect::<Vec<_>>(),
+        names
+    );
+    assert_eq!(kinds.iter().filter(|kind| kind.is_assignable()).count(), 6);
+    assert!(!PropertyType::Tags.is_assignable() && !PropertyType::Aliases.is_assignable());
+}

@@ -50,15 +50,7 @@ impl NoteRepository for FsNoteRepository {
         path: &NotePath,
         content: &str,
     ) -> Result<(), NoteRepositoryError> {
-        let file = location(root, path.as_vault_path());
-        let folder = file.parent().unwrap_or(root.as_path());
-        fs::create_dir_all(folder).map_err(storage)?;
-        let temporary = folder.join(format!(
-            ".{}{TEMPORARY_SUFFIX}",
-            path.as_vault_path().file_name()
-        ));
-        fs::write(&temporary, content).map_err(storage)?;
-        fs::rename(&temporary, &file).map_err(storage)
+        self.write_text(root, path.as_vault_path(), content)
     }
 
     fn create_folder(&self, root: &VaultRoot, path: &VaultPath) -> Result<(), NoteRepositoryError> {
@@ -106,6 +98,20 @@ impl NoteRepository for FsNoteRepository {
 
     fn read_text(&self, root: &VaultRoot, path: &VaultPath) -> Result<String, NoteRepositoryError> {
         fs::read_to_string(location(root, path)).map_err(|error| failure(error, path))
+    }
+
+    fn write_text(
+        &self,
+        root: &VaultRoot,
+        path: &VaultPath,
+        content: &str,
+    ) -> Result<(), NoteRepositoryError> {
+        let file = location(root, path);
+        let folder = file.parent().unwrap_or(root.as_path());
+        fs::create_dir_all(folder).map_err(storage)?;
+        let temporary = folder.join(format!(".{}{TEMPORARY_SUFFIX}", path.file_name()));
+        fs::write(&temporary, content).map_err(storage)?;
+        fs::rename(&temporary, &file).map_err(storage)
     }
 
     fn metadata(

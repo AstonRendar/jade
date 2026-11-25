@@ -16,4 +16,5 @@ pub mod rename_entry;
 pub mod resolve_links;
 pub mod save_note;
 pub mod search_notes;
+pub mod set_property_type;
 pub mod write_properties;

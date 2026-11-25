@@ -2,6 +2,7 @@ use cucumber::gherkin::Step;
 use cucumber::{then, when};
 use jade_notes::application::list_properties::{ListProperties, ListPropertiesRequest};
 use jade_notes::application::read_properties::{ReadProperties, ReadPropertiesRequest};
+use jade_notes::application::set_property_type::{SetPropertyType, SetPropertyTypeRequest};
 use jade_notes::application::write_properties::{WriteProperties, WritePropertiesRequest};
 use jade_notes::domain::value_object::{Data, PropertyType};
 use jade_notes::infrastructure::{FsNoteRepository, YamlDataFormat};
@@ -86,4 +87,25 @@ fn type_name(kind: PropertyType) -> &'static str {
         PropertyType::Tags => "tags",
         PropertyType::Aliases => "aliases",
     }
+}
+
+#[when(expr = "the type of the property {string} is set to {string}")]
+fn the_type_is_set(world: &mut NotesWorld, name: String, kind: String) {
+    let result =
+        SetPropertyType::new(FsNoteRepository, YamlDataFormat).execute(SetPropertyTypeRequest {
+            vault_root: world.root(),
+            name,
+            kind,
+        });
+    world.record(result).expect("the type is stored");
+}
+
+#[then(expr = "the file {string} reads:")]
+fn the_file_reads(world: &mut NotesWorld, path: String, step: &Step) {
+    let expected = step
+        .docstring
+        .as_deref()
+        .expect("the step has a text block");
+    let actual = std::fs::read_to_string(format!("{}/{path}", world.root())).expect("file is read");
+    assert_eq!(actual.trim(), expected.trim());
 }
