@@ -88,7 +88,12 @@
     "pending_one": "{{count}} pendent",
     "pending_other": "{{count}} pendents",
     "localOnly": "només local",
-    "conflictCopy": "Els dos dispositius van canviar «{{original}}». L'altra versió s'ha desat com a «{{copy}}»."
+    "conflictCopy": "Els dos dispositius van canviar «{{original}}». L'altra versió s'ha desat com a «{{copy}}».",
+    "chooseBranch": "Tria la branca",
+    "branchPlaceholder": "Branca…",
+    "currentBranch": "actual",
+    "switchingBranch": "Canviant a {{branch}}…",
+    "switchingBranchDetail": "Abans es desen els canvis pendents a la branca actual."
   },
   "settings": {
     "title": "Ajustos",

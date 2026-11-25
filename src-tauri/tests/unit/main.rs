@@ -92,6 +92,9 @@ fn maps_every_version_control_failure() {
         VersionControlError::Network("down".to_string()),
         VersionControlError::FileTooLarge(path.clone()),
         VersionControlError::PathNotFound(path),
+        VersionControlError::BranchNotFound(
+            jade_sync::domain::value_object::BranchName::parse("develop").expect("valid"),
+        ),
         VersionControlError::Backend("boom".to_string()),
     ];
 
@@ -110,6 +113,7 @@ fn maps_every_version_control_failure() {
             ErrorCode::AuthFailed,
             ErrorCode::Network,
             ErrorCode::FileTooLarge,
+            ErrorCode::NotFound,
             ErrorCode::NotFound,
             ErrorCode::Unexpected,
         ]

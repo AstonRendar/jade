@@ -1,4 +1,5 @@
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import type { BranchListView } from "../../shared/bindings/BranchListView";
 import type { ErrorView } from "../../shared/bindings/ErrorView";
 import type { RepositoryStatusView } from "../../shared/bindings/RepositoryStatusView";
 import type { RevisionView } from "../../shared/bindings/RevisionView";
@@ -11,6 +12,9 @@ export const syncGateway = {
     call<VaultView>("sync_clone_repository", { url, parent }),
   synchronize: () => call<SyncReportView>("sync_synchronize"),
   getStatus: () => call<RepositoryStatusView>("sync_get_status"),
+  listBranches: () => call<BranchListView>("sync_list_branches"),
+  switchBranch: (branch: string) =>
+    call<null>("sync_switch_branch", { branch }),
   initRepository: () => call<null>("sync_init_repository"),
   connectRemote: (url: string) => call<null>("sync_connect_remote", { url }),
   listNoteHistory: (path: string) =>

@@ -5,7 +5,9 @@ use tauri::{AppHandle, Emitter, State};
 use super::{blocking, AppJade};
 use crate::errors::ErrorView;
 use crate::flush::{FlushCoordinator, FlushRequestView, FLUSH_REQUESTED, FLUSH_TIMEOUT};
-use crate::view_models::{RepositoryStatusView, RevisionView, SyncReportView, VaultView};
+use crate::view_models::{
+    BranchListView, RepositoryStatusView, RevisionView, SyncReportView, VaultView,
+};
 use crate::watcher::VaultWatcher;
 
 pub const SYNC_STARTED: &str = "sync://started";
@@ -50,6 +52,21 @@ pub async fn sync_get_status(
     jade: State<'_, Arc<AppJade>>,
 ) -> Result<RepositoryStatusView, ErrorView> {
     blocking(&jade, |jade| jade.repository_status()).await
+}
+
+#[tauri::command]
+pub async fn sync_list_branches(
+    jade: State<'_, Arc<AppJade>>,
+) -> Result<BranchListView, ErrorView> {
+    blocking(&jade, |jade| jade.list_branches()).await
+}
+
+#[tauri::command]
+pub async fn sync_switch_branch(
+    jade: State<'_, Arc<AppJade>>,
+    branch: String,
+) -> Result<(), ErrorView> {
+    blocking(&jade, move |jade| jade.switch_branch(&branch)).await
 }
 
 #[tauri::command]

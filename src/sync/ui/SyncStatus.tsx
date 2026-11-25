@@ -3,12 +3,22 @@ import { reportingErrors } from "../../shared/ui/notificationStore";
 import { useSync } from "../store/syncStore";
 import styles from "./SyncStatus.module.css";
 
-export function SyncStatus() {
+export function SyncStatus({ onChooseBranch }: { onChooseBranch: () => void }) {
   const { t } = useTranslation();
   const status = useSync((state) => state.status);
   const syncing = useSync((state) => state.syncing);
   return (
     <footer className={styles.status}>
+      {status?.isRepository && status.branch !== null && (
+        <button
+          type="button"
+          className={styles.branch}
+          title={t("sync.chooseBranch")}
+          onClick={onChooseBranch}
+        >
+          ⎇ {status.branch}
+        </button>
+      )}
       <span className={styles.summary}>{summary()}</span>
       {status?.isRepository && (
         <button
@@ -31,10 +41,7 @@ export function SyncStatus() {
     if (!status.isRepository) {
       return t("sync.notVersioned");
     }
-    const parts = [
-      status.branch ?? "",
-      t("sync.pending", { count: status.pendingChanges }),
-    ];
+    const parts = [t("sync.pending", { count: status.pendingChanges })];
     if (status.ahead > 0) {
       parts.push(`↑${status.ahead}`);
     }

@@ -63,6 +63,8 @@ pub fn run() {
             notes::notes_follow_link,
             sync::sync_synchronize,
             sync::sync_get_status,
+            sync::sync_list_branches,
+            sync::sync_switch_branch,
             sync::sync_init_repository,
             sync::sync_connect_remote,
             sync::sync_clone_repository,

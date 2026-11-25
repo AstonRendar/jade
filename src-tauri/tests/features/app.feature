@@ -67,3 +67,11 @@ Feature: Application flows across contexts
     Then the app on "laptop" fails with "invalid_path"
     And the folder "notes" still exists
 
+
+  Scenario: Switching to another branch of the remote
+    Given a remote vault "journal" with "welcome.md" containing "hello"
+    And the app on "laptop" cloned the remote vault
+    When the app on "laptop" lists its branches
+    And the app on "laptop" switches to the branch "nowhere"
+    Then the app on "laptop" fails with "not_found"
+    And the app on "laptop" is on the branch "main"
