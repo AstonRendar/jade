@@ -151,5 +151,9 @@
     "content": "In notes",
     "hint": "Type to find files by name and notes by their text.",
     "searching": "Searching…"
+  },
+  "images": {
+    "attach": "Insert image",
+    "viewer": "Image"
   }
 }

@@ -34,6 +34,10 @@ Feature: Notes and history through the app
     Then "Ideas.md" on "laptop" has the properties "status, done" and the body "body"
     And the vault on "laptop" knows the property "done" as a checkbox
 
+  Scenario: Pasting an image into a note
+    When the app on "laptop" attaches "Pasted image.png" to "a.md"
+    Then the image is linked as "Pasted image.png" and "Pasted image.png" resolves to "Pasted image.png" on "laptop"
+
   Scenario: Deleting a note
     When the app on "laptop" deletes "a.md"
     Then the vault on "laptop" does not list "a.md"

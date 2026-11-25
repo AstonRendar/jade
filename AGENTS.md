@@ -66,6 +66,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Local time | `chrono` (infrastructure only: `Clock` adapter) |
 | Device name | `gethostname` (infrastructure only: `DeviceInfo` adapter) |
 | Native dialogs | `tauri-plugin-dialog` (folder picker) |
+| Vault files in the WebView | Tauri's asset protocol (`protocol-asset`); the open vault is added to its scope when it is opened, created or cloned |
 | Errors | `thiserror` |
 | HTTP | `reqwest` (blocking, rustls) — only when an adapter needs HTTP (decision of 2026-11-22) |
 | Serialisation | `serde`, `serde_json` (view models and persistence adapters only) |
@@ -229,7 +230,9 @@ jade/
   flag), `SearchQuery` (Unicode- and case-insensitive matching), `Data` (a parsed
   YAML document: null, boolean, number, text, list, map), `Expression` (the Bases
   expression language, parsed with operator precedence), `PropertyType` (Obsidian's
-  property types, read from `.obsidian/types.json` or inferred from the value).
+  property types, read from `.obsidian/types.json` or inferred from the value),
+  `AttachmentFolder` (Obsidian's `attachmentFolderPath`: vault root, the note's folder,
+  a subfolder of it or a fixed folder).
 - Model: `Note` (path + content), `FileRecord` (a vault file with its metadata and, for
   notes, properties, tags and link targets), `Base` (global filters, formulas, display
   names and views; an empty base gets one table of file names), `BaseTable` (columns
@@ -242,7 +245,9 @@ jade/
   and the path otherwise), `Frontmatter` (splits the YAML block from the body),
   `FrontmatterWriter` (writes properties back as YAML Obsidian reads, quoting text that
   YAML would read as something else; an empty list of properties removes the block),
-  `TagParser` (inline `#tags`, nested, outside code), `FileCatalog` (builds
+  `FileResolver` (any vault file by exact path, name or partial path, shortest path
+  first, notes also without `.md`: embeds and images), `TagParser` (inline `#tags`,
+  nested, outside code), `FileCatalog` (builds
   `FileRecord`s), `ExpressionEvaluator` (`file.*`, `note.*`, bare properties, `this`,
   `formula.*`, global functions and methods per type), `BaseQuery` (filters, sort keys
   with empty values last, limit, columns).
@@ -257,7 +262,9 @@ jade/
   `ReadProperties` (the frontmatter of a text and where its body starts; malformed YAML
   is reported and left in the body), `WriteProperties` (rejects blank or repeated
   names), `ListProperties` (every property in the vault with its type, count and the
-  values used, for suggestions). `.obsidian/types.json` is only read.
+  values used, for suggestions), `ResolveFiles`, `SaveAttachment` (writes pasted or
+  dropped files into the attachment folder read from `.obsidian/app.json`, adding ` 1`,
+  ` 2`… to taken names, and returns the shortest link). `.obsidian/types.json` is only read.
 
 Wikilink parsing and resolution exist **only in Rust**. The frontend asks the core
 (`ResolveLinks`) instead of reimplementing them.
@@ -304,7 +311,8 @@ Tauri commands are named `<context>_<action>` in snake_case:
   `notes_delete_entry`, `notes_search`, `notes_find_backlinks`, `notes_resolve_links`,
   `notes_follow_link`, `notes_query_base` (`BaseTableView`), `notes_read_properties`
   (`bodyStart` in UTF-16 units, as JavaScript slices strings), `notes_write_properties`,
-  `notes_list_properties`;
+  `notes_list_properties`, `notes_resolve_files`, `notes_save_attachment` (raw bytes in the
+  body, note and file name percent-encoded in the `x-note` and `x-file-name` headers);
 - `sync_synchronize`, `sync_get_status`, `sync_init_repository`, `sync_connect_remote`,
   `sync_clone_repository`, `sync_list_note_history`, `sync_read_note_revision`,
   `sync_store_access_token`, `sync_has_access_token`, `sync_list_branches`,

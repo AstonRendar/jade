@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { NotePropertiesView } from "../../shared/bindings/NotePropertiesView";
 import type { PropertyView } from "../../shared/bindings/PropertyView";
 import { reportingErrors } from "../../shared/ui/notificationStore";
 import { notesGateway } from "../gateway/notesGateway";
+import { pastedImageName } from "../images/imageFiles";
 import { PropertiesPanel } from "../properties/PropertiesPanel";
+import { useImages } from "../store/imageStore";
 import { useEditor } from "../store/editorStore";
 import { usePropertyCatalog } from "../store/propertyStore";
 import { useVault } from "../store/vaultStore";
@@ -23,6 +25,8 @@ export function NoteView() {
   const edit = useEditor((state) => state.edit);
   const entries = useVault((state) => state.entries);
   const catalog = usePropertyCatalog((state) => state.catalog);
+  const imageUrls = useImages((state) => state.urls);
+  const filePicker = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<Mode>("edit");
   const [head, setHead] = useState<Head | null>(null);
 
@@ -57,6 +61,25 @@ export function NoteView() {
     const current = useEditor.getState().draft;
     edit(current.slice(0, bodyStart) + text);
   };
+  const attach = async (file: File): Promise<string | null> => {
+    const name =
+      /^image\.\w+$/i.test(file.name) || file.name === ""
+        ? pastedImageName(file.type, new Date())
+        : file.name;
+    const saved = await reportingErrors(async () =>
+      notesGateway.saveAttachment(
+        path,
+        name,
+        new Uint8Array(await file.arrayBuffer()),
+      ),
+    );
+    if (!saved) {
+      return null;
+    }
+    await reportingErrors(() => useVault.getState().refresh());
+    return saved.link;
+  };
+
   const changeProperties = (properties: PropertyView[]) => {
     void reportingErrors(async () => {
       const current = useEditor.getState().draft;
@@ -69,6 +92,25 @@ export function NoteView() {
     <section className={styles.note}>
       <header className={styles.header}>
         <h1>{title}</h1>
+        {mode === "edit" && (
+          <button
+            type="button"
+            className={styles.attach}
+            title={t("images.attach")}
+            aria-label={t("images.attach")}
+            onClick={() => filePicker.current?.click()}
+          >
+            🖼
+          </button>
+        )}
+        <input
+          ref={filePicker}
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+          data-testid="image-picker"
+        />
         <div role="group" className={styles.modes}>
           {(["edit", "preview"] as const).map((option) => (
             <button
@@ -104,8 +146,16 @@ export function NoteView() {
               key={path}
               value={body}
               notes={notes}
+              imageUrls={imageUrls}
+              filePicker={filePicker}
               onChange={editBody}
               onFollow={followLink}
+              onImageTargets={(targets) =>
+                void reportingErrors(() =>
+                  useImages.getState().resolve(targets),
+                )
+              }
+              onAttach={attach}
             />
           ) : (
             <Preview source={body} onFollow={followLink} />

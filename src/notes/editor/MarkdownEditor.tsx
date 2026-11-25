@@ -21,30 +21,46 @@ import {
   type ViewUpdate,
 } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
+import { imageEmbedsIn } from "../images/imageFiles";
+import { imagePreview, setImageUrls } from "./imageWidgets";
 import styles from "./NoteView.module.css";
 import { completeNote, WIKILINK, wikilinkAt } from "./wikilinks";
 
 type MarkdownEditorProps = {
   value: string;
   notes: string[];
+  imageUrls: Record<string, string | null>;
+  filePicker: RefObject<HTMLInputElement | null>;
   onChange: (text: string) => void;
   onFollow: (target: string) => void;
+  onImageTargets: (targets: string[]) => void;
+  onAttach: (file: File) => Promise<string | null>;
 };
 
 export function MarkdownEditor({
   value,
   notes,
+  imageUrls,
+  filePicker,
   onChange,
   onFollow,
+  onImageTargets,
+  onAttach,
 }: MarkdownEditorProps) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   const initialValue = useRef(value);
-  const latest = useRef({ notes, onChange, onFollow });
+  const latest = useRef({
+    notes,
+    onChange,
+    onFollow,
+    onImageTargets,
+    onAttach,
+  });
 
   useEffect(() => {
-    latest.current = { notes, onChange, onFollow };
+    latest.current = { notes, onChange, onFollow, onImageTargets, onAttach };
   });
 
   useEffect(() => {
@@ -74,21 +90,65 @@ export function MarkdownEditor({
             indentWithTab,
           ]),
           wikilinkHighlighter,
+          imagePreview,
           editorTheme,
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              latest.current.onChange(update.state.doc.toString());
+              const text = update.state.doc.toString();
+              latest.current.onChange(text);
+              latest.current.onImageTargets(imageTargets(text));
             }
           }),
           EditorView.domEventHandlers({
             mousedown: (event, editor) =>
               followOnModifierClick(event, editor, latest.current.onFollow),
+            paste: (event, editor) =>
+              attachFiles(
+                [...(event.clipboardData?.files ?? [])],
+                editor,
+                editor.state.selection.main.head,
+                latest.current.onAttach,
+              ),
+            drop: (event, editor) =>
+              attachFiles(
+                [...(event.dataTransfer?.files ?? [])],
+                editor,
+                editor.posAtCoords({ x: event.clientX, y: event.clientY }) ??
+                  editor.state.selection.main.head,
+                latest.current.onAttach,
+              ),
           }),
         ],
       }),
     });
+    latest.current.onImageTargets(imageTargets(initialValue.current));
     return () => view.current?.destroy();
   }, []);
+
+  useEffect(() => {
+    view.current?.dispatch({ effects: setImageUrls.of(imageUrls) });
+  }, [imageUrls]);
+
+  useEffect(() => {
+    const picker = filePicker.current;
+    if (!picker) {
+      return;
+    }
+    const insertPicked = () => {
+      const editor = view.current;
+      if (editor && picker.files) {
+        attachFiles(
+          [...picker.files],
+          editor,
+          editor.state.selection.main.head,
+          latest.current.onAttach,
+        );
+      }
+      picker.value = "";
+    };
+    picker.addEventListener("change", insertPicked);
+    return () => picker.removeEventListener("change", insertPicked);
+  }, [filePicker]);
 
   useEffect(() => {
     const editor = view.current;
@@ -100,6 +160,35 @@ export function MarkdownEditor({
   }, [value]);
 
   return <div ref={host} className={styles.editor} />;
+}
+
+function imageTargets(text: string): string[] {
+  return text
+    .split("\n")
+    .flatMap((line) => imageEmbedsIn(line).map((embed) => embed.target));
+}
+
+function attachFiles(
+  files: File[],
+  editor: EditorView,
+  position: number,
+  onAttach: (file: File) => Promise<string | null>,
+): boolean {
+  if (files.length === 0) {
+    return false;
+  }
+  void (async () => {
+    let at = position;
+    for (const file of files) {
+      const link = await onAttach(file);
+      if (link !== null) {
+        const text = `![[${link}]]\n`;
+        editor.dispatch({ changes: { from: at, insert: text } });
+        at += text.length;
+      }
+    }
+  })();
+  return true;
 }
 
 function followOnModifierClick(
@@ -171,4 +260,11 @@ const editorTheme = EditorView.theme({
     backgroundColor: "var(--selected)",
   },
   ".cm-wikilink": { color: "var(--accent-text)" },
+  ".cm-image": { padding: "6px 0" },
+  ".cm-image img": {
+    maxWidth: "100%",
+    height: "auto",
+    borderRadius: "var(--radius)",
+    display: "block",
+  },
 });

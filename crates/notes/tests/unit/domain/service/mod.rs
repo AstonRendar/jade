@@ -2,6 +2,7 @@ mod backlink_finder;
 mod base_query;
 mod expression_evaluator;
 mod file_catalog;
+mod file_resolver;
 mod frontmatter;
 mod frontmatter_writer;
 mod link_resolver;

@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BaseView } from "../notes/bases/BaseView";
 import { isBase } from "../notes/bases/isBase";
+import { isImage } from "../notes/images/imageFiles";
+import { ImageView } from "../notes/images/ImageView";
 import { NoteView } from "../notes/editor/NoteView";
 import { notesGateway } from "../notes/gateway/notesGateway";
 import { useEditor } from "../notes/store/editorStore";
+import { useImages } from "../notes/store/imageStore";
 import { useVault } from "../notes/store/vaultStore";
 import { QuickSwitcher } from "../notes/ui/QuickSwitcher";
 import { SearchPanel } from "../notes/ui/SearchPanel";
@@ -30,7 +33,10 @@ export function AppShell() {
   const { t } = useTranslation();
   const vault = useVault((state) => state.vault);
   const selected = useVault((state) => state.selected);
-  const selectedNote = selected !== null && !isBase(selected) ? selected : null;
+  const selectedNote =
+    selected !== null && !isBase(selected) && !isImage(selected)
+      ? selected
+      : null;
   const close = useVault((state) => state.close);
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [navigationOpen, setNavigationOpen] = useState(false);
@@ -40,6 +46,7 @@ export function AppShell() {
     void reportingErrors(() => useSync.getState().refresh());
     const subscriptions = [
       notesGateway.onChanged((paths) => {
+        void reportingErrors(() => useImages.getState().refresh());
         void reportingErrors(async () => {
           await useVault.getState().refresh();
           await useEditor.getState().reloadIfChanged(paths);
@@ -70,6 +77,9 @@ export function AppShell() {
   useEffect(
     () =>
       useVault.subscribe((state, previous) => {
+        if (state.vault?.path !== previous.vault?.path) {
+          useImages.getState().forget();
+        }
         if (state.selected !== previous.selected) {
           setNavigationOpen(false);
         }
@@ -200,6 +210,8 @@ export function AppShell() {
         <TabBar />
         {selected !== null && isBase(selected) ? (
           <BaseView key={selected} path={selected} />
+        ) : selected !== null && isImage(selected) ? (
+          <ImageView key={selected} path={selected} />
         ) : selectedNote ? (
           <NoteView />
         ) : (

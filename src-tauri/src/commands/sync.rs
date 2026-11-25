@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use tauri::{AppHandle, Emitter, State};
 
-use super::{blocking, AppJade};
+use super::{blocking, expose_vault_files, AppJade};
 use crate::errors::ErrorView;
 use crate::flush::{FlushCoordinator, FlushRequestView, FLUSH_REQUESTED, FLUSH_TIMEOUT};
 use crate::view_models::{
@@ -91,6 +91,7 @@ pub async fn sync_clone_repository(
     parent: String,
 ) -> Result<VaultView, ErrorView> {
     let vault = blocking(&jade, move |jade| jade.clone_repository(&url, &parent)).await?;
+    expose_vault_files(&app, &vault.path)?;
     watcher.watch(app, &vault.path)?;
     Ok(vault)
 }

@@ -25,6 +25,12 @@ pub trait NoteRepository {
     fn delete(&self, root: &VaultRoot, path: &VaultPath) -> Result<(), NoteRepositoryError>;
     fn notes(&self, root: &VaultRoot) -> Result<Vec<Note>, NoteRepositoryError>;
     fn read_text(&self, root: &VaultRoot, path: &VaultPath) -> Result<String, NoteRepositoryError>;
+    fn write_bytes(
+        &self,
+        root: &VaultRoot,
+        path: &VaultPath,
+        content: &[u8],
+    ) -> Result<(), NoteRepositoryError>;
     fn metadata(
         &self,
         root: &VaultRoot,

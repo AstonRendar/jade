@@ -16,7 +16,9 @@ use jade_notes::application::query_base::{QueryBase, QueryBaseRequest};
 use jade_notes::application::read_note::{ReadNote, ReadNoteRequest};
 use jade_notes::application::read_properties::{ReadProperties, ReadPropertiesRequest};
 use jade_notes::application::rename_entry::{RenameEntry, RenameEntryRequest};
+use jade_notes::application::resolve_files::{ResolveFiles, ResolveFilesRequest};
 use jade_notes::application::resolve_links::{ResolveLinks, ResolveLinksRequest};
+use jade_notes::application::save_attachment::{SaveAttachment, SaveAttachmentRequest};
 use jade_notes::application::save_note::{SaveNote, SaveNoteRequest};
 use jade_notes::application::search_notes::{SearchNotes, SearchNotesRequest};
 use jade_notes::application::write_properties::{WriteProperties, WritePropertiesRequest};
@@ -48,9 +50,9 @@ use jade_sync::infrastructure::Git2VersionControl;
 
 use crate::errors::{ErrorCode, ErrorView};
 use crate::view_models::{
-    BacklinkView, BaseTableView, BranchListView, EntryView, FollowedLinkView, NotePropertiesView,
-    PreferencesView, PropertySummaryView, PropertyView, RepositoryStatusView, ResolvedLinkView,
-    RevisionView, SearchHitView, SyncReportView, VaultView,
+    AttachmentView, BacklinkView, BaseTableView, BranchListView, EntryView, FollowedLinkView,
+    NotePropertiesView, PreferencesView, PropertySummaryView, PropertyView, RepositoryStatusView,
+    ResolvedLinkView, RevisionView, SearchHitView, SyncReportView, VaultView,
 };
 
 const HISTORY_LIMIT: usize = 100;
@@ -231,6 +233,32 @@ where
             targets,
         })?;
         Ok(links.into_iter().map(ResolvedLinkView::from).collect())
+    }
+
+    pub fn resolve_files(&self, targets: Vec<String>) -> Result<Vec<ResolvedLinkView>, ErrorView> {
+        let files = ResolveFiles::new(FsNoteRepository).execute(ResolveFilesRequest {
+            vault_root: self.vault()?,
+            targets,
+        })?;
+        Ok(files.into_iter().map(ResolvedLinkView::from).collect())
+    }
+
+    pub fn save_attachment(
+        &self,
+        note: &str,
+        file_name: &str,
+        content: Vec<u8>,
+    ) -> Result<AttachmentView, ErrorView> {
+        let _exclusive = self.exclusive()?;
+        let saved = SaveAttachment::new(FsNoteRepository, YamlDataFormat).execute(
+            SaveAttachmentRequest {
+                vault_root: self.vault()?,
+                note: note.to_string(),
+                file_name: file_name.to_string(),
+                content,
+            },
+        )?;
+        Ok(saved.into())
     }
 
     pub fn follow_link(&self, target: &str) -> Result<FollowedLinkView, ErrorView> {

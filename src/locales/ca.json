@@ -151,5 +151,9 @@
     "content": "A les notes",
     "hint": "Escriu per trobar fitxers pel nom i notes pel text.",
     "searching": "Cercant…"
+  },
+  "images": {
+    "attach": "Insereix una imatge",
+    "viewer": "Imatge"
   }
 }

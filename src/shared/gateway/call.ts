@@ -1,9 +1,17 @@
-import { invoke, type InvokeArgs } from "@tauri-apps/api/core";
+import {
+  invoke,
+  type InvokeArgs,
+  type InvokeOptions,
+} from "@tauri-apps/api/core";
 import type { ErrorView } from "../bindings/ErrorView";
 
-export async function call<T>(command: string, args?: InvokeArgs): Promise<T> {
+export async function call<T>(
+  command: string,
+  args?: InvokeArgs,
+  options?: InvokeOptions,
+): Promise<T> {
   try {
-    return await invoke<T>(command, args);
+    return await invoke<T>(command, args, options);
   } catch (error) {
     throw toErrorView(error);
   }

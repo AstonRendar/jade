@@ -465,3 +465,28 @@ fn the_app_is_on_branch(world: &mut AppWorld, device: String, branch: String) {
         .expect("branches are listed");
     assert_eq!(list.current, branch);
 }
+
+#[when(expr = "the app on {string} attaches {string} to {string}")]
+fn the_app_attaches(world: &mut AppWorld, device: String, name: String, note: String) {
+    let saved = world
+        .app(&device)
+        .save_attachment(&note, &name, vec![1, 2, 3])
+        .expect("the attachment is saved");
+    world.attachment_link = Some(saved.link);
+}
+
+#[then(expr = "the image is linked as {string} and {string} resolves to {string} on {string}")]
+fn the_image_resolves(
+    world: &mut AppWorld,
+    link: String,
+    target: String,
+    path: String,
+    device: String,
+) {
+    assert_eq!(world.attachment_link.as_deref(), Some(link.as_str()));
+    let resolved = world
+        .app(&device)
+        .resolve_files(vec![target])
+        .expect("files resolve");
+    assert_eq!(resolved[0].path.as_deref(), Some(path.as_str()));
+}

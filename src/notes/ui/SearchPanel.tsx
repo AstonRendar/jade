@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { SearchHitView } from "../../shared/bindings/SearchHitView";
 import { reportingErrors } from "../../shared/ui/notificationStore";
 import { isBase } from "../bases/isBase";
+import { isImage } from "../images/imageFiles";
 import { notesGateway } from "../gateway/notesGateway";
 import { useVault } from "../store/vaultStore";
 import { fuzzyMatch } from "./fuzzyMatch";
@@ -46,7 +47,12 @@ export function SearchPanel({ onClose }: { onClose: () => void }) {
   const files = searching
     ? matchingFiles(
         entries
-          .filter((entry) => entry.kind === "note" || isBase(entry.path))
+          .filter(
+            (entry) =>
+              entry.kind === "note" ||
+              isBase(entry.path) ||
+              isImage(entry.path),
+          )
           .map((entry) => entry.path),
         query,
       )

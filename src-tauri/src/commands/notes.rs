@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
+use tauri::ipc::{InvokeBody, Request};
 use tauri::{AppHandle, State};
 
-use super::{blocking, AppJade};
+use super::{blocking, expose_vault_files, percent_decode, AppJade};
 use crate::errors::ErrorView;
 use crate::view_models::{
-    BacklinkView, BaseTableView, EntryView, FollowedLinkView, NotePropertiesView, PreferencesView,
-    PropertySummaryView, PropertyView, ResolvedLinkView, SearchHitView, VaultView,
+    AttachmentView, BacklinkView, BaseTableView, EntryView, FollowedLinkView, NotePropertiesView,
+    PreferencesView, PropertySummaryView, PropertyView, ResolvedLinkView, SearchHitView, VaultView,
 };
 use crate::watcher::VaultWatcher;
 
@@ -19,6 +20,7 @@ pub async fn notes_open_vault(
 ) -> Result<VaultView, ErrorView> {
     let root = path.clone();
     let vault = blocking(&jade, move |jade| jade.open_vault(&path)).await?;
+    expose_vault_files(&app, &root)?;
     watcher.watch(app, &root)?;
     Ok(vault)
 }
@@ -32,6 +34,7 @@ pub async fn notes_create_vault(
     name: String,
 ) -> Result<VaultView, ErrorView> {
     let vault = blocking(&jade, move |jade| jade.create_vault(&parent, &name)).await?;
+    expose_vault_files(&app, &vault.path)?;
     watcher.watch(app, &vault.path)?;
     Ok(vault)
 }
@@ -171,6 +174,39 @@ pub async fn notes_delete_vault(
     let container = super::app::app_capabilities(app)?.managed_vaults_folder;
     blocking(&jade, move |jade| {
         jade.delete_vault(&path, container.as_deref())
+    })
+    .await
+}
+
+#[tauri::command]
+pub async fn notes_resolve_files(
+    jade: State<'_, Arc<AppJade>>,
+    targets: Vec<String>,
+) -> Result<Vec<ResolvedLinkView>, ErrorView> {
+    blocking(&jade, move |jade| jade.resolve_files(targets)).await
+}
+
+#[tauri::command]
+pub async fn notes_save_attachment(
+    jade: State<'_, Arc<AppJade>>,
+    request: Request<'_>,
+) -> Result<AttachmentView, ErrorView> {
+    let header = |name: &str| {
+        request
+            .headers()
+            .get(name)
+            .and_then(|value| value.to_str().ok())
+            .and_then(percent_decode)
+            .unwrap_or_default()
+    };
+    let note = header("x-note");
+    let file_name = header("x-file-name");
+    let InvokeBody::Raw(content) = request.body() else {
+        return Err(ErrorView::unexpected("expected the file bytes".to_string()));
+    };
+    let content = content.clone();
+    blocking(&jade, move |jade| {
+        jade.save_attachment(&note, &file_name, content)
     })
     .await
 }
