@@ -20,7 +20,7 @@ jade-sync = { path = "../crates/sync" }
 notify = "9"
 serde.workspace = true
 serde_json.workspace = true
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-opener = "2"
 ts-rs = "12"

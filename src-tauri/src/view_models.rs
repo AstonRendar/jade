@@ -3,7 +3,9 @@ use jade_notes::application::list_properties::PropertySummary;
 use jade_notes::application::open_vault::VaultInfo;
 use jade_notes::application::query_base::QueryBaseResponse;
 use jade_notes::application::read_properties::NoteProperties;
+use jade_notes::application::resolve_files::ResolvedFile;
 use jade_notes::application::resolve_links::ResolvedLink;
+use jade_notes::application::save_attachment::SavedAttachment;
 use jade_notes::domain::model::{Cell, EntryKind, TableColumn, TableRow, VaultEntry};
 use jade_notes::domain::service::{Backlink, SearchHit};
 use jade_notes::domain::value_object::{Data, PropertyType};
@@ -551,6 +553,32 @@ impl From<BranchList> for BranchListView {
                 .iter()
                 .map(|branch| branch.as_str().to_string())
                 .collect(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct AttachmentView {
+    pub path: String,
+    pub link: String,
+}
+
+impl From<ResolvedFile> for ResolvedLinkView {
+    fn from(file: ResolvedFile) -> Self {
+        Self {
+            path: file.path.map(|path| path.as_str().to_string()),
+            target: file.target,
+        }
+    }
+}
+
+impl From<SavedAttachment> for AttachmentView {
+    fn from(saved: SavedAttachment) -> Self {
+        Self {
+            path: saved.path.as_str().to_string(),
+            link: saved.link,
         }
     }
 }

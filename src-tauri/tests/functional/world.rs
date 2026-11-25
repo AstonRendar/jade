@@ -15,6 +15,7 @@ pub type TestApp = Jade<InMemoryCredentialStore, FixedClock, NamedDevice>;
 #[derive(cucumber::World)]
 #[world(init = Self::new)]
 pub struct AppWorld {
+    pub attachment_link: Option<String>,
     sandbox: TempDir,
     apps: HashMap<String, TestApp>,
     pub remote: Option<PathBuf>,
@@ -36,6 +37,7 @@ impl fmt::Debug for AppWorld {
 impl AppWorld {
     fn new() -> Self {
         Self {
+            attachment_link: None,
             sandbox: tempfile::tempdir().expect("sandbox is created"),
             apps: HashMap::new(),
             remote: None,

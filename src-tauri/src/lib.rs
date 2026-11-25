@@ -55,6 +55,8 @@ pub fn run() {
             notes::notes_delete_vault,
             notes::notes_search,
             notes::notes_query_base,
+            notes::notes_resolve_files,
+            notes::notes_save_attachment,
             notes::notes_read_properties,
             notes::notes_write_properties,
             notes::notes_list_properties,
