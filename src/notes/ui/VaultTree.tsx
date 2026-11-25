@@ -73,7 +73,16 @@ export function VaultTree() {
   function menuItems(node: TreeNode): MenuItem[] {
     const folder =
       node.kind === "folder" ? node.path : parentOf(node.path) || null;
+    const opening: MenuItem[] = opens(node)
+      ? [
+          {
+            label: t("tabs.openInNewTab"),
+            action: () => useVault.getState().openInNewTab(node.path),
+          },
+        ]
+      : [];
     return [
+      ...opening,
       {
         label: t("tree.newNote"),
         action: () => setDialog({ kind: "newNote", folder }),
@@ -107,9 +116,11 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
   const select = useVault((state) => state.select);
   const isFolder = node.kind === "folder";
   const isOpen = expanded.has(node.path);
-  const activate = () => {
+  const activate = (inNewTab: boolean) => {
     if (isFolder) {
       onToggle(node.path);
+    } else if (opens(node) && inNewTab) {
+      useVault.getState().openInNewTab(node.path);
     } else if (opens(node)) {
       select(node.path);
     }
@@ -123,12 +134,18 @@ function TreeItem({ node, depth, expanded, onToggle, onMenu }: TreeItemProps) {
       tabIndex={0}
       onClick={(event) => {
         event.stopPropagation();
-        activate();
+        activate(event.metaKey || event.ctrlKey);
+      }}
+      onAuxClick={(event) => {
+        if (event.button === 1) {
+          event.stopPropagation();
+          activate(true);
+        }
       }}
       onKeyDown={(event) => {
         if (event.key === "Enter") {
           event.stopPropagation();
-          activate();
+          activate(event.metaKey || event.ctrlKey);
         }
       }}
       onContextMenu={(event) => {

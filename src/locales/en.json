@@ -135,5 +135,10 @@
     "addValue": "Add a value to {{name}}",
     "addValuePlaceholder": "Add…",
     "invalid": "The properties block is not valid YAML; edit it as text."
+  },
+  "tabs": {
+    "label": "Open notes",
+    "close": "Close {{name}}",
+    "openInNewTab": "Open in new tab"
   }
 }

@@ -135,5 +135,10 @@
     "addValue": "为 {{name}} 添加值",
     "addValuePlaceholder": "添加…",
     "invalid": "属性块不是有效的 YAML，请以文本方式编辑。"
+  },
+  "tabs": {
+    "label": "打开的笔记",
+    "close": "关闭 {{name}}",
+    "openInNewTab": "在新标签页中打开"
   }
 }

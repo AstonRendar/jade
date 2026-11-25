@@ -135,5 +135,10 @@
     "addValue": "Afegeix un valor a {{name}}",
     "addValuePlaceholder": "Afegeix…",
     "invalid": "El bloc de propietats no és YAML vàlid; edita’l com a text."
+  },
+  "tabs": {
+    "label": "Notes obertes",
+    "close": "Tanca {{name}}",
+    "openInNewTab": "Obre en una pestanya nova"
   }
 }

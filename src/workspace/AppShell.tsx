@@ -18,6 +18,7 @@ import { useSync } from "../sync/store/syncStore";
 import { SyncStatus } from "../sync/ui/SyncStatus";
 import styles from "./AppShell.module.css";
 import { SettingsDialog } from "./SettingsDialog";
+import { TabBar } from "./TabBar";
 import { SidePanel } from "./SidePanel";
 
 type Overlay =
@@ -82,10 +83,23 @@ export function AppShell() {
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === "Tab") {
+        event.preventDefault();
+        useVault.getState().cycleTab(event.shiftKey ? -1 : 1);
+        return;
+      }
       if (!(event.metaKey || event.ctrlKey)) {
         return;
       }
       const key = event.key.toLowerCase();
+      if (key === "w") {
+        const active = useVault.getState().selected;
+        if (active !== null) {
+          event.preventDefault();
+          useVault.getState().closeTab(active);
+        }
+        return;
+      }
       if (key === "o") {
         event.preventDefault();
         setOverlay({ kind: "switcher" });
@@ -167,6 +181,7 @@ export function AppShell() {
           </button>
           <span>{vault?.name}</span>
         </div>
+        <TabBar />
         {selected !== null && isBase(selected) ? (
           <BaseView key={selected} path={selected} />
         ) : selectedNote ? (

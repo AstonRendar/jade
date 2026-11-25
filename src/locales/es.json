@@ -135,5 +135,10 @@
     "addValue": "Añadir un valor a {{name}}",
     "addValuePlaceholder": "Añadir…",
     "invalid": "El bloque de propiedades no es YAML válido; edítalo como texto."
+  },
+  "tabs": {
+    "label": "Notas abiertas",
+    "close": "Cerrar {{name}}",
+    "openInNewTab": "Abrir en pestaña nueva"
   }
 }

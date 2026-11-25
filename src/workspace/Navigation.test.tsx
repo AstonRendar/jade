@@ -2,6 +2,7 @@ import { emit } from "@tauri-apps/api/event";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import {
   cleanup,
+  fireEvent,
   render,
   screen,
   waitFor,
@@ -83,6 +84,71 @@ describe("navigation, history, sync and settings", () => {
     // Assert
     expect(called("notes_read_note")).toEqual([{ path: "ideas.md" }]);
     await screen.findByRole("heading", { level: 1, name: "ideas" });
+  });
+
+  it("keeps several notes open in tabs", async () => {
+    // Arrange
+    await openVault();
+    await userEvent.click(screen.getByRole("treeitem", { name: "ideas" }));
+
+    // Act
+    await userEvent.click(screen.getByRole("treeitem", { name: "projects" }));
+    fireEvent.click(await screen.findByRole("treeitem", { name: "plan" }), {
+      metaKey: true,
+    });
+
+    // Assert
+    const tabs = within(screen.getByRole("tablist", { name: "Open notes" }))
+      .getAllByRole("tab")
+      .map((tab) => tab.textContent);
+    expect(tabs).toEqual(["ideas", "plan"]);
+    expect(screen.getByRole("tab", { name: "plan" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await screen.findByRole("heading", { level: 1, name: "plan" });
+  });
+
+  it("switches, cycles and closes tabs", async () => {
+    // Arrange
+    await openVault();
+    useVault.getState().select("ideas.md");
+    useVault.getState().openInNewTab("projects/plan.md");
+    await screen.findByRole("tab", { name: "plan" });
+
+    // Act
+    await userEvent.click(screen.getByRole("tab", { name: "ideas" }));
+    const clicked = useVault.getState().selected;
+    await userEvent.keyboard("{Control>}{Tab}{/Control}");
+    const cycled = useVault.getState().selected;
+    await userEvent.click(screen.getByRole("button", { name: "Close plan" }));
+    await userEvent.keyboard("{Meta>}w{/Meta}");
+
+    // Assert
+    expect(clicked).toBe("ideas.md");
+    expect(cycled).toBe("projects/plan.md");
+    expect(
+      screen.queryByRole("tablist", { name: "Open notes" }),
+    ).not.toBeInTheDocument();
+    expect(useVault.getState().selected).toBeNull();
+  });
+
+  it("opens a note in a new tab from its context menu", async () => {
+    // Arrange
+    await openVault();
+    useVault.getState().select("ideas.md");
+    await userEvent.click(screen.getByRole("treeitem", { name: "projects" }));
+
+    // Act
+    fireEvent.contextMenu(
+      await screen.findByRole("treeitem", { name: "plan" }),
+    );
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: "Open in new tab" }),
+    );
+
+    // Assert
+    expect(useVault.getState().tabs).toEqual(["ideas.md", "projects/plan.md"]);
   });
 
   it("finds text in every note and opens a hit", async () => {
