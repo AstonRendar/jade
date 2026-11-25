@@ -1,5 +1,6 @@
 use jade_notes::application::error::NotesError;
 use jade_notes::application::follow_link::{FollowLink, FollowLinkRequest, FollowedLink};
+use jade_notes::domain::model::{EntryKind, VaultEntry};
 use jade_shared::application::use_case::UseCase;
 use mockall::predicate::eq;
 
@@ -66,8 +67,18 @@ fn request(target: &str) -> FollowLinkRequest {
 }
 
 fn given_notes(repository: &mut MockNoteRepository, paths: &[&str]) {
-    let notes: Vec<_> = paths.iter().map(|p| NoteMother::note(p, "")).collect();
-    repository.expect_notes().return_once(move |_| Ok(notes));
+    let entries: Vec<_> = paths
+        .iter()
+        .map(|path| VaultEntry {
+            path: NoteMother::vault_path(path),
+            kind: EntryKind::Note,
+        })
+        .chain([VaultEntry {
+            path: NoteMother::vault_path("image.png"),
+            kind: EntryKind::File,
+        }])
+        .collect();
+    repository.expect_list().return_once(move |_| Ok(entries));
 }
 
 fn expect_empty_note_written(repository: &mut MockNoteRepository, path: &str) {

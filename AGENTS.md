@@ -235,8 +235,8 @@ jade/
   names and views; an empty base gets one table of file names), `BaseTable` (columns
   and rows of typed `Cell`s).
 - Domain services: `WikiLinkParser` (ignores links in fenced and inline code),
-  `LinkResolver` (exact path, then name or partial path, case-insensitive, shortest path
-  wins on ambiguity), `BacklinkFinder`, `NoteSearch` (title and line hits, capped),
+  `LinkResolver` (an index built once per operation over the note paths: exact path, then
+  name or partial path, case-insensitive, shortest path wins on ambiguity), `BacklinkFinder`, `NoteSearch` (title and line hits, capped),
   `LinkRewriter` (points links at moved notes, keeping headings, aliases and embeds;
   keeps the link text when it still resolves, uses the title when it is unambiguous
   and the path otherwise), `Frontmatter` (splits the YAML block from the body),

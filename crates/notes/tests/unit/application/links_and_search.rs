@@ -12,7 +12,7 @@ use crate::support::mothers::{NoteMother, VAULT};
 fn resolves_each_requested_target() {
     // Arrange
     let mut repository = MockNoteRepository::new();
-    given_notes(&mut repository, vec![NoteMother::note("plan.md", "")]);
+    given_note_paths(&mut repository, vec![NoteMother::note("plan.md", "")]);
 
     // Act
     let resolved = ResolveLinks::new(repository).execute(ResolveLinksRequest {
@@ -100,4 +100,18 @@ fn searches_every_note() {
 
 fn given_notes(repository: &mut MockNoteRepository, notes: Vec<jade_notes::domain::model::Note>) {
     repository.expect_notes().return_once(move |_| Ok(notes));
+}
+
+fn given_note_paths(
+    repository: &mut MockNoteRepository,
+    notes: Vec<jade_notes::domain::model::Note>,
+) {
+    let entries: Vec<_> = notes
+        .into_iter()
+        .map(|note| jade_notes::domain::model::VaultEntry {
+            path: note.path().as_vault_path().clone(),
+            kind: jade_notes::domain::model::EntryKind::Note,
+        })
+        .collect();
+    repository.expect_list().return_once(move |_| Ok(entries));
 }

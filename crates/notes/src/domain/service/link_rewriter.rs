@@ -19,14 +19,15 @@ impl LinkRewriter {
         moves: &[NoteMove],
         before: &[NotePath],
     ) -> Option<String> {
-        let after = paths_after(before, moves);
+        let after = LinkResolver::new(&paths_after(before, moves));
+        let before = LinkResolver::new(before);
         let edits: Vec<(Range<usize>, String)> = WikiLinkParser
             .parse(content)
             .into_iter()
             .filter_map(|located| {
                 let target = located.link.target();
-                let moved = moved_note(target, moves, before)?;
-                if LinkResolver.resolve(target, &after).as_ref() == Some(moved) {
+                let moved = moved_note(target, moves, &before)?;
+                if after.resolve(target).as_ref() == Some(moved) {
                     return None;
                 }
                 Some((located.target_span, link_text(target, moved, &after)))
@@ -46,9 +47,9 @@ impl LinkRewriter {
 fn moved_note<'m>(
     target: &str,
     moves: &'m [NoteMove],
-    before: &[NotePath],
+    before: &LinkResolver,
 ) -> Option<&'m NotePath> {
-    let resolved = LinkResolver.resolve(target, before)?;
+    let resolved = before.resolve(target)?;
     moves
         .iter()
         .find(|note_move| note_move.from == resolved)
@@ -67,9 +68,9 @@ fn paths_after(before: &[NotePath], moves: &[NoteMove]) -> Vec<NotePath> {
         .collect()
 }
 
-fn link_text(original: &str, moved: &NotePath, after: &[NotePath]) -> String {
+fn link_text(original: &str, moved: &NotePath, after: &LinkResolver) -> String {
     let title = moved.title();
-    let title_is_enough = LinkResolver.resolve(title, after).as_ref() == Some(moved);
+    let title_is_enough = after.resolve(title).as_ref() == Some(moved);
     if original.contains('/') || !title_is_enough {
         moved.without_extension().to_string()
     } else {
