@@ -60,16 +60,16 @@ export function BranchPicker({ onClose }: { onClose: () => void }) {
 async function switchTo(branch: string) {
   await useEditor.getState().flush();
   await syncGateway.switchBranch(branch);
-  const selected = useVault.getState().selected;
   await useVault.getState().refresh();
-  const stillThere = useVault
-    .getState()
-    .entries.some((entry) => entry.path === selected);
-  if (selected !== null && stillThere) {
+  const { entries, tabs, selected } = useVault.getState();
+  const exists = (path: string) => entries.some((entry) => entry.path === path);
+  for (const tab of tabs.filter((tab) => !exists(tab))) {
+    useVault.getState().closeTab(tab);
+  }
+  if (selected !== null && exists(selected)) {
     await useEditor.getState().load(selected);
-  } else if (selected !== null) {
+  } else {
     useEditor.getState().reset();
-    useVault.setState({ selected: null });
   }
   await useSync.getState().refresh();
 }
