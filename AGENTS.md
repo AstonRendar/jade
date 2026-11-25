@@ -338,6 +338,11 @@ user-facing text**; the frontend maps `code` to the i18n key `errors.<code>` and
   system bars, cutout and keyboard insets, and CSS also honours `env(safe-area-inset-*)`
   (`viewport-fit=cover`). Every mobile UI change is checked on a device or emulator
   screenshot (`adb exec-out screencap -p`), not only in tests.
+- Android Wi-Fi: while visible, `MainActivity` holds a low-latency `WifiLock`. Without it,
+  Wi-Fi power saving on some routers held GitHub's HTTPS replies back for 10–60 s, so
+  every sync stalled (measured on a Pixel 8 on 2026-11-25; the same requests from the
+  Mac on the same network took 0.2 s). Commits are named after the device model
+  (`ro.product.model`) because Android's hostname is always `localhost`.
 - Tests use `mockIPC(..., { shouldMockEvents: true })`, record the commands invoked and
   assert on them; they unmount and flush pending promises before `clearMocks`.
 
