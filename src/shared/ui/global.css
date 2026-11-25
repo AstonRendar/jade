@@ -16,6 +16,13 @@
   --backdrop: rgba(20, 24, 22, 0.35);
   --shadow: 0 8px 24px rgba(20, 24, 22, 0.16);
   --radius: 8px;
+  --highlight: rgba(250, 204, 21, 0.4);
+  --callout-note: #2563eb;
+  --callout-info: #0891b2;
+  --callout-success: #2f8f6a;
+  --callout-warning: #c2780c;
+  --callout-danger: #c2410c;
+  --callout-example: #7c3aed;
   color-scheme: light;
 }
 
@@ -37,6 +44,13 @@
     --danger-text: #fdc9ae;
     --backdrop: rgba(0, 0, 0, 0.55);
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --highlight: rgba(250, 204, 21, 0.28);
+  --callout-note: #60a5fa;
+  --callout-info: #22d3ee;
+  --callout-success: #5cc49a;
+  --callout-warning: #f5b544;
+  --callout-danger: #fb7d4a;
+  --callout-example: #a78bfa;
     color-scheme: dark;
   }
 }
@@ -58,6 +72,13 @@
   --danger-text: #fdc9ae;
   --backdrop: rgba(0, 0, 0, 0.55);
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --highlight: rgba(250, 204, 21, 0.28);
+  --callout-note: #60a5fa;
+  --callout-info: #22d3ee;
+  --callout-success: #5cc49a;
+  --callout-warning: #f5b544;
+  --callout-danger: #fb7d4a;
+  --callout-example: #a78bfa;
   color-scheme: dark;
 }
 

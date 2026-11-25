@@ -76,7 +76,7 @@ Pending work is tracked as GitHub issues, never as `TODO` comments in the code.
 | Frontend | React 19 + TypeScript (strict) + Vite |
 | State | Zustand |
 | Editor | CodeMirror 6 (`@codemirror/lang-markdown`) |
-| Preview | markdown-it (`html: false`) with a custom wikilink rule |
+| Preview | markdown-it (`html: false`) with custom rules for wikilinks and embeds, callouts (foldable, Obsidian kinds and aliases), task lists, `==highlights==`, `%%comments%%` and `#tags` |
 | i18n | i18next + react-i18next |
 | Styling | CSS Modules + CSS custom properties (light/dark) |
 | Frontend tests | Vitest + React Testing Library + `@tauri-apps/api/mocks`, coverage v8 |
