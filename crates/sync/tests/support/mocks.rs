@@ -22,6 +22,9 @@ mock! {
         fn set_remote(&self, dir: &WorkingDirectory, url: &RemoteUrl) -> Result<(), VersionControlError>;
         fn commit_all(&self, dir: &WorkingDirectory, message: &CommitMessage) -> Result<Option<CommitId>, VersionControlError>;
         fn fetch(&self, dir: &WorkingDirectory, url: &RemoteUrl, branch: &BranchName, credentials: &Credentials) -> Result<(), VersionControlError>;
+        fn fetch_branches(&self, dir: &WorkingDirectory, url: &RemoteUrl, credentials: &Credentials) -> Result<(), VersionControlError>;
+        fn branches(&self, dir: &WorkingDirectory) -> Result<Vec<BranchName>, VersionControlError>;
+        fn switch_branch(&self, dir: &WorkingDirectory, branch: &BranchName) -> Result<(), VersionControlError>;
         fn merge_remote(&self, dir: &WorkingDirectory, branch: &BranchName) -> Result<MergeOutcome, VersionControlError>;
         fn existing_paths(&self, dir: &WorkingDirectory) -> Result<BTreeSet<TrackedPath>, VersionControlError>;
         fn conclude_merge(&self, dir: &WorkingDirectory, branch: &BranchName, resolutions: &[ResolvedConflict], message: &CommitMessage) -> Result<CommitId, VersionControlError>;

@@ -88,7 +88,12 @@
     "pending_one": "{{count}} pendiente",
     "pending_other": "{{count}} pendientes",
     "localOnly": "solo local",
-    "conflictCopy": "Los dos dispositivos cambiaron «{{original}}». La otra versión se ha guardado como «{{copy}}»."
+    "conflictCopy": "Los dos dispositivos cambiaron «{{original}}». La otra versión se ha guardado como «{{copy}}».",
+    "chooseBranch": "Elegir rama",
+    "branchPlaceholder": "Rama…",
+    "currentBranch": "actual",
+    "switchingBranch": "Cambiando a {{branch}}…",
+    "switchingBranchDetail": "Antes se guardan los cambios pendientes en la rama actual."
   },
   "settings": {
     "title": "Ajustes",

@@ -280,7 +280,10 @@ Wikilink parsing and resolution exist **only in Rust**. The frontend asks the co
 - Use cases: `InitRepository`, `CloneRepository`, `ConnectRemote`, `SynchronizeVault`
   (returns a `SyncReport`), `GetRepositoryStatus`, `ListNoteHistory`,
   `ReadNoteRevision`, `StoreAccessToken` (an empty token deletes it),
-  `CheckAccessToken`.
+  `CheckAccessToken`, `ListBranches` (local and remote branches, refreshed from the
+  remote when it is reachable), `SwitchBranch` (commits pending edits on the current
+  branch, then checks out the other one, tracking the remote branch when it is new
+  locally). The branch is chosen per device and is not stored in the vault.
 
 **`preferences`**
 - Value objects: `Locale` (`en`, `es`, `zh-CN`, `ca` only), `Theme` (`system`, `light`,
@@ -304,7 +307,8 @@ Tauri commands are named `<context>_<action>` in snake_case:
   `notes_list_properties`;
 - `sync_synchronize`, `sync_get_status`, `sync_init_repository`, `sync_connect_remote`,
   `sync_clone_repository`, `sync_list_note_history`, `sync_read_note_revision`,
-  `sync_store_access_token`, `sync_has_access_token`;
+  `sync_store_access_token`, `sync_has_access_token`, `sync_list_branches`,
+  `sync_switch_branch`;
 - `preferences_get`, `preferences_update`, `preferences_forget_vault`;
 - `editor_flush_completed`.
 

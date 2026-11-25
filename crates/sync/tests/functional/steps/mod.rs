@@ -1,3 +1,4 @@
+mod branch_steps;
 mod device_steps;
 mod history_steps;
 mod remote_steps;

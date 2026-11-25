@@ -160,7 +160,44 @@ describe("navigation, history, sync and settings", () => {
     await openVault();
 
     // Assert
-    expect(await screen.findByText("main · 2 pending")).toBeInTheDocument();
+    expect(await screen.findByText("2 pending")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "⎇ main" })).toBeInTheDocument();
+  });
+
+  it("switches to another branch and reloads the vault", async () => {
+    // Arrange
+    await openVault();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "⎇ main" }),
+    );
+
+    // Act
+    await userEvent.click(
+      await screen.findByRole("option", { name: /develop/ }),
+    );
+
+    // Assert
+    await waitFor(() =>
+      expect(called("sync_switch_branch")).toEqual([{ branch: "develop" }]),
+    );
+    await waitFor(() =>
+      expect(called("notes_list_entries").length).toBeGreaterThan(1),
+    );
+  });
+
+  it("closes the branch list when the current branch is chosen", async () => {
+    // Arrange
+    await openVault();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "⎇ main" }),
+    );
+
+    // Act
+    await userEvent.click(await screen.findByRole("option", { name: /main/ }));
+
+    // Assert
+    expect(called("sync_switch_branch")).toEqual([]);
+    expect(screen.queryByRole("option")).not.toBeInTheDocument();
   });
 
   it("offers to version a folder that is not a repository", async () => {
@@ -280,6 +317,8 @@ describe("navigation, history, sync and settings", () => {
           { path: "projects/plan.md", kind: "note" },
           { path: "Index.base", kind: "file" },
         ];
+      case "sync_list_branches":
+        return { current: "main", branches: ["develop", "main"] };
       case "notes_read_properties":
         return { properties: [], bodyStart: 0, valid: true };
       case "notes_list_properties":

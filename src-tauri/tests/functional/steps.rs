@@ -441,3 +441,27 @@ fn the_vault_knows_a_property(world: &mut AppWorld, device: String, name: String
         .expect("the property is listed");
     assert_eq!(summary.kind, PropertyTypeView::Checkbox);
 }
+
+#[when(expr = "the app on {string} lists its branches")]
+fn the_app_lists_branches(world: &mut AppWorld, device: String) {
+    let list = world
+        .app(&device)
+        .list_branches()
+        .expect("branches are listed");
+    assert_eq!(list.branches, vec![list.current.clone()]);
+}
+
+#[when(expr = "the app on {string} switches to the branch {string}")]
+fn the_app_switches_branch(world: &mut AppWorld, device: String, branch: String) {
+    let result = world.app(&device).switch_branch(&branch);
+    world.record(&device, result);
+}
+
+#[then(expr = "the app on {string} is on the branch {string}")]
+fn the_app_is_on_branch(world: &mut AppWorld, device: String, branch: String) {
+    let list = world
+        .app(&device)
+        .list_branches()
+        .expect("branches are listed");
+    assert_eq!(list.current, branch);
+}

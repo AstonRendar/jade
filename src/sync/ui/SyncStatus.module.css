@@ -18,3 +18,14 @@
 .status button {
   padding: 2px 8px;
 }
+
+.status .branch {
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: none;
+  background: none;
+  color: var(--accent-text);
+  padding: 2px 4px;
+}

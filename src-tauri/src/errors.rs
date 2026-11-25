@@ -6,9 +6,11 @@ use jade_sync::application::clone_repository::CloneRepositoryError;
 use jade_sync::application::connect_remote::ConnectRemoteError;
 use jade_sync::application::get_repository_status::GetRepositoryStatusError;
 use jade_sync::application::init_repository::InitRepositoryError;
+use jade_sync::application::list_branches::ListBranchesError;
 use jade_sync::application::list_note_history::ListNoteHistoryError;
 use jade_sync::application::read_note_revision::ReadNoteRevisionError;
 use jade_sync::application::store_access_token::StoreAccessTokenError;
+use jade_sync::application::switch_branch::SwitchBranchError;
 use jade_sync::application::synchronize_vault::SynchronizeVaultError;
 use jade_sync::domain::port::{CredentialStoreError, VersionControlError};
 use serde::Serialize;
@@ -105,6 +107,9 @@ impl From<VersionControlError> for ErrorView {
             }
             VersionControlError::PathNotFound(path) => {
                 Self::with(ErrorCode::NotFound, "path", path.as_str())
+            }
+            VersionControlError::BranchNotFound(branch) => {
+                Self::with(ErrorCode::NotFound, "path", branch.as_str())
             }
             VersionControlError::Backend(detail) => Self::unexpected(detail),
         }
@@ -236,6 +241,33 @@ impl From<StoreAccessTokenError> for ErrorView {
         match error {
             StoreAccessTokenError::InvalidToken(_) => Self::new(ErrorCode::InvalidToken),
             StoreAccessTokenError::Credentials(error) => error.into(),
+        }
+    }
+}
+
+impl From<ListBranchesError> for ErrorView {
+    fn from(error: ListBranchesError) -> Self {
+        match error {
+            ListBranchesError::InvalidWorkingDirectory(error) => {
+                Self::with(ErrorCode::InvalidPath, "path", error.0)
+            }
+            ListBranchesError::VersionControl(error) => error.into(),
+            ListBranchesError::Credentials(error) => error.into(),
+        }
+    }
+}
+
+impl From<SwitchBranchError> for ErrorView {
+    fn from(error: SwitchBranchError) -> Self {
+        match error {
+            SwitchBranchError::InvalidWorkingDirectory(error) => {
+                Self::with(ErrorCode::InvalidPath, "path", error.0)
+            }
+            SwitchBranchError::InvalidBranch(error) => {
+                Self::with(ErrorCode::InvalidPath, "path", error.0)
+            }
+            SwitchBranchError::VersionControl(error) => error.into(),
+            SwitchBranchError::Credentials(error) => error.into(),
         }
     }
 }
