@@ -21,3 +21,10 @@ Feature: Local vault without remote
     Given a new local vault on device "desk"
     When "desk" is initialised again
     Then initialising fails because it is already a repository
+
+  Scenario: A repository created by another tool keeps accented names composed
+    Given a repository created by another tool on device "desk"
+    And "desk" writes "Imágenes.md" with decomposed accents
+    When "desk" synchronizes
+    Then the repository on "desk" composes Unicode file names
+    And the last commit on "desk" names the note "Imágenes.md"
