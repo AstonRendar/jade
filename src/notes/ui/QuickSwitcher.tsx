@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Palette, type PaletteOption } from "../../shared/ui/Palette";
 import { useVault } from "../store/vaultStore";
+import { matchingFiles } from "./SearchPanel";
 
 const MAX_OPTIONS = 50;
 
@@ -36,20 +37,7 @@ export function QuickSwitcher({ onClose }: { onClose: () => void }) {
 }
 
 export function matchingNotes(paths: string[], query: string): PaletteOption[] {
-  const needle = query.trim().toLocaleLowerCase();
-  return paths
-    .map((path) => ({ path, title: titleOf(path) }))
-    .filter(({ path }) => path.toLocaleLowerCase().includes(needle))
-    .sort(
-      (a, b) =>
-        Number(b.title.toLocaleLowerCase().startsWith(needle)) -
-          Number(a.title.toLocaleLowerCase().startsWith(needle)) ||
-        a.title.localeCompare(b.title),
-    )
+  return matchingFiles(paths, query)
     .slice(0, MAX_OPTIONS)
-    .map(({ path, title }) => ({ id: path, label: title, detail: path }));
-}
-
-function titleOf(path: string): string {
-  return path.slice(path.lastIndexOf("/") + 1).replace(/\.md$/i, "");
+    .map(({ path, name }) => ({ id: path, label: name, detail: path }));
 }

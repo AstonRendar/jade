@@ -71,8 +71,6 @@
   "navigation": {
     "quickSwitcher": "Abrir nota",
     "quickSwitcherPlaceholder": "Escribe el nombre de una nota…",
-    "search": "Buscar",
-    "searchPlaceholder": "Buscar en todas las notas…",
     "backlinks": "Enlaces entrantes",
     "noBacklinks": "Ninguna otra nota enlaza aquí."
   },
@@ -145,5 +143,13 @@
     "label": "Notas abiertas",
     "close": "Cerrar {{name}}",
     "openInNewTab": "Abrir en pestaña nueva"
+  },
+  "search": {
+    "title": "Buscar",
+    "placeholder": "Buscar archivos y texto…",
+    "files": "Archivos",
+    "content": "En las notas",
+    "hint": "Escribe para encontrar archivos por su nombre y notas por su texto.",
+    "searching": "Buscando…"
   }
 }
