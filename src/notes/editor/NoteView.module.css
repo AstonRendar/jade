@@ -45,6 +45,17 @@
   color: var(--accent-text);
 }
 
+.content {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.content > section {
+  max-height: 40vh;
+  overflow: auto;
+}
+
 .editor {
   min-height: 0;
   overflow: hidden;
